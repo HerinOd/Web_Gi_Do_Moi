@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ Cá Nhân - Doomixi</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Mở rộng max-width lên 1200px cho đồng bộ Trang Chủ */
+        .profile-header {
+            max-width: 1200px;
+            margin: 80px auto 40px;
+            background: #1f1f2e;
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid #2a2a35;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ffaa00;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            color: #ffaa00;
+            margin-bottom: 10px;
+        }
+
+        .profile-role {
+            display: inline-block;
+            background: #2a2a35;
+            color: #e0e0e0;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .profile-bio {
+            color: #aaa;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .btn-edit-profile {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            padding: 8px 15px;
+            background: #2a2a35;
+            color: #e0e0e0;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            display: none;
+            transition: 0.2s;
+        }
+
+        .btn-edit-profile:hover {
+            background: #4da6ff;
+            color: #121218;
+        }
+
+        .section-title {
+            max-width: 1200px;
+            margin: 0 auto 20px;
+            color: #ffaa00;
+            font-size: 20px;
+            border-bottom: 1px solid #2a2a35;
+            padding-bottom: 10px;
+        }
+
+        /* ==========================================
+           [CSS ĐỒNG BỘ: LƯỚI TRUYỆN 5 CỘT & STORY CARD]
+           ========================================== */
+        .post-grid-layout {
+            max-width: 1200px;
+            margin: 0 auto 50px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .post-grid-layout {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .btn-edit-profile {
+                position: static;
+                margin-top: 20px;
+                display: inline-block;
+            }
+        }
+
+        .grid-item {
+            background: #1f1f2e;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2a2a35;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grid-item:hover {
+            transform: translateY(-5px);
+            border-color: #ffaa00;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .post-link {
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            color: inherit;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            font-size: 12px;
+            border-bottom: 1px solid #2a2a35;
+        }
+
+        .card-uploader {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+        }
+
+        .card-uploader img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .card-uploader-name {
+            color: #ffaa00;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80px;
+        }
+
+        .card-date {
+            color: #888;
+            white-space: nowrap;
+        }
+
+        .post-thumbnail {
+            position: relative;
+            width: 100%;
+            padding-top: 133%;
+            overflow: hidden;
+            background: #121218;
+        }
+
+        .post-thumbnail img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.3s;
+        }
+
+        .grid-item:hover .post-thumbnail img {
+            transform: scale(1.05);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+        }
+
+        .status-ongoing {
+            background: #28a745;
+        }
+
+        .status-completed {
+            background: #007bff;
+        }
+
+        .status-paused {
+            background: #dc3545;
+        }
+
+        .tags-overlay {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            z-index: 2;
+            right: 10px;
+        }
+
+        .tag-badge {
+            background: #ffaa00;
+            color: #121218;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .tag-badge.plus-tag {
+            background: #e0245e;
+            color: #fff;
+        }
+
+        .thumbnail-gradient {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(0deg, rgba(18, 18, 24, 0.9) 0%, rgba(18, 18, 24, 0) 100%);
+            z-index: 1;
+        }
+
+        .post-title {
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #e0e0e0;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 12px;
+            color: #aaa;
+            border-top: 1px solid #2a2a35;
+            font-size: 13px;
+            background: #1a1a24;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo">Doomixi</a>
+        </div>
+    </header>
+
+    <div class="profile-header" id="profile-block">
+        <h2 style="color: #aaa; width: 100%; text-align: center;">Đang trích xuất dữ liệu người dùng...</h2>
+    </div>
+
+    <div class="section-title">TRUYỆN ĐÃ ĐĂNG TẢI</div>
+    <div class="post-grid-layout" id="user-stories-grid">
+        <p style="text-align: center; width: 100%; color: #aaa;">Hệ thống đang quét dữ liệu...</p>
+    </div>
+
+    <div class="section-title" id="bookmark-title" style="display: none; margin-top: 40px; color: #4da6ff;">TRUYỆN ĐÃ
+        LƯU (BẢN THÂN)</div>
+    <div class="post-grid-layout" id="bookmark-grid" style="display: none;">
+        <p style="text-align: center; width: 100%; color: #aaa;">Đang tải danh sách lưu...</p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVAIacKswr9w5NagFnDoh5P9kcweztOmQ",
+            authDomain: "web-truyen-3769d.firebaseapp.com",
+            projectId: "web-truyen-3769d",
+            storageBucket: "web-truyen-3769d.firebasestorage.app",
+            messagingSenderId: "613339406890",
+            appId: "1:613339406890:web:3304ae5de8bbc91bb5d953"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUid = urlParams.get('uid');
+
+        const profileBlock = document.getElementById('profile-block');
+        const storiesGrid = document.getElementById('user-stories-grid');
+        const bookmarkTitle = document.getElementById('bookmark-title');
+        const bookmarkGrid = document.getElementById('bookmark-grid');
+
+        let currentUser = null;
+
+        if (!targetUid) {
+            profileBlock.innerHTML = "<h2 style='color:#ff5555; width:100%; text-align:center;'>Không tìm thấy mã người dùng!</h2>";
+            storiesGrid.innerHTML = "";
+        } else {
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+                renderProfile();
+            });
+        }
+
+        // ==========================================
+        // MODULE: RENDER THẺ TRUYỆN DÙNG CHUNG (DRY PRINCIPLE)
+        // ==========================================
+        function generateStoryCardHTML(story, docId) {
+            const dateStr = story.createdAt ? new Date(story.createdAt).toLocaleDateString('vi-VN') : 'N/A';
+
+            let statusClass = 'status-ongoing';
+            if (story.status === 'Hoàn thành') statusClass = 'status-completed';
+            if (story.status === 'Tạm dừng') statusClass = 'status-paused';
+
+            let tagsHTML = "";
+            if (story.tags && Array.isArray(story.tags) && story.tags.length > 0) {
+                const displayTags = story.tags.slice(0, 2);
+                displayTags.forEach(tag => tagsHTML += `<span class="tag-badge">${tag}</span>`);
+                if (story.tags.length > 2) tagsHTML += `<span class="tag-badge plus-tag">+${story.tags.length - 2}</span>`;
+            }
+
+            const uploaderName = story.uploaderName || "Ẩn danh";
+            const uploaderAvatar = story.uploaderAvatar || "https://www.w3schools.com/howto/img_avatar.png";
+            const viewCount = story.views || 0;
+            const likeCount = story.likeCount || 0;
+
+            return `
+                <div class="grid-item">
+                    <a href="info.html?id=${docId}" class="post-link">
+                        <div class="card-header">
+                            <div class="card-uploader">
+                                <img src="${uploaderAvatar}" alt="Avatar">
+                                <span class="card-uploader-name">${uploaderName}</span>
+                            </div>
+                            <div class="card-date">${dateStr}</div>
+                        </div>
+                        <div class="post-thumbnail">
+                            <img src="${story.coverImage}" alt="Cover">
+                            <div class="thumbnail-gradient"></div>
+                            <div class="status-badge ${statusClass}">${story.status}</div>
+                            <div class="tags-overlay">${tagsHTML}</div>
+                        </div>
+                        <h3 class="post-title">${story.title}</h3>
+                        <div class="card-footer">
+                            <div class="stat-item"><span style="font-size: 16px;">👁️</span> ${viewCount}</div>
+                            <div class="stat-item"><span style="font-size: 14px;">❤️</span> ${likeCount}</div>
+                        </div>
+                    </a>
+                </div>
+            `;
+        }
+
+        async function renderProfile() {
+            try {
+                // 1. KÉO DỮ LIỆU PUBLIC USER
+                const userRef = doc(db, "users", targetUid);
+                const userSnap = await getDoc(userRef);
+
+                if (!userSnap.exists()) {
+                    profileBlock.innerHTML = "<h2 style='color:#ff5555; width:100%; text-align:center;'>Người dùng không tồn tại!</h2>";
+                    storiesGrid.innerHTML = "";
+                    return;
+                }
+
+                const userData = userSnap.data();
+                const avatarUrl = userData.avatar || "https://www.w3schools.com/howto/img_avatar.png";
+                const roleBadge = userData.role === "admin" ? "ADMIN / QUẢN TRỊ VIÊN" : "DỊCH GIẢ";
+
+                profileBlock.innerHTML = `
+                    <img src="${avatarUrl}" alt="Avatar" class="profile-avatar">
+                    <div class="profile-info">
+                        <div class="profile-name">${userData.displayName}</div>
+                        <div class="profile-role">${roleBadge}</div>
+                        <div class="profile-bio">${userData.bio || 'Người dùng này rất lười, chưa viết giới thiệu gì cả...'}</div>
+                    </div>
+                    <a href="settings.html" class="btn-edit-profile" id="btnEditProfile">Chỉnh sửa hồ sơ</a>
+                `;
+                document.title = `${userData.displayName} - Hồ Sơ - Doomixi`;
+
+                // 2. KÉO DỮ LIỆU TRUYỆN ĐÃ ĐĂNG
+                const storiesRef = collection(db, "stories");
+                const q = query(storiesRef, where("uploaderId", "==", targetUid));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    storiesGrid.innerHTML = "<p style='text-align: center; width: 100%; color: #aaa; grid-column: 1/-1;'>Người dùng này chưa đăng tải bộ truyện nào.</p>";
+                } else {
+                    storiesGrid.innerHTML = "";
+                    querySnapshot.forEach((doc) => {
+                        storiesGrid.innerHTML += generateStoryCardHTML(doc.data(), doc.id);
+                    });
+                }
+
+                // 3. LOGIC XỬ LÝ QUYỀN RIÊNG TƯ (BOOKMARK CROSS-QUERY)
+                if (currentUser && currentUser.uid === targetUid) {
+                    document.getElementById('btnEditProfile').style.display = 'block';
+
+                    bookmarkTitle.style.display = 'block';
+                    bookmarkGrid.style.display = 'grid';
+
+                    if (!userData.bookmarked || userData.bookmarked.length === 0) {
+                        bookmarkGrid.innerHTML = "<p style='text-align: center; width: 100%; color: #aaa; grid-column: 1/-1;'>Bạn chưa lưu bộ truyện nào.</p>";
+                    } else {
+                        bookmarkGrid.innerHTML = "";
+                        const fetchPromises = userData.bookmarked.map(storyId => getDoc(doc(db, "stories", storyId)));
+                        const storySnaps = await Promise.all(fetchPromises);
+
+                        storySnaps.forEach(snap => {
+                            if (snap.exists()) {
+                                bookmarkGrid.innerHTML += generateStoryCardHTML(snap.data(), snap.id);
+                            }
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Lỗi:", error);
+                profileBlock.innerHTML = "<h2 style='color:#ff5555; width:100%; text-align:center;'>Lỗi kết nối máy chủ!</h2>";
+            }
+        }
+    </script>
+</body>
+
+</html>

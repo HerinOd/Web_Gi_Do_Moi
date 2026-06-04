@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đọc Truyện - Doomixi</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #121218;
+        }
+
+        /* ==========================================
+           [CSS LỚP VIEW: ĐỌC TRUYỆN] 
+           ========================================== */
+        .reader-container {
+            max-width: 900px;
+            margin: 80px auto 40px;
+            background: #1f1f2e;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .breadcrumb {
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: #ffaa00;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            color: #aaa;
+            margin: 0 10px;
+        }
+
+        .chapter-header {
+            text-align: center;
+            border-bottom: 1px solid #2a2a35;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chapter-title {
+            font-size: 28px;
+            color: #ffaa00;
+            margin-bottom: 10px;
+        }
+
+        .story-name {
+            font-size: 18px;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .chapter-content {
+            font-size: 20px;
+            line-height: 1.8;
+            color: #e0e0e0;
+            white-space: pre-wrap;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navigation-bars {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            border-top: 1px solid #2a2a35;
+            padding-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: #2a2a35;
+            color: #e0e0e0;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #ffaa00;
+            color: #121218;
+        }
+
+        .nav-btn.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* ==========================================
+           [CSS LỚP VIEW: MODULE KHÓA CHƯƠNG] 
+           ========================================== */
+        .lock-container {
+            text-align: center;
+            padding: 60px 20px;
+            background: #1a1a24;
+            border: 1px dashed #ffaa00;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .lock-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .lock-msg {
+            color: #e0e0e0;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .lock-input-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .lock-input {
+            padding: 10px 15px;
+            background: #121218;
+            border: 1px solid #2a2a35;
+            color: #e0e0e0;
+            border-radius: 4px;
+            flex: 1;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .lock-btn {
+            padding: 10px 20px;
+            background: #ffaa00;
+            color: #121218;
+            border: none;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .lock-btn:hover {
+            background: #e69900;
+        }
+
+        .lock-error {
+            color: #ff5555;
+            margin-top: 15px;
+            display: none;
+            font-weight: bold;
+        }
+
+        /* ==========================================
+           [CSS LỚP VIEW: MODULE COMMENT] 
+           ========================================== */
+        .comment-section {
+            max-width: 900px;
+            margin: 0 auto 50px;
+            background: #1f1f2e;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            background: #121218;
+            border: 1px solid #2a2a35;
+            color: #e0e0e0;
+            padding: 10px;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .comment-form button {
+            align-self: flex-end;
+            padding: 8px 20px;
+            background: #4da6ff;
+            color: #121218;
+            border: none;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .comment-form button:hover {
+            background: #3388dd;
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .comment-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .comment-body {
+            flex: 1;
+            background: #2a2a35;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            color: #ffaa00;
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .comment-text {
+            color: #e0e0e0;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            margin-bottom: 10px;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+        }
+
+        .action-btn {
+            color: #aaa;
+            cursor: pointer;
+            transition: 0.2s;
+            user-select: none;
+        }
+
+        .action-btn:hover {
+            color: #4da6ff;
+        }
+
+        .action-btn.delete:hover {
+            color: #ff5555;
+        }
+
+        .action-btn.liked {
+            color: #ffaa00;
+            font-weight: bold;
+        }
+
+        .replies-container {
+            margin-left: 60px;
+            border-left: 2px solid #2a2a35;
+            padding-left: 15px;
+        }
+
+        .reply-input-box {
+            display: none;
+            margin-top: 10px;
+            gap: 10px;
+        }
+
+        .reply-input-box input {
+            flex: 1;
+            background: #121218;
+            border: 1px solid #4da6ff;
+            color: #e0e0e0;
+            padding: 8px;
+            border-radius: 4px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .reply-input-box button {
+            padding: 8px 15px;
+            background: #ffaa00;
+            color: #121218;
+            border: none;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .comment-edit-box {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .comment-edit-box textarea {
+            width: 100%;
+            background: #121218;
+            border: 1px solid #ffaa00;
+            color: #e0e0e0;
+            padding: 10px;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .edit-actions button {
+            padding: 6px 12px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-save-edit {
+            background: #ffaa00;
+            color: #121218;
+        }
+
+        .btn-cancel-edit {
+            background: transparent;
+            color: #aaa;
+            border: 1px solid #aaa !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo">Doomixi</a>
+        </div>
+    </header>
+
+    <div class="reader-container" id="reader-block">
+        <h2 style="color: #aaa; text-align: center;">Đang tải nội dung chương...</h2>
+    </div>
+
+    <div class="comment-section" id="comment-section-block" style="display: none;">
+        <div style="border-bottom: 1px solid #2a2a35; padding-bottom: 10px; margin-bottom: 20px;">
+            <h3 style="color: #ffaa00; margin: 0;">THẢO LUẬN CHƯƠNG NÀY</h3>
+        </div>
+
+        <div id="comment-auth-warning" style="text-align: center; color: #ff5555; padding: 20px 0;">
+            Vui lòng <a href="login.html" style="color: #ffaa00;">đăng nhập</a> để bình luận.
+        </div>
+        <form class="comment-form" id="main-comment-form" style="display: none;">
+            <textarea id="main-comment-text" placeholder="Bạn nghĩ gì về chương truyện này?" required></textarea>
+            <button type="submit" id="btnSubmitComment">Gửi Bình Luận</button>
+        </form>
+
+        <div id="comment-list-block">
+            <p style="color: #aaa; text-align: center;">Đang tải bình luận...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVAIacKswr9w5NagFnDoh5P9kcweztOmQ",
+            authDomain: "web-truyen-3769d.firebaseapp.com",
+            projectId: "web-truyen-3769d",
+            storageBucket: "web-truyen-3769d.firebasestorage.app",
+            messagingSenderId: "613339406890",
+            appId: "1:613339406890:web:3304ae5de8bbc91bb5d953"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const chapterId = urlParams.get('chapterId');
+
+        let currentUser = null;
+        let currentUserData = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if (user) {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    currentUserData = userDoc.data();
+                    document.getElementById('comment-auth-warning').style.display = 'none';
+                    document.getElementById('main-comment-form').style.display = 'flex';
+                }
+            } else {
+                currentUserData = null;
+                document.getElementById('comment-auth-warning').style.display = 'block';
+                document.getElementById('main-comment-form').style.display = 'none';
+            }
+        });
+
+        async function renderChapter() {
+            const readerBlock = document.getElementById('reader-block');
+            if (!chapterId) { readerBlock.innerHTML = "<h2 style='text-align:center; color:#ff5555;'>Không tìm thấy mã chương!</h2>"; return; }
+
+            try {
+                const chapterRef = doc(db, "chapters", chapterId);
+                const chapterSnap = await getDoc(chapterRef);
+
+                if (!chapterSnap.exists()) { readerBlock.innerHTML = "<h2 style='text-align:center; color:#ff5555;'>Chương này không tồn tại hoặc đã bị xóa.</h2>"; return; }
+
+                const chapterData = chapterSnap.data();
+                let storyTitle = "Tên truyện...";
+                let storyUploaderId = null;
+
+                const storyRef = doc(db, "stories", chapterData.storyId);
+                const storySnap = await getDoc(storyRef);
+                if (storySnap.exists()) {
+                    storyTitle = storySnap.data().title;
+                    storyUploaderId = storySnap.data().uploaderId;
+                }
+
+                function triggerViewIncrement() {
+                    const viewSessionKey = `viewed_chap_${chapterId}`;
+                    if (!sessionStorage.getItem(viewSessionKey)) {
+                        updateDoc(storyRef, { views: increment(1) }).catch(err => console.error("Lỗi tăng view:", err));
+                        sessionStorage.setItem(viewSessionKey, "true");
+                    }
+                }
+
+                let isLocked = chapterData.password && chapterData.password.trim() !== "";
+                let hasAccess = false;
+
+                if (currentUser && currentUserData) {
+                    if (currentUserData.role === "admin" || currentUser.uid === storyUploaderId) {
+                        hasAccess = true;
+                    }
+                }
+                if (sessionStorage.getItem(`unlocked_chap_${chapterId}`)) {
+                    hasAccess = true;
+                }
+
+                let contentHTML = "";
+                if (!isLocked || hasAccess) {
+                    contentHTML = `<div class="chapter-content">${chapterData.content}</div>`;
+                    triggerViewIncrement();
+                } else {
+                    contentHTML = `
+                        <div class="lock-container" id="lock-block">
+                            <div class="lock-icon">🔒</div>
+                            <div class="lock-msg">Chương này đã được bảo vệ bằng mật mã.</div>
+                            <div class="lock-input-group">
+                                <input type="password" id="chap-password-input" class="lock-input" placeholder="Nhập mật mã...">
+                                <button id="btnUnlock" class="lock-btn">Mở Khóa</button>
+                            </div>
+                            <div id="lock-error-msg" class="lock-error">Mật mã không chính xác!</div>
+                        </div>
+                        <div class="chapter-content" id="hidden-content" style="display: none;">${chapterData.content}</div>
+                    `;
+                }
+
+                const chaptersRef = collection(db, "chapters");
+                const q = query(chaptersRef, where("storyId", "==", chapterData.storyId));
+                const querySnapshot = await getDocs(q);
+
+                let chaptersArray = [];
+                querySnapshot.forEach((doc) => { chaptersArray.push({ id: doc.id, chapterNumber: doc.data().chapterNumber }); });
+                chaptersArray.sort((a, b) => a.chapterNumber - b.chapterNumber);
+                const currentIndex = chaptersArray.findIndex(c => c.id === chapterId);
+
+                let prevLink = `<a href="#" class="nav-btn disabled">Chương Trước</a>`;
+                let nextLink = `<a href="#" class="nav-btn disabled">Chương Sau</a>`;
+
+                if (currentIndex > 0) prevLink = `<a href="read.html?chapterId=${chaptersArray[currentIndex - 1].id}" class="nav-btn">Chương Trước</a>`;
+                if (currentIndex < chaptersArray.length - 1) nextLink = `<a href="read.html?chapterId=${chaptersArray[currentIndex + 1].id}" class="nav-btn">Chương Sau</a>`;
+
+                const chapterDisplayTitle = `Chương ${chapterData.chapterNumber}${chapterData.title ? ': ' + chapterData.title : ''}`;
+
+                let adminControlsHTML = "";
+                if (currentUser && currentUserData) {
+                    if (currentUserData.role === "admin" || currentUser.uid === storyUploaderId) {
+                        adminControlsHTML = `
+                            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px; padding-top: 20px; border-top: 1px dashed #2a2a35;">
+                                <a href="add-chapter.html?editId=${chapterId}" class="btn" style="background: #4da6ff; color: #121218; padding: 10px 20px; font-weight: bold; border-radius: 4px; text-decoration: none;">Sửa Nội Dung</a>
+                                <button class="btn" id="btnDeleteChapter" data-chap-id="${chapterId}" data-story-id="${chapterData.storyId}" style="background: #ff5555; color: #121218; padding: 10px 20px; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">Xóa Chương</button>
+                            </div>
+                        `;
+                    }
+                }
+
+                readerBlock.innerHTML = `
+                    <div class="breadcrumb">
+                        <a href="index.html">Trang Chủ</a> <span>/</span> 
+                        <a href="info.html?id=${chapterData.storyId}">${storyTitle}</a> <span>/</span> 
+                        <span style="color: #e0e0e0;">${chapterDisplayTitle}</span>
+                    </div>
+                    <div class="chapter-header">
+                        <h1 class="chapter-title">${chapterDisplayTitle}</h1>
+                        <div class="story-name">${storyTitle}</div>
+                        ${adminControlsHTML}
+                    </div>
+                    ${contentHTML}
+                    <div class="navigation-bars">
+                        ${prevLink}
+                        <a href="info.html?id=${chapterData.storyId}" class="nav-btn" style="background: #4da6ff; color:#121218;">Mục Lục</a>
+                        ${nextLink}
+                    </div>
+                `;
+                document.title = `${chapterDisplayTitle} - Doomixi`;
+
+                if (isLocked && !hasAccess) {
+                    document.getElementById('btnUnlock').addEventListener('click', () => {
+                        const inputVal = document.getElementById('chap-password-input').value.trim();
+                        if (inputVal === chapterData.password) {
+                            sessionStorage.setItem(`unlocked_chap_${chapterId}`, "true");
+                            triggerViewIncrement();
+                            document.getElementById('lock-block').style.display = 'none';
+                            document.getElementById('hidden-content').style.display = 'block';
+                        } else {
+                            document.getElementById('lock-error-msg').style.display = 'block';
+                        }
+                    });
+
+                    document.getElementById('chap-password-input').addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            document.getElementById('btnUnlock').click();
+                        }
+                    });
+                }
+
+                document.getElementById('comment-section-block').style.display = 'block';
+                loadComments();
+
+            } catch (error) { console.error(error); readerBlock.innerHTML = "<h2 style='text-align:center; color:#ff5555;'>Lỗi tải dữ liệu.</h2>"; }
+        }
+
+        const commentListBlock = document.getElementById('comment-list-block');
+
+        // ==========================================
+        // THUẬT TOÁN RENDER BÌNH LUẬN NÂNG CẤP
+        // ==========================================
+        function generateCommentHTML(c, isReply = false, parentComment = null) {
+            const dateStr = new Date(c.createdAt).toLocaleString('vi-VN');
+            const avatar = c.avatar || "https://www.w3schools.com/howto/img_avatar.png";
+
+            let actionBtnsHTML = "";
+            if (currentUser && currentUserData) {
+                if (currentUser.uid === c.userId) actionBtnsHTML += `<div class="action-btn" data-action="edit" data-id="${c.id}">Sửa</div>`;
+                if (currentUser.uid === c.userId || currentUserData.role === 'admin') actionBtnsHTML += `<div class="action-btn delete" data-action="delete" data-id="${c.id}">Xóa</div>`;
+            }
+
+            let isLiked = false;
+            let likeCount = c.likedBy ? c.likedBy.length : 0;
+            if (currentUser && c.likedBy && c.likedBy.includes(currentUser.uid)) isLiked = true;
+
+            const editedTag = c.isEdited ? `<span style="font-size: 11px; font-style: italic; color: #888; margin-left: 5px;">(đã chỉnh sửa)</span>` : "";
+            const replyParentId = isReply ? c.parentId : c.id;
+
+            // XÁC ĐỊNH MỤC TIÊU BỊ TAG
+            const tagTargetName = c.displayName;
+            const tagTargetUid = c.userId;
+
+            let formattedContent = c.content;
+
+            // THUẬT TOÁN ĐỊNH TUYẾN HYPERLINK (Ưu tiên Phi chuẩn hóa, dùng Fallback cho bản cũ)
+            if (c.replyToName && c.replyToUid) {
+                const tagString = `@${c.replyToName}`;
+                if (formattedContent.startsWith(tagString)) {
+                    const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+                    formattedContent = formattedContent.replace(tagString, hyperlinkTag);
+                }
+            } else if (isReply && parentComment) {
+                const tagString = `@${parentComment.displayName}`;
+                if (formattedContent.startsWith(tagString)) {
+                    const hyperlinkTag = `<a href="profile.html?uid=${parentComment.userId}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+                    formattedContent = formattedContent.replace(tagString, hyperlinkTag);
+                }
+            }
+
+            return `
+                <div class="comment-item" id="cmt-${c.id}">
+                    <a href="profile.html?uid=${c.userId}">
+                        <img src="${avatar}" alt="Avatar" class="comment-avatar" ${isReply ? 'style="width:35px; height:35px;"' : ''}>
+                    </a>
+                    <div class="comment-body" style="width: 100%;">
+                        <div class="comment-header">
+                            <div class="comment-author">
+                                <a href="profile.html?uid=${c.userId}" style="color: #ffaa00; text-decoration: none;">${c.displayName}</a> ${editedTag}
+                            </div>
+                            <div class="comment-time">${dateStr}</div>
+                        </div>
+                        
+                        <div class="comment-text" id="text-display-${c.id}">${formattedContent}</div>
+                        
+                        <div class="comment-edit-box" id="edit-box-${c.id}">
+                            <textarea id="edit-input-${c.id}">${c.content}</textarea>
+                            <div class="edit-actions">
+                                <button class="btn-cancel-edit" data-action="cancel-edit" data-id="${c.id}">Hủy</button>
+                                <button class="btn-save-edit" data-action="save-edit" data-id="${c.id}">Lưu thay đổi</button>
+                            </div>
+                        </div>
+
+                        <div class="comment-actions">
+                            <div class="action-btn ${isLiked ? 'liked' : ''}" data-action="like" data-id="${c.id}">
+                                ${isLiked ? 'Đã Thích' : 'Thích'} (${likeCount})
+                            </div>
+                            <div class="action-btn" data-action="reply" data-id="${c.id}" data-parent-id="${replyParentId}" data-tag-name="${tagTargetName}" data-tag-uid="${tagTargetUid}">Phản hồi</div>
+                            ${actionBtnsHTML}
+                        </div>
+                        
+                        <div class="reply-input-box" id="reply-box-${c.id}">
+                            <input type="text" id="reply-text-${c.id}" placeholder="Viết phản hồi...">
+                            <button data-action="submit-reply" data-parent-id="${replyParentId}" data-box-id="${c.id}">Gửi</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadComments() {
+            if (!chapterId) return;
+            try {
+                const q = query(collection(db, "comments"), where("targetId", "==", chapterId));
+                const snap = await getDocs(q);
+                let commentsArr = [];
+                snap.forEach(doc => commentsArr.push({ id: doc.id, ...doc.data() }));
+
+                commentsArr.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+                const parents = commentsArr.filter(c => c.parentId === null);
+                const replies = commentsArr.filter(c => c.parentId !== null);
+
+                if (commentsArr.length === 0) {
+                    commentListBlock.innerHTML = "<p style='color: #aaa; text-align: center;'>Chưa có bình luận nào cho chương này. Mở bát thôi!</p>";
+                    return;
+                }
+
+                let html = "";
+                parents.forEach(p => {
+                    html += generateCommentHTML(p, false, null);
+                    const childReplies = replies.filter(r => r.parentId === p.id);
+                    if (childReplies.length > 0) {
+                        html += `<div class="replies-container">`;
+                        childReplies.forEach(r => html += generateCommentHTML(r, true, p));
+                        html += `</div>`;
+                    }
+                });
+                commentListBlock.innerHTML = html;
+            } catch (error) { console.error(error); commentListBlock.innerHTML = "<p style='color: #ff5555;'>Lỗi tải bình luận.</p>"; }
+        }
+
+        const mainCommentForm = document.getElementById('main-comment-form');
+        const btnSubmitComment = document.getElementById('btnSubmitComment');
+
+        mainCommentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser || !currentUserData) return;
+            btnSubmitComment.disabled = true;
+            const content = document.getElementById('main-comment-text').value.trim();
+
+            const cmtObject = {
+                targetType: "chapter",
+                targetId: chapterId,
+                userId: currentUser.uid,
+                displayName: currentUserData.displayName,
+                avatar: currentUserData.avatar || "",
+                content: content,
+                likedBy: [],
+                parentId: null,
+                replyToUid: null,
+                replyToName: null,
+                isEdited: false,
+                createdAt: new Date().toISOString()
+            };
+
+            try { await addDoc(collection(db, "comments"), cmtObject); document.getElementById('main-comment-text').value = ""; loadComments(); }
+            catch (error) { console.error(error); alert("Lỗi khi đăng bình luận."); }
+            finally { btnSubmitComment.disabled = false; }
+        });
+
+        commentListBlock.addEventListener('click', async (e) => {
+            const target = e.target;
+            const action = target.getAttribute('data-action');
+            if (!action) return;
+
+            if (action === "delete") {
+                if (!confirm("Bạn có chắc chắn muốn xóa bình luận này?")) return;
+                const cmtId = target.getAttribute('data-id');
+                try { await deleteDoc(doc(db, "comments", cmtId)); loadComments(); }
+                catch (err) { console.error(err); alert("Lỗi xóa bình luận."); }
+            }
+
+            if (action === "reply") {
+                if (!currentUser) { alert("Vui lòng đăng nhập để phản hồi."); return; }
+                const cmtId = target.getAttribute('data-id');
+                const tagName = target.getAttribute('data-tag-name');
+                const tagUid = target.getAttribute('data-tag-uid'); // Lấy UID người bị Tag
+
+                document.querySelectorAll('.reply-input-box').forEach(box => { box.style.display = 'none'; });
+                const replyBox = document.getElementById(`reply-box-${cmtId}`);
+                const replyInput = document.getElementById(`reply-text-${cmtId}`);
+                replyBox.style.display = 'flex';
+
+                if (tagName) {
+                    replyInput.value = `@${tagName} `;
+                    replyInput.setAttribute('data-reply-name', tagName);
+                    replyInput.setAttribute('data-reply-uid', tagUid);
+                } else {
+                    replyInput.value = "";
+                    replyInput.removeAttribute('data-reply-name');
+                    replyInput.removeAttribute('data-reply-uid');
+                }
+                replyInput.focus();
+            }
+
+            if (action === "submit-reply") {
+                const parentId = target.getAttribute('data-parent-id');
+                const boxId = target.getAttribute('data-box-id');
+                const replyInput = document.getElementById(`reply-text-${boxId}`);
+                const content = replyInput.value.trim();
+
+                const replyToName = replyInput.getAttribute('data-reply-name') || null;
+                const replyToUid = replyInput.getAttribute('data-reply-uid') || null;
+
+                if (content === "") return;
+                target.textContent = "...";
+
+                const replyObject = {
+                    targetType: "chapter",
+                    targetId: chapterId,
+                    userId: currentUser.uid,
+                    displayName: currentUserData.displayName,
+                    avatar: currentUserData.avatar || "",
+                    content: content,
+                    likedBy: [],
+                    parentId: parentId,
+                    replyToUid: replyToUid,
+                    replyToName: replyToName,
+                    isEdited: false,
+                    createdAt: new Date().toISOString()
+                };
+
+                try { await addDoc(collection(db, "comments"), replyObject); loadComments(); }
+                catch (err) { console.error(err); alert("Lỗi gửi phản hồi."); target.textContent = "Gửi"; }
+            }
+
+            if (action === "edit") {
+                const cmtId = target.getAttribute('data-id');
+                document.getElementById(`text-display-${cmtId}`).style.display = 'none';
+                document.getElementById(`edit-box-${cmtId}`).style.display = 'flex';
+            }
+
+            if (action === "cancel-edit") {
+                const cmtId = target.getAttribute('data-id');
+                document.getElementById(`text-display-${cmtId}`).style.display = 'block';
+                document.getElementById(`edit-box-${cmtId}`).style.display = 'none';
+            }
+
+            if (action === "save-edit") {
+                const cmtId = target.getAttribute('data-id');
+                const newContent = document.getElementById(`edit-input-${cmtId}`).value.trim();
+                if (newContent === "") { alert("Nội dung không được để trống!"); return; }
+
+                target.textContent = "Đang lưu...";
+                try {
+                    await updateDoc(doc(db, "comments", cmtId), { content: newContent, isEdited: true });
+                    loadComments();
+                } catch (error) { console.error("Lỗi sửa:", error); alert("Lỗi khi lưu chỉnh sửa."); target.textContent = "Lưu thay đổi"; }
+            }
+
+            if (action === "like") {
+                if (!currentUser) { alert("Vui lòng đăng nhập để Thích."); return; }
+                const cmtId = target.getAttribute('data-id');
+                const cmtRef = doc(db, "comments", cmtId);
+                try {
+                    const isLiked = target.classList.contains('liked');
+                    if (isLiked) { await updateDoc(cmtRef, { likedBy: arrayRemove(currentUser.uid) }); }
+                    else { await updateDoc(cmtRef, { likedBy: arrayUnion(currentUser.uid) }); }
+                    loadComments();
+                } catch (error) { console.error(error); }
+            }
+        });
+
+        document.addEventListener('click', async (e) => {
+            if (e.target.id === 'btnDeleteChapter') {
+                e.preventDefault();
+                if (!confirm("CẢNH BÁO: Bạn có chắc chắn muốn xóa chương này? Toàn bộ bình luận của chương sẽ bị xóa vĩnh viễn!")) return;
+
+                const chapId = e.target.getAttribute('data-chap-id');
+                const parentStoryId = e.target.getAttribute('data-story-id');
+                e.target.textContent = "Đang dọn dẹp dữ liệu...";
+                e.target.disabled = true;
+
+                try {
+                    const cmtQuery = query(collection(db, "comments"), where("targetId", "==", chapId));
+                    const cmtSnap = await getDocs(cmtQuery);
+
+                    const deletePromises = [];
+                    cmtSnap.forEach(docSnap => {
+                        deletePromises.push(deleteDoc(doc(db, "comments", docSnap.id)));
+                    });
+
+                    await Promise.all(deletePromises);
+                    await deleteDoc(doc(db, "chapters", chapId));
+
+                    alert("Đã xóa chương và dọn dẹp bình luận thành công!");
+                    window.location.href = `info.html?id=${parentStoryId}`;
+                } catch (error) {
+                    console.error("Lỗi xóa chương:", error);
+                    alert("Có lỗi xảy ra khi xóa.");
+                    e.target.textContent = "Xóa Chương";
+                    e.target.disabled = false;
+                }
+            }
+        });
+
+        renderChapter();
+    </script>
+</body>
+
+</html>

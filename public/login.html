@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập - Doomixi</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: #1f1f2e;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #2a2a35;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffaa00;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #e0e0e0;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background: #121218;
+            border: 1px solid #2a2a35;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 10px;
+            background: #ffaa00;
+            color: #121218;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            background: #e69900;
+        }
+
+        .toggle-text {
+            text-align: center;
+            margin-top: 15px;
+            display: block;
+            color: #aaa;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .toggle-text:hover {
+            color: #ffaa00;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo">Doomixi</a>
+        </div>
+    </header>
+
+    <div class="auth-container">
+        <h2 class="auth-header">Đăng Nhập</h2>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="login-email" required>
+        </div>
+        <div class="form-group">
+            <label>Mật khẩu</label>
+            <input type="password" id="login-password" required>
+        </div>
+        <button class="auth-btn" id="btnLogin">Đăng Nhập</button>
+        <a href="register.html" class="toggle-text">Chưa có tài khoản? Đăng ký ngay</a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVAIacKswr9w5NagFnDoh5P9kcweztOmQ",
+            authDomain: "web-truyen-3769d.firebaseapp.com",
+            projectId: "web-truyen-3769d",
+            storageBucket: "web-truyen-3769d.firebasestorage.app",
+            messagingSenderId: "613339406890",
+            appId: "1:613339406890:web:3304ae5de8bbc91bb5d953"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.getElementById('btnLogin').addEventListener('click', async () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            const btn = document.getElementById('btnLogin');
+
+            if (!email || !pass) {
+                alert("Vui lòng điền đủ Email và Mật khẩu!");
+                return;
+            }
+
+            btn.textContent = "Đang xác thực...";
+            btn.disabled = true;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                alert("Đăng nhập thành công!");
+                window.location.href = "index.html";
+            } catch (error) {
+                console.error(error);
+                alert("Sai Email hoặc Mật khẩu!");
+                btn.textContent = "Đăng Nhập";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

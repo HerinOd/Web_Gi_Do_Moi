@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doomixi - Nền Tảng Đọc Truyện Trực Tuyến</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hero-section {
+      text-align: center;
+      padding: 50px 20px;
+      background: linear-gradient(180deg, #1f1f2e 0%, #121218 100%);
+      border-bottom: 1px solid #2a2a35;
+    }
+
+    .hero-title {
+      font-size: 36px;
+      color: #ffaa00;
+      margin-bottom: 10px;
+    }
+
+    .hero-subtitle {
+      color: #aaa;
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+
+    /* MỞ RỘNG MAX-WIDTH LÊN 1200PX ĐỂ CHỨA ĐẸP 5 CỘT */
+    .filter-bar {
+      max-width: 1200px;
+      margin: 30px auto;
+      display: flex;
+      gap: 15px;
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+      padding: 12px 15px;
+      background: #1f1f2e;
+      border: 1px solid #2a2a35;
+      color: #e0e0e0;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 16px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .filter-bar input:focus,
+    .filter-bar select:focus {
+      border-color: #ffaa00;
+    }
+
+    .filter-bar input {
+      flex: 2;
+    }
+
+    .filter-bar select {
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .section-title {
+      max-width: 1200px;
+      margin: 0 auto 20px;
+      color: #ffaa00;
+      font-size: 20px;
+      border-bottom: 1px solid #2a2a35;
+      padding-bottom: 10px;
+    }
+
+    /* ==========================================
+       [NEW] LƯỚI TRUYỆN 5 CỘT & RESPONSIVE
+       ========================================== */
+    .post-grid-layout {
+      max-width: 1200px;
+      margin: 0 auto 30px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .post-grid-layout {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .filter-bar {
+        flex-direction: column;
+        padding: 0 15px;
+      }
+    }
+
+    /* ==========================================
+       [NEW] CSS CHO THẺ TRUYỆN HIỆN ĐẠI
+       ========================================== */
+    .grid-item {
+      background: #1f1f2e;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #2a2a35;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .grid-item:hover {
+      transform: translateY(-5px);
+      border-color: #ffaa00;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .post-link {
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      color: inherit;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      font-size: 12px;
+      border-bottom: 1px solid #2a2a35;
+    }
+
+    .card-uploader {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .card-uploader img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .card-uploader-name {
+      color: #ffaa00;
+      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 80px;
+    }
+
+    .card-date {
+      color: #888;
+      white-space: nowrap;
+    }
+
+    .post-thumbnail {
+      position: relative;
+      width: 100%;
+      padding-top: 133%;
+      overflow: hidden;
+      background: #121218;
+    }
+
+    .post-thumbnail img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: 0.3s;
+    }
+
+    .grid-item:hover .post-thumbnail img {
+      transform: scale(1.05);
+    }
+
+    .status-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      z-index: 2;
+    }
+
+    .status-ongoing {
+      background: #28a745;
+    }
+
+    .status-completed {
+      background: #007bff;
+    }
+
+    .status-paused {
+      background: #dc3545;
+    }
+
+    .tags-overlay {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      z-index: 2;
+      right: 10px;
+    }
+
+    .tag-badge {
+      background: #ffaa00;
+      color: #121218;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .tag-badge.plus-tag {
+      background: #e0245e;
+      color: #fff;
+    }
+
+    .thumbnail-gradient {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: linear-gradient(0deg, rgba(18, 18, 24, 0.9) 0%, rgba(18, 18, 24, 0) 100%);
+      z-index: 1;
+    }
+
+    .post-title {
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #e0e0e0;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 12px;
+      color: #aaa;
+      border-top: 1px solid #2a2a35;
+      font-size: 13px;
+      background: #1a1a24;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: bold;
+    }
+
+    .empty-msg {
+      text-align: center;
+      color: #aaa;
+      width: 100%;
+      grid-column: 1 / -1;
+      padding: 40px 0;
+      font-size: 18px;
+    }
+
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin: 20px auto 50px;
+      flex-wrap: wrap;
+      max-width: 1200px;
+    }
+
+    .page-btn {
+      padding: 8px 16px;
+      background: #2a2a35;
+      color: #e0e0e0;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      user-select: none;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background: #4da6ff;
+      color: #121218;
+    }
+
+    .page-btn.active {
+      background: #5a55ff;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(90, 85, 255, 0.5);
+      pointer-events: none;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .page-ellipsis {
+      color: #aaa;
+      font-weight: bold;
+      padding: 0 5px;
+      user-select: none;
+    }
+
+    .recent-comments-container {
+      max-width: 1200px;
+      margin: 0 auto 50px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .recent-comment-item {
+      background: #1f1f2e;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #2a2a35;
+      display: flex;
+      gap: 15px;
+      transition: 0.2s;
+    }
+
+    .recent-comment-item:hover {
+      border-color: #4da6ff;
+    }
+
+    .recent-comment-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .recent-comment-content {
+      flex: 1;
+    }
+
+    .recent-comment-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .recent-comment-author {
+      font-weight: bold;
+      color: #ffaa00;
+      text-decoration: none;
+    }
+
+    .recent-comment-time {
+      color: #aaa;
+      font-size: 12px;
+    }
+
+    .recent-comment-text {
+      color: #e0e0e0;
+      font-size: 15px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .recent-comment-target {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .recent-comment-target a {
+      color: #4da6ff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .recent-comment-target a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="logo">Doomixi</a>
+      <nav class="main-nav" id="top-nav"></nav>
+    </div>
+  </header>
+
+  <div class="hero-section">
+    <h1 class="hero-title">Kho Ga De Tem</h1>
+    <p class="hero-subtitle">Ba Mia Loai Hai</p>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" id="searchInput" placeholder="Nhập tên truyện cần tìm...">
+    <select id="tagFilter">
+      <option value="all">Tất cả thể loại</option>
+    </select>
+  </div>
+
+  <div class="section-title">DANH SÁCH TRUYỆN MỚI</div>
+
+  <div class="post-grid-layout" id="latest-stories-grid">
+    <p style="text-align: center; width: 100%; color: #aaa; grid-column: 1/-1;">Đang đồng bộ dữ liệu từ đám mây...</p>
+  </div>
+
+  <div class="pagination-container" id="pagination-block"></div>
+
+  <div class="section-title" style="margin-top: 50px;">BÌNH LUẬN GẦN ĐÂY</div>
+  <div class="recent-comments-container" id="recent-comments-block">
+    <p style="text-align: center; width: 100%; color: #aaa;">Đang tải bình luận mới nhất...</p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, getDocs, orderBy, query, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVAIacKswr9w5NagFnDoh5P9kcweztOmQ",
+      authDomain: "web-truyen-3769d.firebaseapp.com",
+      projectId: "web-truyen-3769d",
+      storageBucket: "web-truyen-3769d.firebasestorage.app",
+      messagingSenderId: "613339406890",
+      appId: "1:613339406890:web:3304ae5de8bbc91bb5d953"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const topNav = document.getElementById('top-nav');
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        topNav.innerHTML = `
+                    <a href="profile.html?uid=${user.uid}">Hồ Sơ</a>
+                    <a href="add-story.html">Đăng Truyện</a>
+                    <a href="#" id="btnLogout">Đăng Xuất</a>
+                `;
+        document.getElementById('btnLogout').addEventListener('click', (e) => {
+          e.preventDefault();
+          signOut(auth).then(() => { window.location.reload(); });
+        });
+      } else {
+        topNav.innerHTML = `
+                    <a href="login.html">Đăng Nhập</a>
+                    <a href="register.html">Đăng Ký</a>
+                `;
+      }
+    });
+
+    let allStoriesArray = [];
+    let currentFilteredData = [];
+
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 10;
+
+    const storiesGrid = document.getElementById('latest-stories-grid');
+    const searchInput = document.getElementById('searchInput');
+    const tagFilter = document.getElementById('tagFilter');
+    const paginationBlock = document.getElementById('pagination-block');
+
+    function updateView() {
+      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      const chunk = currentFilteredData.slice(startIndex, endIndex);
+
+      storiesGrid.innerHTML = "";
+      if (chunk.length === 0) {
+        storiesGrid.innerHTML = "<div class='empty-msg'>Không tìm thấy bộ truyện nào.</div>";
+        paginationBlock.innerHTML = "";
+        return;
+      }
+
+      chunk.forEach(story => {
+        const dateStr = story.createdAt ? new Date(story.createdAt).toLocaleDateString('vi-VN') : 'N/A';
+
+        let statusClass = 'status-ongoing';
+        if (story.status === 'Hoàn thành') statusClass = 'status-completed';
+        if (story.status === 'Tạm dừng') statusClass = 'status-paused';
+
+        let tagsHTML = "";
+        if (story.tags && Array.isArray(story.tags) && story.tags.length > 0) {
+          const displayTags = story.tags.slice(0, 2);
+          displayTags.forEach(tag => {
+            tagsHTML += `<span class="tag-badge">${tag}</span>`;
+          });
+          if (story.tags.length > 2) {
+            tagsHTML += `<span class="tag-badge plus-tag">+${story.tags.length - 2}</span>`;
+          }
+        }
+
+        const uploaderName = story.uploaderName || "Ẩn danh";
+        const uploaderAvatar = story.uploaderAvatar || "https://www.w3schools.com/howto/img_avatar.png";
+        const viewCount = story.views || 0;
+        const likeCount = story.likeCount || 0;
+
+        const storyHTML = `
+            <div class="grid-item">
+                <a href="info.html?id=${story.id}" class="post-link">
+                    <div class="card-header">
+                        <div class="card-uploader">
+                            <img src="${uploaderAvatar}" alt="Avatar">
+                            <span class="card-uploader-name">${uploaderName}</span>
+                        </div>
+                        <div class="card-date">${dateStr}</div>
+                    </div>
+                    
+                    <div class="post-thumbnail">
+                        <img src="${story.coverImage}" alt="Cover">
+                        <div class="thumbnail-gradient"></div>
+                        <div class="status-badge ${statusClass}">${story.status}</div>
+                        <div class="tags-overlay">${tagsHTML}</div>
+                    </div>
+                    
+                    <h3 class="post-title">${story.title}</h3>
+                    
+                    <div class="card-footer">
+                        <div class="stat-item"><span style="font-size: 16px;">👁️</span> ${viewCount}</div>
+                        <div class="stat-item"><span style="font-size: 14px;">❤️</span> ${likeCount}</div>
+                    </div>
+                </a>
+            </div>
+        `;
+        storiesGrid.innerHTML += storyHTML;
+      });
+
+      renderPagination(currentFilteredData.length);
+    }
+
+    function renderPagination(totalItems) {
+      const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+      paginationBlock.innerHTML = '';
+
+      if (totalPages <= 1) return;
+
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'page-btn';
+      prevBtn.innerHTML = '❮';
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; updateView(); window.scrollTo(0, 0); } };
+      paginationBlock.appendChild(prevBtn);
+
+      const maxVisibleButtons = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisibleButtons / 2));
+      let endPage = startPage + maxVisibleButtons - 1;
+
+      if (endPage > totalPages) {
+        endPage = totalPages;
+        startPage = Math.max(1, endPage - maxVisibleButtons + 1);
+      }
+
+      if (startPage > 1) {
+        paginationBlock.appendChild(createPageBtn(1));
+        if (startPage > 2) {
+          const span = document.createElement('span'); span.className = 'page-ellipsis'; span.innerText = '...'; paginationBlock.appendChild(span);
+        }
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        paginationBlock.appendChild(createPageBtn(i));
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          const span = document.createElement('span'); span.className = 'page-ellipsis'; span.innerText = '...'; paginationBlock.appendChild(span);
+        }
+        paginationBlock.appendChild(createPageBtn(totalPages));
+      }
+
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'page-btn';
+      nextBtn.innerHTML = '❯';
+      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; updateView(); window.scrollTo(0, 0); } };
+      paginationBlock.appendChild(nextBtn);
+    }
+
+    function createPageBtn(pageNum) {
+      const btn = document.createElement('button');
+      btn.className = `page-btn ${pageNum === currentPage ? 'active' : ''}`;
+      btn.innerText = pageNum;
+      btn.onclick = () => { currentPage = pageNum; updateView(); window.scrollTo(0, 0); };
+      return btn;
+    }
+
+    function applyFilters() {
+      const searchText = searchInput.value.toLowerCase().trim();
+      const selectedTag = tagFilter.value;
+
+      currentFilteredData = allStoriesArray.filter(story => {
+        const matchSearch = story.title.toLowerCase().includes(searchText);
+        const matchTag = selectedTag === "all" || (story.tags && story.tags.includes(selectedTag));
+        return matchSearch && matchTag;
+      });
+
+      currentPage = 1;
+      updateView();
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    tagFilter.addEventListener('change', applyFilters);
+
+    function populateDynamicTags() {
+      let allTagsRaw = [];
+      allStoriesArray.forEach(story => {
+        if (story.tags && Array.isArray(story.tags)) allTagsRaw = allTagsRaw.concat(story.tags);
+      });
+      const uniqueTags = [...new Set(allTagsRaw)].sort();
+      tagFilter.innerHTML = '<option value="all">Tất cả thể loại</option>';
+      uniqueTags.forEach(tag => { tagFilter.innerHTML += `<option value="${tag}">${tag}</option>`; });
+    }
+
+    async function fetchRecentComments() {
+      const commentsBlock = document.getElementById('recent-comments-block');
+      try {
+        const q = query(collection(db, "comments"), orderBy("createdAt", "desc"), limit(10));
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+          commentsBlock.innerHTML = "<p style='text-align: center; width: 100%; color: #aaa;'>Chưa có bình luận nào.</p>";
+          return;
+        }
+
+        let html = "";
+        snap.forEach(doc => {
+          const c = doc.data();
+          const dateStr = new Date(c.createdAt).toLocaleString('vi-VN');
+          const avatar = c.avatar || "https://www.w3schools.com/howto/img_avatar.png";
+          const targetUrl = c.targetType === 'story' ? `info.html?id=${c.targetId}` : `read.html?chapterId=${c.targetId}`;
+          const targetLabel = c.targetType === 'story' ? 'trang thông tin truyện' : 'chương truyện';
+
+          // THUẬT TOÁN PARSE ĐỊNH TUYẾN HYPERLINK @TAG
+          let formattedContent = c.content;
+          if (c.replyToName && c.replyToUid) {
+            const tagString = `@${c.replyToName}`;
+            if (formattedContent.startsWith(tagString)) {
+              const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+              formattedContent = formattedContent.replace(tagString, hyperlinkTag);
+            }
+          }
+
+          html += `
+                    <div class="recent-comment-item">
+                        <a href="profile.html?uid=${c.userId}">
+                            <img src="${avatar}" alt="Avatar" class="recent-comment-avatar">
+                        </a>
+                        <div class="recent-comment-content">
+                            <div class="recent-comment-header">
+                                <a href="profile.html?uid=${c.userId}" class="recent-comment-author">${c.displayName}</a>
+                                <span class="recent-comment-time">${dateStr}</span>
+                            </div>
+                            <div class="recent-comment-text">${formattedContent}</div>
+                            <div class="recent-comment-target">
+                                Đã bình luận trong <a href="${targetUrl}">${targetLabel}</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        });
+        commentsBlock.innerHTML = html;
+      } catch (e) {
+        console.error("Lỗi kéo comment:", e);
+        commentsBlock.innerHTML = "<p style='color:#ff5555; text-align:center;'>Lỗi kết nối bình luận.</p>";
+      }
+    }
+
+    async function fetchStories() {
+      try {
+        const storiesRef = collection(db, "stories");
+        const q = query(storiesRef, orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach((doc) => {
+          allStoriesArray.push({ id: doc.id, ...doc.data() });
+        });
+
+        currentFilteredData = allStoriesArray;
+        updateView();
+        populateDynamicTags();
+        fetchRecentComments();
+
+      } catch (error) {
+        console.error("Lỗi kéo dữ liệu: ", error);
+        storiesGrid.innerHTML = "<div class='empty-msg'>Lỗi kết nối máy chủ.</div>";
+      }
+    }
+
+    fetchStories();
+  </script>
+</body>
+
+</html>

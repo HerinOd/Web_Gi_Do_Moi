@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Truyện - Doomixi</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container {
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 20px;
+            background: #1f1f2e;
+            border-radius: 8px;
+            border: 1px solid #2a2a35;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ffaa00;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            background: #121218;
+            border: 1px solid #2a2a35;
+            color: #e0e0e0;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ffaa00;
+            color: #121218;
+            border: none;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #e69900;
+        }
+
+        #auth-warning {
+            display: none;
+            text-align: center;
+            color: #ff5555;
+            padding: 50px 0;
+        }
+
+        #add-story-form {
+            display: none;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* KHỐI CSS MODULE TAGS INPUT */
+        .tags-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            background: #121218;
+            border: 1px solid #2a2a35;
+            border-radius: 4px;
+        }
+
+        .tags-input-container:focus-within {
+            border-color: #ffaa00;
+        }
+
+        /* Đổi màu viền khi đang gõ */
+
+        .tag-bubble-edit {
+            background: #4da6ff;
+            color: #121218;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-bubble-edit span {
+            cursor: pointer;
+            color: #121218;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .tag-bubble-edit span:hover {
+            color: #ff5555;
+        }
+
+        .tags-input-container input {
+            flex: 1;
+            border: none !important;
+            background: transparent !important;
+            color: #e0e0e0;
+            outline: none;
+            min-width: 150px;
+            padding: 4px 0 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo">Doomixi - Quản Lý Truyện</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <div id="auth-warning">
+            <h2>Vui lòng đăng nhập để sử dụng tính năng này!</h2><br>
+            <a href="login.html" style="color: #ffaa00; text-decoration: underline;">Đi tới trang Đăng nhập</a>
+        </div>
+
+        <form id="add-story-form">
+            <h2 id="form-title" style="text-align: center; margin-bottom: 20px; color: #e0e0e0;">Khởi tạo Truyện Mới
+            </h2>
+
+            <div class="form-group">
+                <label for="title">Tên Truyện</label>
+                <input type="text" id="title" placeholder="Nhập tên bộ truyện..." required>
+            </div>
+
+            <div class="form-group">
+                <label for="originalAuthor">Tác Giả Gốc</label>
+                <input type="text" id="originalAuthor" placeholder="Tên tác giả gốc..." required>
+            </div>
+
+            <div class="form-group">
+                <label>Thể Loại (Tags)</label>
+                <div class="tags-input-container" id="tags-container">
+                    <input type="text" id="tag-input" placeholder="Nhập tag rồi ấn Enter hoặc phẩy (,)...">
+                </div>
+                <div class="help-text">Nhấn phím Enter hoặc gõ dấu phẩy (,) để thêm thể loại. Click vào dấu "x" để xóa.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="status">Trạng Thái</label>
+                <select id="status">
+                    <option value="Đang tiến hành">Đang tiến hành</option>
+                    <option value="Hoàn thành">Hoàn thành</option>
+                    <option value="Tạm dừng">Tạm dừng</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Mô Tả Truyện (Tóm tắt)</label>
+                <textarea id="description" placeholder="Nhập tóm tắt nội dung cốt truyện..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="coverImage">Ảnh Bìa (Chọn file từ máy tính)</label>
+                <input type="file" id="coverImage" accept="image/*">
+                <div class="help-text" id="image-help-text">Vui lòng chọn ảnh bìa (Bắt buộc).</div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Tạo Bộ Truyện</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVAIacKswr9w5NagFnDoh5P9kcweztOmQ",
+            authDomain: "web-truyen-3769d.firebaseapp.com",
+            projectId: "web-truyen-3769d",
+            storageBucket: "web-truyen-3769d.firebasestorage.app",
+            messagingSenderId: "613339406890",
+            appId: "1:613339406890:web:3304ae5de8bbc91bb5d953"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('editId');
+        const isEditMode = !!editId;
+        let existingImageUrl = "";
+
+        let currentUserId = null;
+        let currentUserData = null;
+
+        // ==========================================
+        // MODULE: XỬ LÝ TAGS BẰNG ARRAY VÀ DOM
+        // ==========================================
+        let currentTagsArray = [];
+        const tagInput = document.getElementById('tag-input');
+        const tagsContainer = document.getElementById('tags-container');
+
+        function renderTags() {
+            document.querySelectorAll('.tag-bubble-edit').forEach(el => el.remove());
+            currentTagsArray.forEach((tag, index) => {
+                const tagEl = document.createElement('div');
+                tagEl.className = 'tag-bubble-edit';
+                tagEl.innerHTML = `${tag} <span data-index="${index}">×</span>`;
+                tagsContainer.insertBefore(tagEl, tagInput);
+            });
+        }
+
+        tagInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const val = tagInput.value.trim().replace(',', '');
+                if (val !== "" && !currentTagsArray.includes(val)) {
+                    currentTagsArray.push(val);
+                    renderTags();
+                }
+                tagInput.value = '';
+            }
+        });
+
+        tagsContainer.addEventListener('click', (e) => {
+            if (e.target.tagName === 'SPAN') {
+                const index = e.target.getAttribute('data-index');
+                currentTagsArray.splice(index, 1);
+                renderTags();
+            }
+        });
+
+        document.getElementById('add-story-form').addEventListener('keydown', function (event) {
+            if (event.key === "Enter" && event.target.tagName !== "TEXTAREA") {
+                event.preventDefault();
+            }
+        });
+
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                const userSnap = await getDoc(doc(db, "users", currentUserId));
+                if (userSnap.exists()) {
+                    currentUserData = userSnap.data();
+                }
+
+                document.getElementById('add-story-form').style.display = 'block';
+                document.getElementById('auth-warning').style.display = 'none';
+
+                if (isEditMode) { initEditMode(); }
+
+            } else {
+                currentUserId = null;
+                document.getElementById('add-story-form').style.display = 'none';
+                document.getElementById('auth-warning').style.display = 'block';
+            }
+        });
+
+        async function initEditMode() {
+            document.getElementById('form-title').textContent = "Cập Nhật Thông Tin Truyện";
+            document.getElementById('submitBtn').textContent = "Lưu Thay Đổi";
+            document.getElementById('image-help-text').textContent = "Để trống nếu bạn không muốn thay đổi ảnh bìa cũ.";
+
+            try {
+                const storyRef = doc(db, "stories", editId);
+                const storySnap = await getDoc(storyRef);
+
+                if (storySnap.exists()) {
+                    const data = storySnap.data();
+
+                    if (data.uploaderId !== currentUserId && currentUserData.role !== "admin") {
+                        alert("Lỗi Phân Quyền: Bạn không có quyền sửa bộ truyện này!");
+                        window.location.href = "index.html";
+                        return;
+                    }
+
+                    document.getElementById('title').value = data.title;
+                    document.getElementById('originalAuthor').value = data.originalAuthor;
+                    document.getElementById('status').value = data.status;
+                    document.getElementById('description').value = data.description || "";
+                    existingImageUrl = data.coverImage;
+
+                    if (data.tags && Array.isArray(data.tags)) {
+                        currentTagsArray = data.tags;
+                        renderTags();
+                    }
+
+                } else {
+                    alert("Bộ truyện không tồn tại!");
+                    window.location.href = "index.html";
+                }
+            } catch (error) { console.error("Lỗi khi tải dữ liệu cũ: ", error); }
+        }
+
+        const form = document.getElementById('add-story-form');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUserId || !currentUserData) return;
+
+            if (currentTagsArray.length === 0) {
+                alert("Vui lòng thêm ít nhất 1 thể loại (Tag) cho truyện!");
+                tagInput.focus();
+                return;
+            }
+
+            const imageFile = document.getElementById('coverImage').files[0];
+
+            if (!isEditMode && !imageFile) {
+                alert("Vui lòng chọn ảnh bìa cho truyện mới!");
+                return;
+            }
+
+            submitBtn.textContent = "Đang xử lý...";
+            submitBtn.disabled = true;
+
+            try {
+                let finalImageUrl = existingImageUrl;
+
+                if (imageFile) {
+                    submitBtn.textContent = "Đang tải ảnh lên máy chủ...";
+                    const imgbbApiKey = "c73ecf8bf9b0b41e03fd4e1c2a83f57a";
+                    const formData = new FormData();
+                    formData.append("image", imageFile);
+                    formData.append("key", imgbbApiKey);
+
+                    const imgbbResponse = await fetch("https://api.imgbb.com/1/upload", { method: "POST", body: formData });
+                    const imgbbData = await imgbbResponse.json();
+                    finalImageUrl = imgbbData.data.display_url;
+                }
+
+                submitBtn.textContent = "Đang ghi vào Cơ sở dữ liệu...";
+
+                const titleInput = document.getElementById('title').value;
+                const authorInput = document.getElementById('originalAuthor').value;
+                const statusInput = document.getElementById('status').value;
+                const descriptionInput = document.getElementById('description').value.trim();
+
+                // Object Model đã được bơm thêm dữ liệu Phi chuẩn hóa
+                const storyObject = {
+                    title: titleInput,
+                    originalAuthor: authorInput,
+                    tags: currentTagsArray,
+                    status: statusInput,
+                    description: descriptionInput,
+                    coverImage: finalImageUrl,
+                    // Đồng bộ Avatar và Tên (kể cả lúc Create hay Update để lỡ họ có đổi tên/avatar)
+                    uploaderName: currentUserData.displayName || "Ẩn danh",
+                    uploaderAvatar: currentUserData.avatar || "https://www.w3schools.com/howto/img_avatar.png"
+                };
+
+                if (isEditMode) {
+                    const storyRef = doc(db, "stories", editId);
+                    // UpdateDoc sẽ ghi đè các trường trên, bao gồm cả việc cập nhật uploaderName mới nhất
+                    await updateDoc(storyRef, storyObject);
+                    alert("Cập nhật thông tin truyện thành công!");
+                    window.location.href = `info.html?id=${editId}`;
+                } else {
+                    // Khi Tạo Mới thì mới bơm thêm Khóa ngoại và các Biến đếm (Counters)
+                    storyObject.uploaderId = currentUserId;
+                    storyObject.createdAt = new Date().toISOString();
+                    storyObject.views = 0;
+                    storyObject.likeCount = 0;
+
+                    const docRef = await addDoc(collection(db, "stories"), storyObject);
+                    alert("Tạo bộ truyện thành công!");
+                    window.location.href = `info.html?id=${docRef.id}`;
+                }
+
+            } catch (error) {
+                console.error("Lỗi hệ thống: ", error);
+                alert("Đã xảy ra lỗi, vui lòng xem Console (F12) để debug.");
+                submitBtn.textContent = isEditMode ? "Lưu Thay Đổi" : "Tạo Bộ Truyện";
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

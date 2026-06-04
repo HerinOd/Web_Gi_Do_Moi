@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Chương - Doomixi</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container {
+            max-width: 800px;
+            margin: 100px auto;
+            padding: 30px;
+            background: #1f1f2e;
+            border-radius: 8px;
+            border: 1px solid #2a2a35;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffaa00;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: #121218;
+            border: 1px solid #2a2a35;
+            color: #e0e0e0;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 400px;
+            line-height: 1.6;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #ffaa00;
+            color: #121218;
+            border: none;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #e69900;
+        }
+
+        #auth-warning {
+            display: none;
+            text-align: center;
+            color: #ff5555;
+            padding: 50px 0;
+        }
+
+        #add-chapter-form {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo">Doomixi - Quản Lý Chương</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <div id="auth-warning">
+            <h2>Vui lòng đăng nhập để sử dụng tính năng này!</h2><br>
+            <a href="login.html" style="color: #ffaa00; text-decoration: underline;">Đi tới trang Đăng nhập</a>
+        </div>
+
+        <form id="add-chapter-form">
+            <h2 id="form-title" style="text-align: center; margin-bottom: 25px; color: #e0e0e0;">Thêm Chương Mới</h2>
+
+            <div style="display: flex; gap: 20px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="chapterNumber">Số Thứ Tự Chương</label>
+                    <input type="number" id="chapterNumber" placeholder="VD: 1, 2, 3..." required min="1" step="any">
+                </div>
+                <div class="form-group" style="flex: 3;">
+                    <label for="chapterTitle">Tiêu Đề Chương (Tùy chọn)</label>
+                    <input type="text" id="chapterTitle" placeholder="Nhập Tên Chương...">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="chapterPassword">Mật Khẩu (Tùy chọn - Để trống nếu muốn công khai)</label>
+                <input type="text" id="chapterPassword" placeholder="Nhập mật mã để khóa chương này...">
+            </div>
+
+            <div class="form-group">
+                <label for="content">Nội Dung Chương</label>
+                <textarea id="content" placeholder="Nhập nội dung chương vào đây..." required></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Đăng Chương</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVAIacKswr9w5NagFnDoh5P9kcweztOmQ",
+            authDomain: "web-truyen-3769d.firebaseapp.com",
+            projectId: "web-truyen-3769d",
+            storageBucket: "web-truyen-3769d.firebasestorage.app",
+            messagingSenderId: "613339406890",
+            appId: "1:613339406890:web:3304ae5de8bbc91bb5d953"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Đọc tham số URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const storyId = urlParams.get('storyId');
+        const editId = urlParams.get('editId');
+        const isEditMode = !!editId;
+
+        let currentUserId = null;
+        let currentUserData = null;
+        let parentStoryId = storyId; // Dùng để định tuyến quay về trang truyện
+
+        // Bẫy lỗi URL
+        if (!storyId && !editId) {
+            alert("Lỗi truy cập: Không xác định được mã truyện hoặc chương!");
+            window.location.href = "index.html";
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                const userSnap = await getDoc(doc(db, "users", currentUserId));
+                if (userSnap.exists()) currentUserData = userSnap.data();
+
+                document.getElementById('add-chapter-form').style.display = 'block';
+                document.getElementById('auth-warning').style.display = 'none';
+
+                if (isEditMode) initEditMode();
+            } else {
+                document.getElementById('add-chapter-form').style.display = 'none';
+                document.getElementById('auth-warning').style.display = 'block';
+            }
+        });
+
+        async function initEditMode() {
+            document.getElementById('form-title').textContent = "Sửa Nội Dung Chương";
+            document.getElementById('submitBtn').textContent = "Lưu Thay Đổi";
+
+            try {
+                const chapterSnap = await getDoc(doc(db, "chapters", editId));
+                if (!chapterSnap.exists()) {
+                    alert("Chương không tồn tại!");
+                    window.location.href = "index.html";
+                    return;
+                }
+
+                const chapData = chapterSnap.data();
+                parentStoryId = chapData.storyId; // Cập nhật ID truyện gốc để dùng lúc submit xong
+
+                // Kiểm tra quyền (Auth Guard) bằng cách chọc vào object Truyện mẹ
+                const storySnap = await getDoc(doc(db, "stories", parentStoryId));
+                if (storySnap.exists()) {
+                    const storyData = storySnap.data();
+                    if (storyData.uploaderId !== currentUserId && currentUserData.role !== "admin") {
+                        alert("Lỗi Phân Quyền: Bạn không có quyền sửa chương này!");
+                        window.location.href = `info.html?id=${parentStoryId}`;
+                        return;
+                    }
+                }
+
+                // Điền data cũ vào Form
+                document.getElementById('chapterNumber').value = chapData.chapterNumber;
+                document.getElementById('chapterTitle').value = chapData.title || "";
+                document.getElementById('chapterPassword').value = chapData.password || ""; // Nạp Mật khẩu cũ nếu có
+                document.getElementById('content').value = chapData.content;
+            } catch (error) {
+                console.error("Lỗi: ", error);
+            }
+        }
+
+        const form = document.getElementById('add-chapter-form');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUserId) return;
+
+            submitBtn.textContent = "Đang xử lý...";
+            submitBtn.disabled = true;
+
+            try {
+                // Đóng gói Object Model (bổ sung thuộc tính password)
+                const chapObject = {
+                    chapterNumber: parseFloat(document.getElementById('chapterNumber').value),
+                    title: document.getElementById('chapterTitle').value.trim(),
+                    password: document.getElementById('chapterPassword').value.trim(),
+                    content: document.getElementById('content').value
+                };
+
+                if (isEditMode) {
+                    // CẬP NHẬT
+                    await updateDoc(doc(db, "chapters", editId), chapObject);
+                    alert("Cập nhật chương thành công!");
+                    window.location.href = `read.html?chapterId=${editId}`; // Trả về trang đọc
+                } else {
+                    // TẠO MỚI
+                    chapObject.storyId = storyId; // Gắn Khóa ngoại (Foreign Key)
+                    chapObject.createdAt = new Date().toISOString();
+                    const docRef = await addDoc(collection(db, "chapters"), chapObject);
+                    alert("Đăng chương thành công!");
+                    window.location.href = `read.html?chapterId=${docRef.id}`;
+                }
+            } catch (error) {
+                console.error("Lỗi: ", error);
+                alert("Đã xảy ra lỗi, vui lòng xem Console.");
+                submitBtn.textContent = isEditMode ? "Lưu Thay Đổi" : "Đăng Chương";
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

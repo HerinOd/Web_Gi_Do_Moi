@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Tin Truyện - Doomixi</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .info-container {
+            max-width: 900px;
+            margin: 100px auto 30px;
+            background: #1f1f2e;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #2a2a35;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .cover-wrapper {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+        }
+
+        .cover-wrapper img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .meta-wrapper {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .story-title {
+            font-size: 32px;
+            color: #ffaa00;
+            margin-bottom: 10px;
+        }
+
+        .meta-item {
+            margin-bottom: 10px;
+            color: #aaa;
+            font-size: 16px;
+        }
+
+        .meta-item span {
+            color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        .meta-item a {
+            color: #4da6ff;
+            text-decoration: none;
+        }
+
+        .meta-item a:hover {
+            text-decoration: underline;
+        }
+
+        .tag-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .tag-bubble {
+            background: #2a2a35;
+            color: #ffaa00;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .action-bars {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.2s;
+        }
+
+        .btn-read {
+            background: #ffaa00;
+            color: #121218;
+        }
+
+        .btn-read:hover {
+            background: #e69900;
+        }
+
+        .btn-edit {
+            background: #4da6ff;
+            color: #121218;
+            display: none;
+        }
+
+        .description-section {
+            max-width: 900px;
+            margin: 0 auto 30px;
+            background: #1f1f2e;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #2a2a35;
+        }
+
+        .description-content {
+            color: #e0e0e0;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            font-size: 16px;
+        }
+
+        .chapter-section {
+            max-width: 900px;
+            margin: 0 auto 50px;
+            background: #1f1f2e;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2a2a35;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a2a35;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .chapter-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .chapter-item {
+            padding: 15px;
+            border-bottom: 1px solid #2a2a35;
+            display: flex;
+            justify-content: space-between;
+            transition: 0.2s;
+        }
+
+        .chapter-item:hover {
+            background: #2a2a35;
+        }
+
+        .chapter-item a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-weight: bold;
+            width: 100%;
+            display: block;
+        }
+
+        .chapter-item a:hover {
+            color: #ffaa00;
+        }
+
+        .chapter-date {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .comment-section {
+            max-width: 900px;
+            margin: 0 auto 50px;
+            background: #1f1f2e;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2a2a35;
+        }
+
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            background: #121218;
+            border: 1px solid #2a2a35;
+            color: #e0e0e0;
+            padding: 10px;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .comment-form button {
+            align-self: flex-end;
+            padding: 8px 20px;
+            background: #4da6ff;
+            color: #121218;
+            border: none;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .comment-form button:hover {
+            background: #3388dd;
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .comment-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .comment-body {
+            flex: 1;
+            background: #2a2a35;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            color: #ffaa00;
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .comment-text {
+            color: #e0e0e0;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            margin-bottom: 10px;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+        }
+
+        .action-btn {
+            color: #aaa;
+            cursor: pointer;
+            transition: 0.2s;
+            user-select: none;
+        }
+
+        .action-btn:hover {
+            color: #4da6ff;
+        }
+
+        .action-btn.delete:hover {
+            color: #ff5555;
+        }
+
+        .action-btn.liked {
+            color: #ffaa00;
+            font-weight: bold;
+        }
+
+        .replies-container {
+            margin-left: 60px;
+            border-left: 2px solid #2a2a35;
+            padding-left: 15px;
+        }
+
+        .reply-input-box {
+            display: none;
+            margin-top: 10px;
+            gap: 10px;
+        }
+
+        .reply-input-box input {
+            flex: 1;
+            background: #121218;
+            border: 1px solid #4da6ff;
+            color: #e0e0e0;
+            padding: 8px;
+            border-radius: 4px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .reply-input-box button {
+            padding: 8px 15px;
+            background: #ffaa00;
+            color: #121218;
+            border: none;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .comment-edit-box {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .comment-edit-box textarea {
+            width: 100%;
+            background: #121218;
+            border: 1px solid #ffaa00;
+            color: #e0e0e0;
+            padding: 10px;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .edit-actions button {
+            padding: 6px 12px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-save-edit {
+            background: #ffaa00;
+            color: #121218;
+        }
+
+        .btn-cancel-edit {
+            background: transparent;
+            color: #aaa;
+            border: 1px solid #aaa !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo">Doomixi</a>
+        </div>
+    </header>
+
+    <div class="info-container" id="story-info-block">
+        <h2 style="color: #aaa; width: 100%; text-align: center;">Đang trích xuất dữ liệu...</h2>
+    </div>
+
+    <div class="description-section" id="story-desc-block" style="display: none;">
+        <div class="section-header">
+            <h3 style="color: #ffaa00; margin: 0;">TÓM TẮT NỘI DUNG</h3>
+        </div>
+        <div class="description-content" id="desc-text-content"></div>
+    </div>
+
+    <div class="chapter-section">
+        <div class="section-header">
+            <h3 style="color: #ffaa00; margin: 0;">DANH SÁCH CHƯƠNG</h3>
+            <a href="#" class="btn btn-edit" id="btnAddChapter">Thêm Chương Mới</a>
+        </div>
+        <ul class="chapter-list" id="chapter-list-block">
+            <li style="color: #aaa; text-align: center;">Hệ thống đang tải danh sách chương...</li>
+        </ul>
+    </div>
+
+    <div class="comment-section">
+        <div class="section-header">
+            <h3 style="color: #ffaa00; margin: 0;">BÌNH LUẬN</h3>
+        </div>
+
+        <div id="comment-auth-warning" style="text-align: center; color: #ff5555; padding: 20px 0;">
+            Vui lòng <a href="login.html" style="color: #ffaa00;">đăng nhập</a> để bình luận.
+        </div>
+        <form class="comment-form" id="main-comment-form" style="display: none;">
+            <textarea id="main-comment-text" placeholder="Bạn nghĩ gì về bộ truyện này?" required></textarea>
+            <button type="submit" id="btnSubmitComment">Gửi Bình Luận</button>
+        </form>
+
+        <div id="comment-list-block">
+            <p style="color: #aaa; text-align: center;">Đang tải bình luận...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVAIacKswr9w5NagFnDoh5P9kcweztOmQ",
+            authDomain: "web-truyen-3769d.firebaseapp.com",
+            projectId: "web-truyen-3769d",
+            storageBucket: "web-truyen-3769d.firebasestorage.app",
+            messagingSenderId: "613339406890",
+            appId: "1:613339406890:web:3304ae5de8bbc91bb5d953"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const storyId = urlParams.get('id');
+
+        let currentStoryData = null;
+        let currentUser = null;
+        let currentUserData = null;
+
+        function updateBookmarkUI() {
+            const btnBookmark = document.getElementById('btnBookmark');
+            if (btnBookmark && currentUserData) {
+                if (currentUserData.bookmarked && currentUserData.bookmarked.includes(storyId)) {
+                    btnBookmark.textContent = "Bỏ Lưu Truyện";
+                    btnBookmark.style.background = "#ff5555";
+                    btnBookmark.style.color = "#121218";
+                } else {
+                    btnBookmark.textContent = "Lưu Truyện";
+                    btnBookmark.style.background = "#2a2a35";
+                    btnBookmark.style.color = "#e0e0e0";
+                }
+            }
+        }
+
+        async function checkPermissions() {
+            if (currentUser && currentStoryData && currentUserData) {
+                if (currentUserData.role === "admin" || currentUser.uid === currentStoryData.uploaderId) {
+                    const btnAddChapter = document.getElementById('btnAddChapter');
+                    btnAddChapter.style.display = 'inline-block';
+                    btnAddChapter.href = `add-chapter.html?storyId=${storyId}`;
+                }
+            }
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if (user) {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    currentUserData = userDoc.data();
+                    document.getElementById('comment-auth-warning').style.display = 'none';
+                    document.getElementById('main-comment-form').style.display = 'flex';
+                    updateBookmarkUI();
+
+                    const btnLike = document.getElementById('btnLikeStory');
+                    if (btnLike && currentStoryData && currentStoryData.likedBy && currentStoryData.likedBy.includes(user.uid)) {
+                        btnLike.textContent = "Đã Thích";
+                        btnLike.style.background = "#ff5555";
+                        btnLike.style.color = "#121218";
+                    }
+                }
+            } else {
+                currentUserData = null;
+                document.getElementById('comment-auth-warning').style.display = 'block';
+                document.getElementById('main-comment-form').style.display = 'none';
+            }
+            checkPermissions();
+        });
+
+        async function renderStoryInfo() {
+            const infoBlock = document.getElementById('story-info-block');
+            const descBlock = document.getElementById('story-desc-block');
+            const descTextContent = document.getElementById('desc-text-content');
+
+            if (!storyId) { infoBlock.innerHTML = "<h2 style='color:#ff5555; width:100%; text-align:center;'>Không tìm thấy mã truyện!</h2>"; return; }
+
+            try {
+                const storyRef = doc(db, "stories", storyId);
+                const storySnap = await getDoc(storyRef);
+                if (!storySnap.exists()) { infoBlock.innerHTML = "<h2 style='color:#ff5555; width:100%; text-align:center;'>Truyện đã bị xóa!</h2>"; return; }
+                currentStoryData = storySnap.data();
+
+                let firstChapterUrl = "#";
+                const chaptersRef = collection(db, "chapters");
+                const q = query(chaptersRef, where("storyId", "==", storyId));
+                const querySnapshot = await getDocs(q);
+                let chaptersArray = [];
+                querySnapshot.forEach((doc) => { chaptersArray.push({ id: doc.id, ...doc.data() }); });
+
+                if (chaptersArray.length > 0) {
+                    chaptersArray.sort((a, b) => a.chapterNumber - b.chapterNumber);
+                    firstChapterUrl = `read.html?chapterId=${chaptersArray[0].id}`;
+                }
+
+                let translatorName = "Ẩn danh";
+                if (currentStoryData.uploaderId) {
+                    const userSnap = await getDoc(doc(db, "users", currentStoryData.uploaderId));
+                    if (userSnap.exists()) translatorName = userSnap.data().displayName;
+                }
+
+                let tagsHTML = '';
+                if (currentStoryData.tags && Array.isArray(currentStoryData.tags)) {
+                    currentStoryData.tags.forEach(tag => tagsHTML += `<span class="tag-bubble">${tag}</span>`);
+                }
+
+                let isLiked = false;
+                if (currentUser && currentStoryData.likedBy && currentStoryData.likedBy.includes(currentUser.uid)) {
+                    isLiked = true;
+                }
+                const likeCountDisplay = currentStoryData.likeCount || 0;
+
+                infoBlock.innerHTML = `
+                    <div class="cover-wrapper"><img src="${currentStoryData.coverImage}" alt="Cover"></div>
+                    <div class="meta-wrapper">
+                        <h1 class="story-title">${currentStoryData.title}</h1>
+                        <div class="meta-item">Tác giả gốc: <span>${currentStoryData.originalAuthor || 'Đang cập nhật'}</span></div>
+                        <div class="meta-item">Trạng thái: <span>${currentStoryData.status}</span></div>
+                        <div class="meta-item">Dịch giả: <a href="profile.html?uid=${currentStoryData.uploaderId}">${translatorName}</a></div>
+                        
+                        <div class="meta-item" style="margin-top: 15px; color: #ffaa00;">
+                            Lượt xem: <span>${currentStoryData.views}</span> &nbsp;|&nbsp; Lượt thích: <span id="like-count-display">${likeCountDisplay}</span>
+                        </div>
+
+                        <div class="tag-list">${tagsHTML}</div>
+                        
+                        <div class="action-bars">
+                            <a href="${firstChapterUrl}" class="btn btn-read" ${chaptersArray.length === 0 ? 'style="opacity: 0.5; pointer-events: none;"' : ''}>Bắt đầu đọc</a>
+                            <button class="btn" id="btnLikeStory" style="background: ${isLiked ? '#ff5555' : '#2a2a35'}; color: ${isLiked ? '#121218' : '#e0e0e0'};">
+                                ${isLiked ? 'Đã Thích' : 'Thích Truyện'}
+                            </button>
+                            <a href="#" class="btn" id="btnBookmark" style="background: #2a2a35; color: #e0e0e0;">Lưu Truyện</a>
+                            
+                            <a href="add-story.html?editId=${storyId}" class="btn" style="background: #4da6ff; color: #121218; display: ${(currentUserData && (currentUserData.role === 'admin' || currentUser.uid === currentStoryData.uploaderId)) ? 'inline-block' : 'none'};">Sửa Thông Tin</a>
+                            <button class="btn" id="btnDeleteStory" data-story-id="${storyId}" style="background: #ff5555; color: #121218; display: ${(currentUserData && (currentUserData.role === 'admin' || currentUser.uid === currentStoryData.uploaderId)) ? 'inline-block' : 'none'};">Xóa Truyện</button>
+                        </div>
+                    </div>
+                `;
+
+                const descText = currentStoryData.description || "Chưa có mô tả cho bộ truyện này.";
+                descTextContent.textContent = descText;
+                descBlock.style.display = 'block';
+
+                document.title = currentStoryData.title + " - Doomixi";
+                checkPermissions();
+                updateBookmarkUI();
+
+                const chapterListBlock = document.getElementById('chapter-list-block');
+                if (chaptersArray.length === 0) {
+                    chapterListBlock.innerHTML = `<li style="color: #aaa; text-align: center;">Chưa có chương nào được đăng tải.</li>`;
+                } else {
+                    chapterListBlock.innerHTML = "";
+                    chaptersArray.forEach(chap => {
+                        const dateString = new Date(chap.createdAt).toLocaleDateString('vi-VN');
+                        chapterListBlock.innerHTML += `
+                            <li class="chapter-item">
+                                <a href="read.html?chapterId=${chap.id}">Chương ${chap.chapterNumber}${chap.title ? ': ' + chap.title : ''}</a>
+                                <span class="chapter-date">${dateString}</span>
+                            </li>
+                        `;
+                    });
+                }
+
+                loadComments();
+            } catch (error) {
+                console.error(error);
+                infoBlock.innerHTML = "<h2 style='color:#ff5555; width:100%; text-align:center;'>Lỗi kết nối CSDL!</h2>";
+            }
+        }
+
+        const infoBlock = document.getElementById('story-info-block');
+        infoBlock.addEventListener('click', async (e) => {
+            if (e.target.id === 'btnBookmark') {
+                e.preventDefault();
+                if (!currentUser || !currentUserData) { alert("Vui lòng đăng nhập để sử dụng tính năng Lưu truyện!"); return; }
+
+                const userRef = doc(db, "users", currentUser.uid);
+                const btn = e.target;
+                btn.textContent = "Đang xử lý...";
+
+                try {
+                    if (!currentUserData.bookmarked) currentUserData.bookmarked = [];
+                    const isBookmarked = currentUserData.bookmarked.includes(storyId);
+
+                    if (isBookmarked) {
+                        await updateDoc(userRef, { bookmarked: arrayRemove(storyId) });
+                        currentUserData.bookmarked = currentUserData.bookmarked.filter(id => id !== storyId);
+                    } else {
+                        await updateDoc(userRef, { bookmarked: arrayUnion(storyId) });
+                        currentUserData.bookmarked.push(storyId);
+                    }
+                    updateBookmarkUI();
+                } catch (error) {
+                    console.error("Lỗi khi lưu truyện:", error);
+                    alert("Đã xảy ra lỗi hệ thống, vui lòng thử lại sau.");
+                    updateBookmarkUI();
+                }
+            }
+
+            if (e.target.id === 'btnLikeStory') {
+                e.preventDefault();
+                if (!currentUser) { alert("Vui lòng đăng nhập để Thích truyện!"); return; }
+
+                const btn = e.target;
+                btn.disabled = true;
+
+                try {
+                    const storyRef = doc(db, "stories", storyId);
+                    if (!currentStoryData.likedBy) currentStoryData.likedBy = [];
+                    const isLiked = currentStoryData.likedBy.includes(currentUser.uid);
+
+                    if (isLiked) {
+                        await updateDoc(storyRef, {
+                            likedBy: arrayRemove(currentUser.uid),
+                            likeCount: increment(-1)
+                        });
+                        currentStoryData.likedBy = currentStoryData.likedBy.filter(id => id !== currentUser.uid);
+                        currentStoryData.likeCount = Math.max(0, (currentStoryData.likeCount || 0) - 1);
+                        btn.textContent = "Thích Truyện";
+                        btn.style.background = "#2a2a35";
+                        btn.style.color = "#e0e0e0";
+                    } else {
+                        await updateDoc(storyRef, {
+                            likedBy: arrayUnion(currentUser.uid),
+                            likeCount: increment(1)
+                        });
+                        currentStoryData.likedBy.push(currentUser.uid);
+                        currentStoryData.likeCount = (currentStoryData.likeCount || 0) + 1;
+                        btn.textContent = "Đã Thích";
+                        btn.style.background = "#ff5555";
+                        btn.style.color = "#121218";
+                    }
+                    const likeDisplay = document.getElementById('like-count-display');
+                    if (likeDisplay) likeDisplay.textContent = currentStoryData.likeCount;
+                } catch (error) {
+                    console.error("Lỗi khi like truyện:", error);
+                    alert("Có lỗi xảy ra, vui lòng thử lại.");
+                } finally {
+                    btn.disabled = false;
+                }
+            }
+        });
+
+        document.addEventListener('click', async (e) => {
+            if (e.target.id === 'btnDeleteStory') {
+                e.preventDefault();
+                if (!confirm("CẢNH BÁO ĐỎ: Bạn có chắc chắn muốn xóa TOÀN BỘ bộ truyện này? Tất cả chương và bình luận sẽ bị xóa vĩnh viễn và không thể khôi phục!")) return;
+
+                const targetStoryId = e.target.getAttribute('data-story-id');
+                e.target.textContent = "Đang dọn dẹp dữ liệu...";
+                e.target.disabled = true;
+
+                try {
+                    const deletePromises = [];
+                    const chaptersQuery = query(collection(db, "chapters"), where("storyId", "==", targetStoryId));
+                    const chaptersSnap = await getDocs(chaptersQuery);
+
+                    for (const chapDoc of chaptersSnap.docs) {
+                        const chapId = chapDoc.id;
+                        deletePromises.push(deleteDoc(doc(db, "chapters", chapId)));
+                        const chapCmtQuery = query(collection(db, "comments"), where("targetId", "==", chapId));
+                        const chapCmtSnap = await getDocs(chapCmtQuery);
+                        chapCmtSnap.forEach(cmtSnap => {
+                            deletePromises.push(deleteDoc(doc(db, "comments", cmtSnap.id)));
+                        });
+                    }
+
+                    const storyCmtQuery = query(collection(db, "comments"), where("targetId", "==", targetStoryId));
+                    const storyCmtSnap = await getDocs(storyCmtQuery);
+                    storyCmtSnap.forEach(cmtSnap => {
+                        deletePromises.push(deleteDoc(doc(db, "comments", cmtSnap.id)));
+                    });
+
+                    await Promise.all(deletePromises);
+                    await deleteDoc(doc(db, "stories", targetStoryId));
+
+                    alert("Đã xóa bộ truyện và toàn bộ dữ liệu phân tầng (Chương & Bình luận) thành công!");
+                    window.location.href = "index.html";
+                } catch (error) {
+                    console.error("Lỗi xóa truyện:", error);
+                    alert("Có lỗi xảy ra khi xóa truyện. Vui lòng kiểm tra Console (F12).");
+                    e.target.textContent = "Xóa Truyện";
+                    e.target.disabled = false;
+                }
+            }
+        });
+
+        const commentListBlock = document.getElementById('comment-list-block');
+
+        // ==========================================
+        // THUẬT TOÁN RENDER BÌNH LUẬN NÂNG CẤP
+        // ==========================================
+        function generateCommentHTML(c, isReply = false, parentComment = null) {
+            const dateStr = new Date(c.createdAt).toLocaleString('vi-VN');
+            const avatar = c.avatar || "https://www.w3schools.com/howto/img_avatar.png";
+
+            let actionBtnsHTML = "";
+            if (currentUser && currentUserData) {
+                if (currentUser.uid === c.userId) actionBtnsHTML += `<div class="action-btn" data-action="edit" data-id="${c.id}">Sửa</div>`;
+                if (currentUser.uid === c.userId || currentUserData.role === 'admin') actionBtnsHTML += `<div class="action-btn delete" data-action="delete" data-id="${c.id}">Xóa</div>`;
+            }
+
+            let isLiked = false;
+            let likeCount = c.likedBy ? c.likedBy.length : 0;
+            if (currentUser && c.likedBy && c.likedBy.includes(currentUser.uid)) isLiked = true;
+
+            const editedTag = c.isEdited ? `<span style="font-size: 11px; font-style: italic; color: #888; margin-left: 5px;">(đã chỉnh sửa)</span>` : "";
+            const replyParentId = isReply ? c.parentId : c.id;
+
+            // XÁC ĐỊNH MỤC TIÊU BỊ TAG
+            const tagTargetName = c.displayName;
+            const tagTargetUid = c.userId;
+
+            let formattedContent = c.content;
+
+            // THUẬT TOÁN ĐỊNH TUYẾN HYPERLINK (Ưu tiên Phi chuẩn hóa, dùng Fallback cho bản cũ)
+            if (c.replyToName && c.replyToUid) {
+                const tagString = `@${c.replyToName}`;
+                if (formattedContent.startsWith(tagString)) {
+                    const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+                    formattedContent = formattedContent.replace(tagString, hyperlinkTag);
+                }
+            } else if (isReply && parentComment) {
+                const tagString = `@${parentComment.displayName}`;
+                if (formattedContent.startsWith(tagString)) {
+                    const hyperlinkTag = `<a href="profile.html?uid=${parentComment.userId}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+                    formattedContent = formattedContent.replace(tagString, hyperlinkTag);
+                }
+            }
+
+            return `
+                <div class="comment-item" id="cmt-${c.id}">
+                    <a href="profile.html?uid=${c.userId}">
+                        <img src="${avatar}" alt="Avatar" class="comment-avatar" ${isReply ? 'style="width:35px; height:35px;"' : ''}>
+                    </a>
+                    <div class="comment-body" style="width: 100%;">
+                        <div class="comment-header">
+                            <div class="comment-author">
+                                <a href="profile.html?uid=${c.userId}" style="color: #ffaa00; text-decoration: none;">${c.displayName}</a> ${editedTag}
+                            </div>
+                            <div class="comment-time">${dateStr}</div>
+                        </div>
+                        
+                        <div class="comment-text" id="text-display-${c.id}">${formattedContent}</div>
+                        
+                        <div class="comment-edit-box" id="edit-box-${c.id}">
+                            <textarea id="edit-input-${c.id}">${c.content}</textarea>
+                            <div class="edit-actions">
+                                <button class="btn-cancel-edit" data-action="cancel-edit" data-id="${c.id}">Hủy</button>
+                                <button class="btn-save-edit" data-action="save-edit" data-id="${c.id}">Lưu thay đổi</button>
+                            </div>
+                        </div>
+
+                        <div class="comment-actions">
+                            <div class="action-btn ${isLiked ? 'liked' : ''}" data-action="like" data-id="${c.id}">
+                                ${isLiked ? 'Đã Thích' : 'Thích'} (${likeCount})
+                            </div>
+                            <div class="action-btn" data-action="reply" data-id="${c.id}" data-parent-id="${replyParentId}" data-tag-name="${tagTargetName}" data-tag-uid="${tagTargetUid}">Phản hồi</div>
+                            ${actionBtnsHTML}
+                        </div>
+                        
+                        <div class="reply-input-box" id="reply-box-${c.id}">
+                            <input type="text" id="reply-text-${c.id}" placeholder="Viết phản hồi...">
+                            <button data-action="submit-reply" data-parent-id="${replyParentId}" data-box-id="${c.id}">Gửi</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadComments() {
+            if (!storyId) return;
+            try {
+                const q = query(collection(db, "comments"), where("targetId", "==", storyId));
+                const snap = await getDocs(q);
+                let commentsArr = [];
+                snap.forEach(doc => commentsArr.push({ id: doc.id, ...doc.data() }));
+
+                commentsArr.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+                const parents = commentsArr.filter(c => c.parentId === null);
+                const replies = commentsArr.filter(c => c.parentId !== null);
+
+                if (commentsArr.length === 0) {
+                    commentListBlock.innerHTML = "<p style='color: #aaa; text-align: center;'>Chưa có bình luận nào. Hãy là người đầu tiên!</p>";
+                    return;
+                }
+
+                let html = "";
+                parents.forEach(p => {
+                    html += generateCommentHTML(p, false, null);
+                    const childReplies = replies.filter(r => r.parentId === p.id);
+                    if (childReplies.length > 0) {
+                        html += `<div class="replies-container">`;
+                        childReplies.forEach(r => html += generateCommentHTML(r, true, p));
+                        html += `</div>`;
+                    }
+                });
+                commentListBlock.innerHTML = html;
+            } catch (error) {
+                console.error("Lỗi tải bình luận:", error);
+                commentListBlock.innerHTML = "<p style='color: #ff5555;'>Lỗi tải bình luận.</p>";
+            }
+        }
+
+        const mainCommentForm = document.getElementById('main-comment-form');
+        const btnSubmitComment = document.getElementById('btnSubmitComment');
+
+        mainCommentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser || !currentUserData) return;
+            btnSubmitComment.disabled = true;
+            const content = document.getElementById('main-comment-text').value.trim();
+
+            const cmtObject = {
+                targetType: "story",
+                targetId: storyId,
+                userId: currentUser.uid,
+                displayName: currentUserData.displayName,
+                avatar: currentUserData.avatar || "",
+                content: content,
+                likedBy: [],
+                parentId: null,
+                replyToUid: null,
+                replyToName: null,
+                isEdited: false,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await addDoc(collection(db, "comments"), cmtObject);
+                document.getElementById('main-comment-text').value = "";
+                loadComments();
+            } catch (error) { console.error(error); alert("Lỗi khi đăng bình luận."); }
+            finally { btnSubmitComment.disabled = false; }
+        });
+
+        commentListBlock.addEventListener('click', async (e) => {
+            const target = e.target;
+            const action = target.getAttribute('data-action');
+            if (!action) return;
+
+            if (action === "delete") {
+                if (!confirm("Bạn có chắc chắn muốn xóa bình luận này?")) return;
+                const cmtId = target.getAttribute('data-id');
+                try {
+                    await deleteDoc(doc(db, "comments", cmtId));
+                    loadComments();
+                } catch (err) { console.error(err); alert("Lỗi xóa bình luận."); }
+            }
+
+            if (action === "reply") {
+                if (!currentUser) { alert("Vui lòng đăng nhập để phản hồi."); return; }
+                const cmtId = target.getAttribute('data-id');
+                const tagName = target.getAttribute('data-tag-name');
+                const tagUid = target.getAttribute('data-tag-uid'); // Lấy UID người bị Tag
+
+                document.querySelectorAll('.reply-input-box').forEach(box => { box.style.display = 'none'; });
+                const replyBox = document.getElementById(`reply-box-${cmtId}`);
+                const replyInput = document.getElementById(`reply-text-${cmtId}`);
+                replyBox.style.display = 'flex';
+
+                if (tagName) {
+                    replyInput.value = `@${tagName} `;
+                    // Gắn tạm data vào Input để chờ lúc ấn Gửi
+                    replyInput.setAttribute('data-reply-name', tagName);
+                    replyInput.setAttribute('data-reply-uid', tagUid);
+                } else {
+                    replyInput.value = "";
+                    replyInput.removeAttribute('data-reply-name');
+                    replyInput.removeAttribute('data-reply-uid');
+                }
+                replyInput.focus();
+            }
+
+            if (action === "submit-reply") {
+                const parentId = target.getAttribute('data-parent-id');
+                const boxId = target.getAttribute('data-box-id');
+                const replyInput = document.getElementById(`reply-text-${boxId}`);
+                const content = replyInput.value.trim();
+
+                // Lấy UID và Name của người bị Tag ra khỏi thẻ Input
+                const replyToName = replyInput.getAttribute('data-reply-name') || null;
+                const replyToUid = replyInput.getAttribute('data-reply-uid') || null;
+
+                if (content === "") return;
+                target.textContent = "...";
+
+                const replyObject = {
+                    targetType: "story",
+                    targetId: storyId,
+                    userId: currentUser.uid,
+                    displayName: currentUserData.displayName,
+                    avatar: currentUserData.avatar || "",
+                    content: content,
+                    likedBy: [],
+                    parentId: parentId,
+                    replyToUid: replyToUid,
+                    replyToName: replyToName,
+                    isEdited: false,
+                    createdAt: new Date().toISOString()
+                };
+
+                try {
+                    await addDoc(collection(db, "comments"), replyObject);
+                    loadComments();
+                } catch (err) { console.error(err); alert("Lỗi gửi phản hồi."); target.textContent = "Gửi"; }
+            }
+
+            if (action === "edit") {
+                const cmtId = target.getAttribute('data-id');
+                document.getElementById(`text-display-${cmtId}`).style.display = 'none';
+                document.getElementById(`edit-box-${cmtId}`).style.display = 'flex';
+            }
+
+            if (action === "cancel-edit") {
+                const cmtId = target.getAttribute('data-id');
+                document.getElementById(`text-display-${cmtId}`).style.display = 'block';
+                document.getElementById(`edit-box-${cmtId}`).style.display = 'none';
+            }
+
+            if (action === "save-edit") {
+                const cmtId = target.getAttribute('data-id');
+                const newContent = document.getElementById(`edit-input-${cmtId}`).value.trim();
+
+                if (newContent === "") { alert("Nội dung không được để trống!"); return; }
+
+                target.textContent = "Đang lưu...";
+                try {
+                    const cmtRef = doc(db, "comments", cmtId);
+                    await updateDoc(cmtRef, { content: newContent, isEdited: true });
+                    loadComments();
+                } catch (error) { console.error("Lỗi sửa:", error); alert("Lỗi khi lưu chỉnh sửa."); target.textContent = "Lưu thay đổi"; }
+            }
+
+            if (action === "like") {
+                if (!currentUser) { alert("Vui lòng đăng nhập để Thích."); return; }
+                const cmtId = target.getAttribute('data-id');
+                const cmtRef = doc(db, "comments", cmtId);
+
+                try {
+                    const isLiked = target.classList.contains('liked');
+                    if (isLiked) { await updateDoc(cmtRef, { likedBy: arrayRemove(currentUser.uid) }); }
+                    else { await updateDoc(cmtRef, { likedBy: arrayUnion(currentUser.uid) }); }
+                    loadComments();
+                } catch (error) { console.error(error); }
+            }
+        });
+
+        renderStoryInfo();
+    </script>
+</body>
+
+</html>
