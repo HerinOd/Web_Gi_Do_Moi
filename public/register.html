@@ -100,7 +100,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        // Bổ sung import sendEmailVerification
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -131,11 +132,14 @@
             btn.disabled = true;
 
             try {
-                // Tạo Token Auth
+                // Khởi tạo Identity trên Firebase Auth Node
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
                 const user = userCredential.user;
 
-                // Tạo Object User với Role mặc định là "user"
+                // Dispatch luồng SMTP xác thực Email
+                await sendEmailVerification(user);
+
+                // Lưu Metadata vào Database Lớp Model
                 const userObject = {
                     uid: user.uid,
                     displayName: name,
@@ -148,8 +152,10 @@
 
                 await setDoc(doc(db, "users", user.uid), userObject);
 
-                alert("Tạo tài khoản thành công! Bạn đang được chuyển về Trang chủ.");
-                window.location.href = "index.html";
+                alert("Tạo tài khoản thành công! Hệ thống đã gửi một Link Xác Thực tới Email của bạn. Vui lòng kiểm tra (cả hộp thư Spam) để kích hoạt tài khoản trước khi đăng nhập.");
+
+                // Đổi luồng Routing: Bắt về màn hình Login thay vì chui thẳng vào Trang chủ
+                window.location.href = "login.html";
             } catch (error) {
                 console.error(error);
                 alert("Lỗi tạo tài khoản (Có thể Email đã tồn tại hoặc Mật khẩu quá ngắn).");

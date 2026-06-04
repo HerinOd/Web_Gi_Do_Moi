@@ -96,7 +96,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        // Bổ sung import signOut để bẻ Session
+        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCVAIacKswr9w5NagFnDoh5P9kcweztOmQ",
@@ -124,7 +125,19 @@
             btn.disabled = true;
 
             try {
-                await signInWithEmailAndPassword(auth, email, pass);
+                // Nhận Payload trả về từ Auth Node
+                const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+                const user = userCredential.user;
+
+                // LỚP GATEKEEPER ĐÁNH GIÁ TOKEN CLAIM
+                if (!user.emailVerified) {
+                    alert("Tài khoản này chưa được kích hoạt! Vui lòng vào Email đã đăng ký và bấm vào Link Xác Thực.");
+                    await signOut(auth); // Vô hiệu hóa Session ngay lập tức
+                    btn.textContent = "Đăng Nhập";
+                    btn.disabled = false;
+                    return; // Ngắt luồng thực thi
+                }
+
                 alert("Đăng nhập thành công!");
                 window.location.href = "index.html";
             } catch (error) {
