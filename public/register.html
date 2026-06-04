@@ -100,8 +100,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        // Bổ sung import sendEmailVerification
-        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        // Bổ sung import signOut để bẻ gãy Session ngay lập tức
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -132,14 +132,14 @@
             btn.disabled = true;
 
             try {
-                // Khởi tạo Identity trên Firebase Auth Node
+                // 1. Khởi tạo Identity trên Firebase Auth Node (Firebase sẽ tự auto-login)
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
                 const user = userCredential.user;
 
-                // Dispatch luồng SMTP xác thực Email
+                // 2. Dispatch luồng SMTP xác thực Email
                 await sendEmailVerification(user);
 
-                // Lưu Metadata vào Database Lớp Model
+                // 3. Lưu Metadata vào Database Lớp Model
                 const userObject = {
                     uid: user.uid,
                     displayName: name,
@@ -149,12 +149,15 @@
                     following: [],
                     createdAt: new Date().toISOString()
                 };
-
                 await setDoc(doc(db, "users", user.uid), userObject);
+
+                // 4. KIỂM SOÁT LUỒNG (SESSION TERMINATION) CỰC KỲ QUAN TRỌNG
+                // Hủy ngay lập tức phiên đăng nhập tự động của Firebase
+                await signOut(auth);
 
                 alert("Tạo tài khoản thành công! Hệ thống đã gửi một Link Xác Thực tới Email của bạn. Vui lòng kiểm tra (cả hộp thư Spam) để kích hoạt tài khoản trước khi đăng nhập.");
 
-                // Đổi luồng Routing: Bắt về màn hình Login thay vì chui thẳng vào Trang chủ
+                // Đổi luồng Routing: Bắt về màn hình Login để Gatekeeper làm việc
                 window.location.href = "login.html";
             } catch (error) {
                 console.error(error);
