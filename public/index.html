@@ -129,6 +129,11 @@
         padding: 0 16px;
       }
 
+      .filter-bar select {
+        flex: 0 0 auto;
+        max-width: 100%;
+      }
+
       .hero-title {
         font-size: 28px;
       }
@@ -318,6 +323,7 @@
 
     .carousel-track-area {
       position: relative;
+      padding: 0 52px;
     }
 
     .carousel-wrapper {
@@ -357,9 +363,10 @@
       z-index: 1;
       display: flex;
       width: 100%;
-      padding: 38px 44px;
+      padding: 38px 40px;
       gap: 36px;
       align-items: center;
+      justify-content: center;
     }
 
     .carousel-cover {
@@ -465,11 +472,11 @@
     }
 
     .carousel-prev {
-      left: 14px;
+      left: 4px;
     }
 
     .carousel-next {
-      right: 14px;
+      right: 4px;
     }
 
     .carousel-dots {
@@ -496,42 +503,24 @@
     }
 
     @media (max-width: 700px) {
-      .carousel-wrapper {
-        height: 290px;
-      }
-
-      .carousel-content {
-        padding: 22px 20px;
-        gap: 18px;
-      }
-
-      .carousel-cover {
-        width: 112px;
-        height: 163px;
-      }
-
-      .carousel-title {
-        font-size: 18px;
-      }
-
-      .carousel-read-btn {
-        padding: 10px 20px;
-        font-size: 13px;
-      }
+      .carousel-track-area { padding: 0 40px; }
+      .carousel-wrapper { height: 290px; }
+      .carousel-content { padding: 22px 20px; gap: 18px; }
+      .carousel-cover { width: 112px; height: 163px; }
+      .carousel-title { font-size: 18px; }
+      .carousel-read-btn { padding: 10px 20px; font-size: 13px; }
     }
 
     @media (max-width: 480px) {
-      .carousel-cover {
-        display: none;
-      }
-
-      .carousel-wrapper {
-        height: 230px;
-      }
-
-      .carousel-content {
-        padding: 22px 20px;
-      }
+      .carousel-track-area { padding: 0 34px; }
+      .carousel-wrapper { height: 250px; }
+      .carousel-content { padding: 16px 14px; gap: 12px; }
+      .carousel-cover { width: 84px; height: 122px; }
+      .carousel-label { display: none; }
+      .carousel-title { font-size: 15px; -webkit-line-clamp: 3; }
+      .carousel-stats { font-size: 12px; gap: 12px; }
+      .carousel-read-btn { padding: 8px 14px; font-size: 12px; margin-top: 0; }
+      .carousel-info { gap: 8px; }
     }
 
     /* ===== EMPTY ===== */
@@ -1001,8 +990,10 @@
       dotsContainer.innerHTML = '';
 
       top5.forEach((story, i) => {
-        const tagsHTML = (story.tags || []).slice(0, 3)
-          .map(t => `<span class="tag-badge">${t}</span>`).join('');
+        const allTags = story.tags || [];
+        const displayTags = allTags.slice(0, 2);
+        let tagsHTML = displayTags.map(t => `<span class="tag-badge">${t}</span>`).join('');
+        if (allTags.length > 2) tagsHTML += `<span class="tag-badge plus-tag">+${allTags.length - 2}</span>`;
 
         const slide = document.createElement('div');
         slide.className = `carousel-slide${i === 0 ? ' active' : ''}`;
