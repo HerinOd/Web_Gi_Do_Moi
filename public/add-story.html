@@ -376,6 +376,7 @@
                 };
 
                 if (isEditMode) {
+                    storyObject.uploaderId = currentUserId;
                     const storyRef = doc(db, "stories", editId);
                     // UpdateDoc sẽ ghi đè các trường trên, bao gồm cả việc cập nhật uploaderName mới nhất
                     await updateDoc(storyRef, storyObject);
