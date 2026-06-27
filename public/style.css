@@ -1,171 +1,328 @@
-/* RESET CSS */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* =============================================
+   CSS VARIABLES
+   ============================================= */
+:root {
+  --bg-base:     #0e0e16;
+  --bg-surface:  #13131e;
+  --bg-card:     #1a1a28;
+  --bg-elevated: #22223380;
+  --bg-hover:    #24243a;
+  --border:      #2a2a40;
+  --border-muted:#1f1f31;
+  --accent:      #f0a500;
+  --accent-dark: #d99200;
+  --accent-dim:  rgba(240, 165, 0, 0.12);
+  --accent-glow: rgba(240, 165, 0, 0.22);
+  --blue:        #4d9fff;
+  --blue-dim:    rgba(77, 159, 255, 0.12);
+  --red:         #ff4d6d;
+  --green:       #22c55e;
+  --text-1:      #eeeef5;
+  --text-2:      #9898b3;
+  --text-3:      #52526a;
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.35);
+  --shadow-md:   0 4px 20px rgba(0,0,0,0.5);
+  --shadow-lg:   0 12px 40px rgba(0,0,0,0.65);
+  --radius-xs:   6px;
+  --radius-sm:   10px;
+  --radius:      14px;
+  --radius-lg:   20px;
+  --ease:        cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* =============================================
+   RESET & BASE
+   ============================================= */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 99px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 body {
-    background-color: #1a1a24;
-    color: #e0e0e0;
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
+  background-color: var(--bg-base);
+  color: var(--text-1);
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* 1. HEADER */
+/* =============================================
+   HEADER
+   ============================================= */
 .site-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #121218;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-    z-index: 1000;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  background: rgba(14, 14, 22, 0.80);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid var(--border);
+  z-index: 1000;
 }
 
 .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    max-width: 1000px;
-    margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 28px;
+  height: 60px;
+  max-width: 1240px;
+  margin: 0 auto;
 }
 
 .logo {
-    font-size: 22px;
-    font-weight: bold;
-    color: #ffaa00;
-    text-decoration: none;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  transition: opacity 0.2s;
 }
+.logo:hover { opacity: 0.8; }
 
 .menu-toggle {
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: bold;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-2);
+  transition: color 0.2s;
+  user-select: none;
+  padding: 6px;
+}
+.menu-toggle:hover { color: var(--accent); }
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
-/* 2. MAIN CONTAINER */
+.main-nav a {
+  color: var(--text-2);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: var(--radius-xs);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.main-nav a:hover {
+  color: var(--text-1);
+  background: var(--bg-hover);
+}
+
+/* =============================================
+   MAIN CONTAINER
+   ============================================= */
 .main-container {
-    padding-top: 80px;
-    min-height: 85vh;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding-left: 15px;
-    padding-right: 15px;
+  padding-top: 80px;
+  min-height: 85vh;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
-/* 3. FOOTER */
+/* =============================================
+   FOOTER
+   ============================================= */
 .site-footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #121218;
-    color: #666;
-    margin-top: 40px;
-    border-top: 1px solid #2a2a35;
+  text-align: center;
+  padding: 28px;
+  background: var(--bg-surface);
+  color: var(--text-3);
+  margin-top: 60px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
 }
 
-/* 4. TRANG CHỦ (GRID LAYOUT) */
+/* =============================================
+   CARD GRID (global fallback)
+   ============================================= */
 .post-grid-layout {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
-    padding-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 18px;
+  padding-top: 20px;
 }
 
 .grid-item {
-    background-color: #1f1f2e;
-    border-radius: 8px;
-    padding: 15px;
-    text-align: center;
-    border: 1px solid #2a2a35;
-    transition: transform 0.2s;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease), border-color 0.28s var(--ease);
+  display: flex;
+  flex-direction: column;
 }
 
 .grid-item:hover {
-    transform: translateY(-5px);
-    border-color: #ffaa00;
+  transform: translateY(-7px);
+  border-color: var(--accent);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.55), 0 0 0 1px var(--accent-glow);
 }
 
 .post-link {
-    text-decoration: none;
-    display: block;
-    cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
 }
 
 .post-thumbnail {
-    width: 100%;
-    aspect-ratio: 3 / 4;
-    overflow: hidden;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    background-color: #2a2a35;
+  width: 100%;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  background: var(--bg-hover);
 }
 
 .post-thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s var(--ease);
 }
 
-.grid-item:hover .post-thumbnail img {
-    transform: scale(1.08);
-}
+.grid-item:hover .post-thumbnail img { transform: scale(1.07); }
 
 .post-title {
-    color: #e0e0e0;
-    font-size: 15px;
-    font-weight: bold;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  color: var(--text-1);
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 10px 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* 5. MENU OVERLAY */
+/* =============================================
+   NAV OVERLAY (menu slide)
+   ============================================= */
 .nav-overlay {
-    height: 100%;
-    width: 0;
-    position: fixed;
-    z-index: 1001;
-    top: 0;
-    right: 0;
-    background-color: rgba(18, 18, 24, 0.95);
-    overflow-x: hidden;
-    transition: 0.3s;
-    backdrop-filter: blur(5px);
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1001;
+  top: 0; right: 0;
+  background: rgba(14, 14, 22, 0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-left: 1px solid var(--border);
+  overflow-x: hidden;
+  transition: width 0.3s var(--ease);
 }
 
-.nav-overlay.active {
-    width: 250px;
-}
+.nav-overlay.active { width: 270px; }
 
 .nav-content {
-    position: relative;
-    top: 60px;
-    width: 100%;
-    text-align: center;
+  position: relative;
+  top: 70px;
+  padding: 0 16px;
 }
 
 .nav-content a {
-    padding: 15px;
-    text-decoration: none;
-    font-size: 20px;
-    color: #e0e0e0;
-    display: block;
-    transition: 0.2s;
-    cursor: pointer;
+  padding: 13px 16px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-2);
+  display: block;
+  border-radius: var(--radius-sm);
+  transition: color 0.2s var(--ease), background 0.2s var(--ease);
+  margin-bottom: 4px;
 }
 
 .nav-content a:hover {
-    color: #ffaa00;
+  color: var(--accent);
+  background: var(--accent-dim);
 }
 
 .close-btn {
-    position: absolute;
-    top: 15px;
-    right: 25px;
-    font-size: 40px;
-    color: #e0e0e0;
-    cursor: pointer;
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  font-size: 30px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: color 0.2s;
+  line-height: 1;
+  user-select: none;
+}
+.close-btn:hover { color: var(--accent); }
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.animate-in {
+  animation: fadeSlideUp 0.4s var(--ease) both;
+}
+
+/* =============================================
+   BUTTON BASE (reusable)
+   ============================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s var(--ease), transform 0.15s var(--ease), box-shadow 0.2s var(--ease);
+  white-space: nowrap;
+}
+
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+.btn-primary {
+  background: var(--accent);
+  color: #0e0e16;
+}
+.btn-primary:hover {
+  background: var(--accent-dark);
+  box-shadow: 0 4px 18px var(--accent-glow);
+}
+
+.btn-secondary {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+.btn-secondary:hover { background: #2c2c46; }
+
+.btn-blue {
+  background: var(--blue);
+  color: #0e0e16;
+}
+.btn-danger {
+  background: var(--red);
+  color: #fff;
 }

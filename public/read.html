@@ -7,353 +7,284 @@
     <title>Đọc Truyện - Doomixi</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body {
-            background-color: #121218;
+        /* ===== READER ===== */
+        .reader-container {
+            max-width: 780px;
+            margin: 72px auto 32px;
+            background: var(--bg-card);
+            padding: 44px 48px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
         }
 
-        /* ==========================================
-           [CSS LỚP VIEW: ĐỌC TRUYỆN] 
-           ========================================== */
-        .reader-container {
-            max-width: 900px;
-            margin: 80px auto 40px;
-            background: #1f1f2e;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        @media (max-width: 600px) {
+            .reader-container { padding: 28px 20px; }
         }
 
         .breadcrumb {
-            margin-bottom: 30px;
-            font-size: 14px;
+            margin-bottom: 28px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
-        .breadcrumb a {
-            color: #ffaa00;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        .breadcrumb span {
-            color: #aaa;
-            margin: 0 10px;
-        }
+        .breadcrumb a { color: var(--accent); text-decoration: none; font-weight: 600; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: var(--text-3); }
 
         .chapter-header {
             text-align: center;
-            border-bottom: 1px solid #2a2a35;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 24px;
+            margin-bottom: 36px;
         }
 
         .chapter-title {
-            font-size: 28px;
-            color: #ffaa00;
-            margin-bottom: 10px;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
 
         .story-name {
-            font-size: 18px;
-            color: #aaa;
+            font-size: 15px;
+            color: var(--text-2);
             font-style: italic;
         }
 
         .chapter-content {
-            font-size: 20px;
-            line-height: 1.8;
-            color: #e0e0e0;
+            font-size: 18px;
+            line-height: 2;
+            color: var(--text-1);
             white-space: pre-wrap;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Georgia', 'Segoe UI', serif;
+            letter-spacing: 0.01em;
         }
 
         .navigation-bars {
             display: flex;
             justify-content: space-between;
-            margin-top: 50px;
-            border-top: 1px solid #2a2a35;
-            padding-top: 20px;
+            align-items: center;
+            margin-top: 52px;
+            border-top: 1px solid var(--border);
+            padding-top: 22px;
+            gap: 10px;
         }
 
         .nav-btn {
             padding: 10px 20px;
-            background: #2a2a35;
-            color: #e0e0e0;
+            background: var(--bg-hover);
+            color: var(--text-1);
             text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-            transition: 0.2s;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid var(--border);
+            transition: background 0.2s var(--ease), border-color 0.2s, transform 0.15s;
         }
 
         .nav-btn:hover {
-            background: #ffaa00;
-            color: #121218;
+            background: var(--accent);
+            color: #0e0e16;
+            border-color: var(--accent);
+            transform: translateY(-1px);
         }
 
-        .nav-btn.disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
+        .nav-btn.disabled { opacity: 0.4; pointer-events: none; }
 
-        /* ==========================================
-           [CSS LỚP VIEW: MODULE KHÓA CHƯƠNG] 
-           ========================================== */
+        /* ===== LOCK ===== */
         .lock-container {
             text-align: center;
-            padding: 60px 20px;
-            background: #1a1a24;
-            border: 1px dashed #ffaa00;
-            border-radius: 8px;
+            padding: 56px 20px;
+            background: var(--bg-surface);
+            border: 1px dashed var(--accent);
+            border-radius: var(--radius);
             margin: 20px 0;
         }
 
-        .lock-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
-        }
-
-        .lock-msg {
-            color: #e0e0e0;
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
+        .lock-icon { font-size: 48px; margin-bottom: 14px; }
+        .lock-msg { color: var(--text-1); font-size: 16px; margin-bottom: 20px; }
 
         .lock-input-group {
             display: flex;
             justify-content: center;
             gap: 10px;
-            max-width: 400px;
+            max-width: 380px;
             margin: 0 auto;
         }
 
         .lock-input {
-            padding: 10px 15px;
-            background: #121218;
-            border: 1px solid #2a2a35;
-            color: #e0e0e0;
-            border-radius: 4px;
+            padding: 11px 14px;
+            background: var(--bg-base);
+            border: 1px solid var(--border);
+            color: var(--text-1);
+            border-radius: var(--radius-sm);
             flex: 1;
-            font-size: 16px;
+            font-size: 15px;
+            font-family: inherit;
             outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
+
+        .lock-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
 
         .lock-btn {
-            padding: 10px 20px;
-            background: #ffaa00;
-            color: #121218;
+            padding: 11px 22px;
+            background: var(--accent);
+            color: #0e0e16;
             border: none;
-            font-weight: bold;
-            border-radius: 4px;
+            font-weight: 700;
+            font-family: inherit;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: 0.2s;
+            transition: background 0.2s, transform 0.15s;
         }
 
-        .lock-btn:hover {
-            background: #e69900;
-        }
+        .lock-btn:hover { background: var(--accent-dark); transform: translateY(-1px); }
+        .lock-error { color: var(--red); margin-top: 14px; display: none; font-weight: 600; font-size: 14px; }
 
-        .lock-error {
-            color: #ff5555;
-            margin-top: 15px;
-            display: none;
-            font-weight: bold;
-        }
-
-        /* ==========================================
-           [CSS LỚP VIEW: MODULE COMMENT] 
-           ========================================== */
+        /* ===== COMMENT SECTION ===== */
         .comment-section {
-            max-width: 900px;
+            max-width: 780px;
             margin: 0 auto 50px;
-            background: #1f1f2e;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            background: var(--bg-card);
+            padding: 32px 40px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
         }
 
-        .comment-form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 30px;
+        @media (max-width: 600px) {
+            .comment-section { padding: 24px 16px; }
         }
+
+        .comment-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
 
         .comment-form textarea {
             width: 100%;
-            background: #121218;
-            border: 1px solid #2a2a35;
-            color: #e0e0e0;
-            padding: 10px;
-            border-radius: 4px;
+            background: var(--bg-base);
+            border: 1px solid var(--border);
+            color: var(--text-1);
+            padding: 12px;
+            border-radius: var(--radius-sm);
             resize: vertical;
             min-height: 80px;
             font-family: inherit;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
+
+        .comment-form textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-dim); }
 
         .comment-form button {
             align-self: flex-end;
-            padding: 8px 20px;
-            background: #4da6ff;
-            color: #121218;
+            padding: 9px 22px;
+            background: var(--blue);
+            color: #0e0e16;
             border: none;
-            font-weight: bold;
-            border-radius: 4px;
+            font-weight: 700;
+            font-size: 14px;
+            font-family: inherit;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: 0.2s;
+            transition: background 0.2s, transform 0.15s;
         }
 
-        .comment-form button:hover {
-            background: #3388dd;
-        }
+        .comment-form button:hover { background: #3388dd; transform: translateY(-1px); }
 
-        .comment-item {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .comment-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
+        .comment-item { display: flex; gap: 14px; margin-bottom: 20px; }
+        .comment-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 
         .comment-body {
             flex: 1;
-            background: #2a2a35;
-            padding: 15px;
-            border-radius: 8px;
+            background: var(--bg-hover);
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-muted);
         }
 
-        .comment-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-        }
+        .comment-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .comment-author { font-weight: 700; color: var(--accent); }
+        .comment-time { font-size: 12px; color: var(--text-3); }
 
-        .comment-author {
-            font-weight: bold;
-            color: #ffaa00;
-        }
+        .comment-text { color: var(--text-1); line-height: 1.6; white-space: pre-wrap; margin-bottom: 10px; font-size: 14px; }
 
-        .comment-time {
-            font-size: 12px;
-            color: #aaa;
-        }
+        .comment-actions { display: flex; gap: 14px; font-size: 13px; }
 
-        .comment-text {
-            color: #e0e0e0;
-            line-height: 1.5;
-            white-space: pre-wrap;
-            margin-bottom: 10px;
-        }
+        .action-btn { color: var(--text-3); cursor: pointer; transition: color 0.2s; user-select: none; font-weight: 500; }
+        .action-btn:hover { color: var(--blue); }
+        .action-btn.delete:hover { color: var(--red); }
+        .action-btn.liked { color: var(--accent); font-weight: 700; }
 
-        .comment-actions {
-            display: flex;
-            gap: 15px;
-            font-size: 13px;
-        }
+        .replies-container { margin-left: 56px; border-left: 2px solid var(--border); padding-left: 16px; }
 
-        .action-btn {
-            color: #aaa;
-            cursor: pointer;
-            transition: 0.2s;
-            user-select: none;
-        }
-
-        .action-btn:hover {
-            color: #4da6ff;
-        }
-
-        .action-btn.delete:hover {
-            color: #ff5555;
-        }
-
-        .action-btn.liked {
-            color: #ffaa00;
-            font-weight: bold;
-        }
-
-        .replies-container {
-            margin-left: 60px;
-            border-left: 2px solid #2a2a35;
-            padding-left: 15px;
-        }
-
-        .reply-input-box {
-            display: none;
-            margin-top: 10px;
-            gap: 10px;
-        }
+        .reply-input-box { display: none; margin-top: 10px; gap: 10px; }
 
         .reply-input-box input {
             flex: 1;
-            background: #121218;
-            border: 1px solid #4da6ff;
-            color: #e0e0e0;
-            padding: 8px;
-            border-radius: 4px;
+            background: var(--bg-base);
+            border: 1px solid var(--blue);
+            color: var(--text-1);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
             outline: none;
             font-family: inherit;
+            font-size: 14px;
         }
 
         .reply-input-box button {
-            padding: 8px 15px;
-            background: #ffaa00;
-            color: #121218;
+            padding: 8px 16px;
+            background: var(--accent);
+            color: #0e0e16;
             border: none;
-            font-weight: bold;
-            border-radius: 4px;
+            font-weight: 700;
+            border-radius: var(--radius-sm);
             cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
         }
 
-        .comment-edit-box {
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
+        .reply-input-box button:hover { background: var(--accent-dark); }
+
+        .comment-edit-box { display: none; flex-direction: column; gap: 8px; margin-bottom: 10px; }
 
         .comment-edit-box textarea {
             width: 100%;
-            background: #121218;
-            border: 1px solid #ffaa00;
-            color: #e0e0e0;
+            background: var(--bg-base);
+            border: 1px solid var(--accent);
+            color: var(--text-1);
             padding: 10px;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             resize: vertical;
             min-height: 60px;
             font-family: inherit;
             outline: none;
         }
 
-        .edit-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
+        .edit-actions { display: flex; gap: 8px; justify-content: flex-end; }
 
         .edit-actions button {
-            padding: 6px 12px;
-            font-weight: bold;
+            padding: 7px 14px;
+            font-weight: 600;
+            font-size: 13px;
+            font-family: inherit;
             border: none;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .btn-save-edit {
-            background: #ffaa00;
-            color: #121218;
-        }
+        .btn-save-edit { background: var(--accent); color: #0e0e16; }
+        .btn-save-edit:hover { background: var(--accent-dark); }
 
         .btn-cancel-edit {
             background: transparent;
-            color: #aaa;
-            border: 1px solid #aaa !important;
+            color: var(--text-2);
+            border: 1px solid var(--border) !important;
         }
     </style>
 </head>
