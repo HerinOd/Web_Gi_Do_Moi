@@ -467,7 +467,7 @@
 
                 const userData = userSnap.data();
                 const avatarUrl = userData.avatar || "https://www.w3schools.com/howto/img_avatar.png";
-                const roleBadge = userData.role === "admin" ? "ADMIN / QUẢN TRỊ VIÊN" : "DỊCH GIẢ";
+                const roleBadge = userData.role === "admin" ? "ADMIN" : "USER";
 
                 const isAdmin = userData.role === "admin";
                 profileBlock.innerHTML = `
