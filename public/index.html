@@ -316,22 +316,21 @@
 
     /* ===== CAROUSEL ===== */
     .carousel-section {
-      max-width: 1200px;
-      margin: 28px auto 0;
-      padding: 0 20px;
+      margin: 0 0 28px;
+      padding: 0;
     }
 
     .carousel-track-area {
       position: relative;
-      padding: 0 52px;
     }
 
     .carousel-wrapper {
       position: relative;
       overflow: hidden;
-      border-radius: var(--radius);
-      height: 380px;
-      border: 1px solid var(--border);
+      border-radius: 0;
+      height: 420px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
       background: var(--bg-card);
     }
 
@@ -362,11 +361,12 @@
       position: relative;
       z-index: 1;
       display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
       width: 100%;
-      padding: 38px 40px;
-      gap: 36px;
+      padding: 40px 80px;
+      gap: 40px;
       align-items: center;
-      justify-content: center;
     }
 
     .carousel-cover {
@@ -472,11 +472,11 @@
     }
 
     .carousel-prev {
-      left: 4px;
+      left: 20px;
     }
 
     .carousel-next {
-      right: 4px;
+      right: 20px;
     }
 
     .carousel-dots {
@@ -502,25 +502,28 @@
       width: 24px;
     }
 
+    @media (max-width: 900px) {
+      .carousel-content { padding: 32px 48px; gap: 32px; }
+    }
+
     @media (max-width: 700px) {
-      .carousel-track-area { padding: 0 40px; }
-      .carousel-wrapper { height: 290px; }
-      .carousel-content { padding: 22px 20px; gap: 18px; }
-      .carousel-cover { width: 112px; height: 163px; }
-      .carousel-title { font-size: 18px; }
+      .carousel-nav-btn { display: none !important; }
+      .carousel-wrapper { height: 300px; }
+      .carousel-content { padding: 24px 24px; gap: 20px; }
+      .carousel-cover { width: 116px; height: 169px; }
+      .carousel-title { font-size: 19px; }
       .carousel-read-btn { padding: 10px 20px; font-size: 13px; }
     }
 
     @media (max-width: 480px) {
-      .carousel-track-area { padding: 0 34px; }
-      .carousel-wrapper { height: 250px; }
-      .carousel-content { padding: 16px 14px; gap: 12px; }
-      .carousel-cover { width: 84px; height: 122px; }
-      .carousel-label { display: none; }
+      .carousel-wrapper { height: 260px; }
+      .carousel-content { padding: 18px 16px; gap: 14px; }
+      .carousel-cover { width: 88px; height: 128px; }
       .carousel-title { font-size: 15px; -webkit-line-clamp: 3; }
       .carousel-stats { font-size: 12px; gap: 12px; }
-      .carousel-read-btn { padding: 8px 14px; font-size: 12px; margin-top: 0; }
-      .carousel-info { gap: 8px; }
+      .carousel-read-btn { padding: 8px 16px; font-size: 12px; margin-top: 0; }
+      .carousel-info { gap: 9px; }
+      .carousel-label { font-size: 10px; letter-spacing: 2px; }
     }
 
     /* ===== EMPTY ===== */
