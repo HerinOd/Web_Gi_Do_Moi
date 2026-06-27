@@ -368,8 +368,8 @@
       object-fit: cover;
       border-radius: var(--radius-sm);
       flex-shrink: 0;
-      box-shadow: 0 12px 38px rgba(0,0,0,0.72);
-      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 12px 38px rgba(0, 0, 0, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .carousel-info {
@@ -410,7 +410,7 @@
     .carousel-stats {
       display: flex;
       gap: 22px;
-      color: rgba(238,238,245,0.65);
+      color: rgba(238, 238, 245, 0.65);
       font-size: 14px;
       font-weight: 600;
     }
@@ -434,16 +434,16 @@
     .carousel-read-btn:hover {
       background: var(--accent-dark);
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(240,165,0,0.38);
+      box-shadow: 0 8px 24px rgba(240, 165, 0, 0.38);
     }
 
     .carousel-nav-btn {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(14,14,22,0.6);
+      background: rgba(14, 14, 22, 0.6);
       color: #fff;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       width: 42px;
       height: 42px;
       border-radius: 50%;
@@ -464,8 +464,13 @@
       transform: translateY(-50%) scale(1.1);
     }
 
-    .carousel-prev { left: 14px; }
-    .carousel-next { right: 14px; }
+    .carousel-prev {
+      left: 14px;
+    }
+
+    .carousel-next {
+      right: 14px;
+    }
 
     .carousel-dots {
       display: flex;
@@ -491,17 +496,42 @@
     }
 
     @media (max-width: 700px) {
-      .carousel-wrapper { height: 290px; }
-      .carousel-content { padding: 22px 20px; gap: 18px; }
-      .carousel-cover { width: 112px; height: 163px; }
-      .carousel-title { font-size: 18px; }
-      .carousel-read-btn { padding: 10px 20px; font-size: 13px; }
+      .carousel-wrapper {
+        height: 290px;
+      }
+
+      .carousel-content {
+        padding: 22px 20px;
+        gap: 18px;
+      }
+
+      .carousel-cover {
+        width: 112px;
+        height: 163px;
+      }
+
+      .carousel-title {
+        font-size: 18px;
+      }
+
+      .carousel-read-btn {
+        padding: 10px 20px;
+        font-size: 13px;
+      }
     }
 
     @media (max-width: 480px) {
-      .carousel-cover { display: none; }
-      .carousel-wrapper { height: 230px; }
-      .carousel-content { padding: 22px 20px; }
+      .carousel-cover {
+        display: none;
+      }
+
+      .carousel-wrapper {
+        height: 230px;
+      }
+
+      .carousel-content {
+        padding: 22px 20px;
+      }
     }
 
     /* ===== EMPTY ===== */
@@ -668,7 +698,9 @@
   <div class="carousel-section">
     <div class="carousel-track-area">
       <div class="carousel-wrapper" id="hero-carousel">
-        <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-3);font-size:14px;">Đang tải truyện nổi bật...</div>
+        <div
+          style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-3);font-size:14px;">
+          Đang tải truyện nổi bật...</div>
       </div>
       <button class="carousel-nav-btn carousel-prev" id="carousel-prev">❮</button>
       <button class="carousel-nav-btn carousel-next" id="carousel-next">❯</button>
@@ -761,8 +793,8 @@
         const dateStr = story.createdAt ? new Date(story.createdAt).toLocaleDateString('vi-VN') : 'N/A';
 
         let statusClass = 'status-ongoing';
-        if (story.status === 'Hoàn thành') statusClass = 'status-completed';
-        if (story.status === 'Tạm dừng') statusClass = 'status-paused';
+        if (story.status === 'Hoàn Thành') statusClass = 'status-completed';
+        if (story.status === 'Tạm Dừng') statusClass = 'status-paused';
 
         let tagsHTML = "";
         if (story.tags && Array.isArray(story.tags) && story.tags.length > 0) {
