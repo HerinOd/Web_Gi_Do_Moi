@@ -769,6 +769,10 @@
     const tagFilter = document.getElementById('tagFilter');
     const paginationBlock = document.getElementById('pagination-block');
 
+    function escapeHTML(str) {
+      return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
     function updateView() {
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
       const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -781,6 +785,7 @@
         return;
       }
 
+      const htmlParts = [];
       chunk.forEach(story => {
         const dateStr = story.createdAt ? new Date(story.createdAt).toLocaleDateString('vi-VN') : 'N/A';
 
@@ -792,47 +797,47 @@
         if (story.tags && Array.isArray(story.tags) && story.tags.length > 0) {
           const displayTags = story.tags.slice(0, 2);
           displayTags.forEach(tag => {
-            tagsHTML += `<span class="tag-badge">${tag}</span>`;
+            tagsHTML += `<span class="tag-badge">${escapeHTML(tag)}</span>`;
           });
           if (story.tags.length > 2) {
             tagsHTML += `<span class="tag-badge plus-tag">+${story.tags.length - 2}</span>`;
           }
         }
 
-        const uploaderName = story.uploaderName || "Ẩn danh";
+        const uploaderName = escapeHTML(story.uploaderName || "Ẩn danh");
         const uploaderAvatar = story.uploaderAvatar || "https://www.w3schools.com/howto/img_avatar.png";
         const viewCount = story.views || 0;
         const likeCount = story.likeCount || 0;
 
-        const storyHTML = `
+        htmlParts.push(`
             <div class="grid-item">
                 <a href="info.html?id=${story.id}" class="post-link">
                     <div class="card-header">
                         <div class="card-uploader">
-                            <img src="${uploaderAvatar}" alt="Avatar">
+                            <img src="${uploaderAvatar}" alt="Avatar" loading="lazy">
                             <span class="card-uploader-name">${uploaderName}</span>
                         </div>
                         <div class="card-date">${dateStr}</div>
                     </div>
-                    
+
                     <div class="post-thumbnail">
-                        <img src="${story.coverImage}" alt="Cover">
+                        <img src="${story.coverImage}" alt="Cover" loading="lazy">
                         <div class="thumbnail-gradient"></div>
-                        <div class="status-badge ${statusClass}">${story.status}</div>
+                        <div class="status-badge ${statusClass}">${escapeHTML(story.status)}</div>
                         <div class="tags-overlay">${tagsHTML}</div>
                     </div>
-                    
-                    <h3 class="post-title">${story.title}</h3>
-                    
+
+                    <h3 class="post-title">${escapeHTML(story.title)}</h3>
+
                     <div class="card-footer">
                         <div class="stat-item"><span style="font-size: 16px;">👁️</span> ${viewCount}</div>
                         <div class="stat-item"><span style="font-size: 14px;">❤️</span> ${likeCount}</div>
                     </div>
                 </a>
             </div>
-        `;
-        storiesGrid.innerHTML += storyHTML;
+        `);
       });
+      storiesGrid.innerHTML = htmlParts.join('');
 
       renderPagination(currentFilteredData.length);
     }
@@ -939,10 +944,9 @@
           const targetUrl = c.targetType === 'story' ? `info.html?id=${c.targetId}` : `read.html?chapterId=${c.targetId}`;
           const targetLabel = c.targetType === 'story' ? 'trang thông tin truyện' : 'chương truyện';
 
-          // THUẬT TOÁN PARSE ĐỊNH TUYẾN HYPERLINK @TAG
-          let formattedContent = c.content;
+          let formattedContent = escapeHTML(c.content);
           if (c.replyToName && c.replyToUid) {
-            const tagString = `@${c.replyToName}`;
+            const tagString = `@${escapeHTML(c.replyToName)}`;
             if (formattedContent.startsWith(tagString)) {
               const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
               formattedContent = formattedContent.replace(tagString, hyperlinkTag);
@@ -952,11 +956,11 @@
           html += `
                     <div class="recent-comment-item">
                         <a href="profile.html?uid=${c.userId}">
-                            <img src="${avatar}" alt="Avatar" class="recent-comment-avatar">
+                            <img src="${avatar}" alt="Avatar" class="recent-comment-avatar" loading="lazy">
                         </a>
                         <div class="recent-comment-content">
                             <div class="recent-comment-header">
-                                <a href="profile.html?uid=${c.userId}" class="recent-comment-author">${c.displayName}</a>
+                                <a href="profile.html?uid=${c.userId}" class="recent-comment-author">${escapeHTML(c.displayName)}</a>
                                 <span class="recent-comment-time">${dateStr}</span>
                             </div>
                             <div class="recent-comment-text">${formattedContent}</div>
@@ -1052,14 +1056,22 @@
     async function fetchStories() {
       try {
         const storiesRef = collection(db, "stories");
-        const q = query(storiesRef, orderBy("createdAt", "desc"));
+
+        // Carousel riêng: top 5 theo lượt xem
+        const carouselQ = query(storiesRef, orderBy("views", "desc"), limit(5));
+        const carouselSnap = await getDocs(carouselQ);
+        const carouselStories = [];
+        carouselSnap.forEach(doc => carouselStories.push({ id: doc.id, ...doc.data() }));
+        buildCarousel(carouselStories);
+
+        // Danh sách truyện: tối đa 100 truyện mới nhất
+        const q = query(storiesRef, orderBy("createdAt", "desc"), limit(100));
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {
           allStoriesArray.push({ id: doc.id, ...doc.data() });
         });
 
-        buildCarousel(allStoriesArray);
         currentFilteredData = allStoriesArray;
         updateView();
         populateDynamicTags();

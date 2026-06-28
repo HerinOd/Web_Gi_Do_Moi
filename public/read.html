@@ -320,7 +320,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, query, where, orderBy, limit, getDocs, addDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -418,20 +418,18 @@
                     `;
                 }
 
+                const currentNum = chapterData.chapterNumber;
                 const chaptersRef = collection(db, "chapters");
-                const q = query(chaptersRef, where("storyId", "==", chapterData.storyId));
-                const querySnapshot = await getDocs(q);
-
-                let chaptersArray = [];
-                querySnapshot.forEach((doc) => { chaptersArray.push({ id: doc.id, chapterNumber: doc.data().chapterNumber }); });
-                chaptersArray.sort((a, b) => a.chapterNumber - b.chapterNumber);
-                const currentIndex = chaptersArray.findIndex(c => c.id === chapterId);
+                const [prevSnap, nextSnap] = await Promise.all([
+                    getDocs(query(chaptersRef, where("storyId", "==", chapterData.storyId), where("chapterNumber", "<", currentNum), orderBy("chapterNumber", "desc"), limit(1))),
+                    getDocs(query(chaptersRef, where("storyId", "==", chapterData.storyId), where("chapterNumber", ">", currentNum), orderBy("chapterNumber", "asc"), limit(1)))
+                ]);
 
                 let prevLink = `<a href="#" class="nav-btn disabled">Chương Trước</a>`;
                 let nextLink = `<a href="#" class="nav-btn disabled">Chương Sau</a>`;
 
-                if (currentIndex > 0) prevLink = `<a href="read.html?chapterId=${chaptersArray[currentIndex - 1].id}" class="nav-btn">Chương Trước</a>`;
-                if (currentIndex < chaptersArray.length - 1) nextLink = `<a href="read.html?chapterId=${chaptersArray[currentIndex + 1].id}" class="nav-btn">Chương Sau</a>`;
+                if (!prevSnap.empty) prevLink = `<a href="read.html?chapterId=${prevSnap.docs[0].id}" class="nav-btn">Chương Trước</a>`;
+                if (!nextSnap.empty) nextLink = `<a href="read.html?chapterId=${nextSnap.docs[0].id}" class="nav-btn">Chương Sau</a>`;
 
                 const chapterDisplayTitle = `Chương ${chapterData.chapterNumber}${chapterData.title ? ': ' + chapterData.title : ''}`;
 
@@ -496,9 +494,10 @@
 
         const commentListBlock = document.getElementById('comment-list-block');
 
-        // ==========================================
-        // THUẬT TOÁN RENDER BÌNH LUẬN NÂNG CẤP
-        // ==========================================
+        function escapeHTML(str) {
+            return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
         function generateCommentHTML(c, isReply = false, parentComment = null) {
             const dateStr = new Date(c.createdAt).toLocaleString('vi-VN');
             const avatar = c.avatar || "https://www.w3schools.com/howto/img_avatar.png";
@@ -520,17 +519,16 @@
             const tagTargetName = c.displayName;
             const tagTargetUid = c.userId;
 
-            let formattedContent = c.content;
+            let formattedContent = escapeHTML(c.content);
 
-            // THUẬT TOÁN ĐỊNH TUYẾN HYPERLINK (Ưu tiên Phi chuẩn hóa, dùng Fallback cho bản cũ)
             if (c.replyToName && c.replyToUid) {
-                const tagString = `@${c.replyToName}`;
+                const tagString = `@${escapeHTML(c.replyToName)}`;
                 if (formattedContent.startsWith(tagString)) {
                     const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
                     formattedContent = formattedContent.replace(tagString, hyperlinkTag);
                 }
             } else if (isReply && parentComment) {
-                const tagString = `@${parentComment.displayName}`;
+                const tagString = `@${escapeHTML(parentComment.displayName)}`;
                 if (formattedContent.startsWith(tagString)) {
                     const hyperlinkTag = `<a href="profile.html?uid=${parentComment.userId}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
                     formattedContent = formattedContent.replace(tagString, hyperlinkTag);
@@ -540,20 +538,20 @@
             return `
                 <div class="comment-item" id="cmt-${c.id}">
                     <a href="profile.html?uid=${c.userId}">
-                        <img src="${avatar}" alt="Avatar" class="comment-avatar" ${isReply ? 'style="width:35px; height:35px;"' : ''}>
+                        <img src="${avatar}" alt="Avatar" class="comment-avatar" ${isReply ? 'style="width:35px; height:35px;"' : ''} loading="lazy">
                     </a>
                     <div class="comment-body" style="width: 100%;">
                         <div class="comment-header">
                             <div class="comment-author">
-                                <a href="profile.html?uid=${c.userId}" style="color: #ffaa00; text-decoration: none;">${c.displayName}</a> ${editedTag}
+                                <a href="profile.html?uid=${c.userId}" style="color: #ffaa00; text-decoration: none;">${escapeHTML(c.displayName)}</a> ${editedTag}
                             </div>
                             <div class="comment-time">${dateStr}</div>
                         </div>
-                        
+
                         <div class="comment-text" id="text-display-${c.id}">${formattedContent}</div>
-                        
+
                         <div class="comment-edit-box" id="edit-box-${c.id}">
-                            <textarea id="edit-input-${c.id}">${c.content}</textarea>
+                            <textarea id="edit-input-${c.id}">${escapeHTML(c.content)}</textarea>
                             <div class="edit-actions">
                                 <button class="btn-cancel-edit" data-action="cancel-edit" data-id="${c.id}">Hủy</button>
                                 <button class="btn-save-edit" data-action="save-edit" data-id="${c.id}">Lưu thay đổi</button>
@@ -580,12 +578,10 @@
         async function loadComments() {
             if (!chapterId) return;
             try {
-                const q = query(collection(db, "comments"), where("targetId", "==", chapterId));
+                const q = query(collection(db, "comments"), where("targetId", "==", chapterId), orderBy("createdAt", "asc"), limit(50));
                 const snap = await getDocs(q);
                 let commentsArr = [];
                 snap.forEach(doc => commentsArr.push({ id: doc.id, ...doc.data() }));
-
-                commentsArr.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
                 const parents = commentsArr.filter(c => c.parentId === null);
                 const replies = commentsArr.filter(c => c.parentId !== null);

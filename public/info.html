@@ -355,7 +355,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, query, where, orderBy, limit, getDocs, addDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -647,9 +647,10 @@
 
         const commentListBlock = document.getElementById('comment-list-block');
 
-        // ==========================================
-        // THUẬT TOÁN RENDER BÌNH LUẬN NÂNG CẤP
-        // ==========================================
+        function escapeHTML(str) {
+            return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
         function generateCommentHTML(c, isReply = false, parentComment = null) {
             const dateStr = new Date(c.createdAt).toLocaleString('vi-VN');
             const avatar = c.avatar || "https://www.w3schools.com/howto/img_avatar.png";
@@ -671,17 +672,16 @@
             const tagTargetName = c.displayName;
             const tagTargetUid = c.userId;
 
-            let formattedContent = c.content;
+            let formattedContent = escapeHTML(c.content);
 
-            // THUẬT TOÁN ĐỊNH TUYẾN HYPERLINK (Ưu tiên Phi chuẩn hóa, dùng Fallback cho bản cũ)
             if (c.replyToName && c.replyToUid) {
-                const tagString = `@${c.replyToName}`;
+                const tagString = `@${escapeHTML(c.replyToName)}`;
                 if (formattedContent.startsWith(tagString)) {
                     const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
                     formattedContent = formattedContent.replace(tagString, hyperlinkTag);
                 }
             } else if (isReply && parentComment) {
-                const tagString = `@${parentComment.displayName}`;
+                const tagString = `@${escapeHTML(parentComment.displayName)}`;
                 if (formattedContent.startsWith(tagString)) {
                     const hyperlinkTag = `<a href="profile.html?uid=${parentComment.userId}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
                     formattedContent = formattedContent.replace(tagString, hyperlinkTag);
@@ -691,20 +691,20 @@
             return `
                 <div class="comment-item" id="cmt-${c.id}">
                     <a href="profile.html?uid=${c.userId}">
-                        <img src="${avatar}" alt="Avatar" class="comment-avatar" ${isReply ? 'style="width:35px; height:35px;"' : ''}>
+                        <img src="${avatar}" alt="Avatar" class="comment-avatar" ${isReply ? 'style="width:35px; height:35px;"' : ''} loading="lazy">
                     </a>
                     <div class="comment-body" style="width: 100%;">
                         <div class="comment-header">
                             <div class="comment-author">
-                                <a href="profile.html?uid=${c.userId}" style="color: #ffaa00; text-decoration: none;">${c.displayName}</a> ${editedTag}
+                                <a href="profile.html?uid=${c.userId}" style="color: #ffaa00; text-decoration: none;">${escapeHTML(c.displayName)}</a> ${editedTag}
                             </div>
                             <div class="comment-time">${dateStr}</div>
                         </div>
-                        
+
                         <div class="comment-text" id="text-display-${c.id}">${formattedContent}</div>
-                        
+
                         <div class="comment-edit-box" id="edit-box-${c.id}">
-                            <textarea id="edit-input-${c.id}">${c.content}</textarea>
+                            <textarea id="edit-input-${c.id}">${escapeHTML(c.content)}</textarea>
                             <div class="edit-actions">
                                 <button class="btn-cancel-edit" data-action="cancel-edit" data-id="${c.id}">Hủy</button>
                                 <button class="btn-save-edit" data-action="save-edit" data-id="${c.id}">Lưu thay đổi</button>
@@ -731,12 +731,10 @@
         async function loadComments() {
             if (!storyId) return;
             try {
-                const q = query(collection(db, "comments"), where("targetId", "==", storyId));
+                const q = query(collection(db, "comments"), where("targetId", "==", storyId), orderBy("createdAt", "asc"), limit(50));
                 const snap = await getDocs(q);
                 let commentsArr = [];
                 snap.forEach(doc => commentsArr.push({ id: doc.id, ...doc.data() }));
-
-                commentsArr.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
                 const parents = commentsArr.filter(c => c.parentId === null);
                 const replies = commentsArr.filter(c => c.parentId !== null);
