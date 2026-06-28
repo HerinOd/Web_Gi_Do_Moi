@@ -128,6 +128,66 @@
             min-width: 150px;
             padding: 4px 0 !important;
         }
+
+        .tags-wrapper {
+            position: relative;
+        }
+
+        .tags-dropdown-btn {
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 11px;
+            flex-shrink: 0;
+            transition: color 0.2s;
+        }
+
+        .tags-dropdown-btn:hover {
+            color: #ffaa00;
+        }
+
+        .tags-dropdown-panel {
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: #1a1a28;
+            border: 1px solid #3a3a55;
+            border-radius: 4px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 10px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tags-dropdown-chip {
+            background: #2a2a40;
+            color: #e0e0e0;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid #3a3a55;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+            user-select: none;
+        }
+
+        .tags-dropdown-chip:hover:not(.selected) {
+            background: #ffaa00;
+            color: #121218;
+            border-color: #ffaa00;
+        }
+
+        .tags-dropdown-chip.selected {
+            background: rgba(77, 166, 255, 0.15);
+            color: #4da6ff;
+            border-color: #4da6ff;
+            cursor: default;
+        }
     </style>
 </head>
 
@@ -160,11 +220,14 @@
 
             <div class="form-group">
                 <label>Thể Loại (Tags)</label>
-                <div class="tags-input-container" id="tags-container">
-                    <input type="text" id="tag-input" placeholder="Nhập tag rồi ấn Enter hoặc phẩy (,)..." list="tags-datalist" autocomplete="off">
-                    <datalist id="tags-datalist"></datalist>
+                <div class="tags-wrapper" id="tags-wrapper">
+                    <div class="tags-input-container" id="tags-container">
+                        <input type="text" id="tag-input" placeholder="Nhập tag rồi ấn Enter hoặc phẩy (,)..." autocomplete="off">
+                        <button type="button" class="tags-dropdown-btn" id="tags-dropdown-btn" title="Xem tags có sẵn">▼</button>
+                    </div>
+                    <div class="tags-dropdown-panel" id="tags-dropdown-panel" style="display:none;"></div>
                 </div>
-                <div class="help-text">Nhấn Enter, gõ phẩy (,), hoặc nhấn ra ngoài để thêm thể loại. Click vào "x" để xóa.
+                <div class="help-text">Nhấn Enter, gõ phẩy (,), hoặc nhấn ra ngoài để thêm thể loại. Bấm ▼ để xem tags có sẵn.
                 </div>
             </div>
 
@@ -217,6 +280,7 @@
 
         let currentUserId = null;
         let currentUserData = null;
+        let originalUploaderId = null;
 
         // ==========================================
         // MODULE: XỬ LÝ TAGS BẰNG ARRAY VÀ DOM
@@ -227,10 +291,10 @@
 
         function renderTags() {
             document.querySelectorAll('.tag-bubble-edit').forEach(el => el.remove());
-            currentTagsArray.forEach((tag, index) => {
+            currentTagsArray.forEach((tag) => {
                 const tagEl = document.createElement('div');
                 tagEl.className = 'tag-bubble-edit';
-                tagEl.innerHTML = `${tag} <span data-index="${index}">×</span>`;
+                tagEl.textContent = tag;
                 tagsContainer.insertBefore(tagEl, tagInput);
             });
         }
@@ -248,6 +312,9 @@
             if (e.key === 'Enter' || e.key === ',') {
                 e.preventDefault();
                 addTag(tagInput.value);
+            } else if (e.key === 'Backspace' && tagInput.value === '') {
+                currentTagsArray.pop();
+                renderTags();
             }
         });
 
@@ -261,11 +328,49 @@
             addTag(tagInput.value);
         });
 
-        tagsContainer.addEventListener('click', (e) => {
-            if (e.target.tagName === 'SPAN') {
-                const index = e.target.getAttribute('data-index');
-                currentTagsArray.splice(index, 1);
-                renderTags();
+        let existingTagsList = [];
+
+        function populateDropdown() {
+            const panel = document.getElementById('tags-dropdown-panel');
+            panel.innerHTML = '';
+            if (existingTagsList.length === 0) {
+                panel.innerHTML = '<span style="color:#666;font-size:12px;">Chưa có tags nào có sẵn.</span>';
+                return;
+            }
+            existingTagsList.forEach(tag => {
+                const chip = document.createElement('div');
+                chip.className = 'tags-dropdown-chip';
+                chip.textContent = tag;
+                if (currentTagsArray.some(t => t.toLowerCase() === tag.toLowerCase())) {
+                    chip.classList.add('selected');
+                } else {
+                    chip.addEventListener('click', () => {
+                        currentTagsArray.push(tag);
+                        renderTags();
+                        populateDropdown();
+                    });
+                }
+                panel.appendChild(chip);
+            });
+        }
+
+        const tagsDropdownBtn = document.getElementById('tags-dropdown-btn');
+        const tagsDropdownPanel = document.getElementById('tags-dropdown-panel');
+
+        tagsDropdownBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isOpen = tagsDropdownPanel.style.display !== 'none';
+            if (isOpen) {
+                tagsDropdownPanel.style.display = 'none';
+            } else {
+                populateDropdown();
+                tagsDropdownPanel.style.display = 'flex';
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#tags-wrapper')) {
+                tagsDropdownPanel.style.display = 'none';
             }
         });
 
@@ -273,13 +378,7 @@
             try {
                 const snap = await getDoc(doc(db, "config", "tags"));
                 if (snap.exists() && Array.isArray(snap.data().list)) {
-                    const datalist = document.getElementById('tags-datalist');
-                    datalist.innerHTML = '';
-                    snap.data().list.sort().forEach(tag => {
-                        const opt = document.createElement('option');
-                        opt.value = tag;
-                        datalist.appendChild(opt);
-                    });
+                    existingTagsList = snap.data().list.sort();
                 }
             } catch(e) {}
         }
@@ -337,6 +436,7 @@
 
                 if (storySnap.exists()) {
                     const data = storySnap.data();
+                    originalUploaderId = data.uploaderId;
 
                     if (data.uploaderId !== currentUserId && currentUserData.role !== "admin") {
                         alert("Lỗi Phân Quyền: Bạn không có quyền sửa bộ truyện này!");
@@ -407,7 +507,6 @@
                 const statusInput = document.getElementById('status').value;
                 const descriptionInput = document.getElementById('description').value.trim();
 
-                // Object Model đã được bơm thêm dữ liệu Phi chuẩn hóa
                 const storyObject = {
                     title: titleInput,
                     originalAuthor: authorInput,
@@ -415,15 +514,16 @@
                     status: statusInput,
                     description: descriptionInput,
                     coverImage: finalImageUrl,
-                    // Đồng bộ Avatar và Tên (kể cả lúc Create hay Update để lỡ họ có đổi tên/avatar)
-                    uploaderName: currentUserData.displayName || "Ẩn danh",
-                    uploaderAvatar: currentUserData.avatar || "https://www.w3schools.com/howto/img_avatar.png"
                 };
 
+                // Chỉ đồng bộ tên/avatar khi chính chủ truyện tự sửa, tránh admin edit làm ghi đè thông tin người đăng
+                if (!isEditMode || currentUserId === originalUploaderId) {
+                    storyObject.uploaderName = currentUserData.displayName || "Ẩn danh";
+                    storyObject.uploaderAvatar = currentUserData.avatar || "https://www.w3schools.com/howto/img_avatar.png";
+                }
+
                 if (isEditMode) {
-                    storyObject.uploaderId = currentUserId;
                     const storyRef = doc(db, "stories", editId);
-                    // UpdateDoc sẽ ghi đè các trường trên, bao gồm cả việc cập nhật uploaderName mới nhất
                     await updateDoc(storyRef, storyObject);
                     await updateConfigTags(currentTagsArray);
                     alert("Cập nhật thông tin truyện thành công!");
