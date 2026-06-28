@@ -340,6 +340,124 @@
             gap: 5px;
             font-weight: 600;
         }
+
+        /* ===== NÚT THÔNG BÁO ADMIN ===== */
+        .btn-announce {
+            position: absolute;
+            top: 72px;
+            right: 28px;
+            padding: 8px 16px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            border: 1px solid var(--accent-glow);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-announce:hover {
+            background: var(--accent);
+            color: #0e0e16;
+        }
+
+        @media (max-width: 600px) {
+            .btn-announce {
+                position: static !important;
+                margin-top: 8px;
+            }
+        }
+
+        /* ===== MODAL THÔNG BÁO ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-1);
+        }
+
+        .modal-box textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            color: var(--text-1);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 110px;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .modal-box textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-modal-cancel {
+            padding: 9px 18px;
+            background: var(--bg-hover);
+            color: var(--text-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-modal-post {
+            padding: 9px 18px;
+            background: var(--accent);
+            color: #0e0e16;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-modal-post:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -367,9 +485,20 @@
         <p style="text-align: center; width: 100%; color: #aaa;">Đang tải danh sách lưu...</p>
     </div>
 
+    <div class="modal-overlay" id="announce-modal">
+        <div class="modal-box">
+            <div class="modal-title">📢 Đăng Thông Báo Mới</div>
+            <textarea id="announce-text" placeholder="Nhập nội dung thông báo..."></textarea>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" id="btn-cancel-announce">Hủy</button>
+                <button class="btn-modal-post" id="btn-submit-announce">Đăng</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -499,6 +628,17 @@
                 if (currentUser && currentUser.uid === targetUid) {
                     document.getElementById('btnEditProfile').style.display = 'block';
 
+                    if (isAdmin) {
+                        const announceBtn = document.createElement('button');
+                        announceBtn.className = 'btn-announce';
+                        announceBtn.textContent = '📢 Thông Báo';
+                        document.getElementById('profile-block').appendChild(announceBtn);
+                        announceBtn.addEventListener('click', () => {
+                            document.getElementById('announce-text').value = '';
+                            document.getElementById('announce-modal').classList.add('open');
+                        });
+                    }
+
                     bookmarkTitle.style.display = 'flex';
                     bookmarkGrid.style.display = 'grid';
 
@@ -521,6 +661,36 @@
                 profileBlock.innerHTML = "<h2 style='color:#ff5555; width:100%; text-align:center;'>Lỗi kết nối máy chủ!</h2>";
             }
         }
+
+        // ===== MODAL THÔNG BÁO =====
+        const announceModal = document.getElementById('announce-modal');
+        document.getElementById('btn-cancel-announce').addEventListener('click', () => {
+            announceModal.classList.remove('open');
+        });
+        announceModal.addEventListener('click', (e) => {
+            if (e.target === announceModal) announceModal.classList.remove('open');
+        });
+        document.getElementById('btn-submit-announce').addEventListener('click', async () => {
+            const text = document.getElementById('announce-text').value.trim();
+            if (!text) return;
+            const submitBtn = document.getElementById('btn-submit-announce');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang đăng...';
+            try {
+                await setDoc(doc(db, "config", "announcement"), {
+                    message: text,
+                    createdAt: new Date().toISOString(),
+                    createdBy: currentUser.uid
+                });
+                announceModal.classList.remove('open');
+                alert('Đã đăng thông báo thành công!');
+            } catch (e) {
+                alert('Lỗi: ' + e.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Đăng';
+            }
+        });
     </script>
 </body>
 

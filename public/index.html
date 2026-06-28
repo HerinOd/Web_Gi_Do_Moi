@@ -684,6 +684,29 @@
         padding: 11px 13px;
       }
     }
+
+    /* ===== ANNOUNCEMENT BANNER ===== */
+    .announcement-banner {
+      max-width: 1200px;
+      margin: 0 auto 20px;
+      padding: 0 20px;
+    }
+
+    .announcement-content {
+      background: var(--bg-card);
+      border: 1px solid var(--accent-glow);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 13px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      color: var(--text-1);
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
   </style>
 </head>
 
@@ -707,6 +730,13 @@
       <button class="carousel-nav-btn carousel-next" id="carousel-next">❯</button>
     </div>
     <div class="carousel-dots" id="carousel-dots"></div>
+  </div>
+
+  <div class="announcement-banner" id="announcement-banner" style="display:none;">
+    <div class="announcement-content">
+      <span style="font-size:18px;flex-shrink:0;margin-top:2px;">📢</span>
+      <span id="announcement-text"></span>
+    </div>
   </div>
 
   <div class="filter-bar">
@@ -1132,7 +1162,18 @@
       }
     }
 
+    async function fetchAnnouncement() {
+      try {
+        const snap = await getDoc(doc(db, "config", "announcement"));
+        if (snap.exists() && snap.data().message) {
+          document.getElementById('announcement-text').textContent = snap.data().message;
+          document.getElementById('announcement-banner').style.display = 'block';
+        }
+      } catch(e) {}
+    }
+
     fetchStories();
+    fetchAnnouncement();
   </script>
 </body>
 

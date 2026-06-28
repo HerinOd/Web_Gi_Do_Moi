@@ -161,9 +161,10 @@
             <div class="form-group">
                 <label>Thể Loại (Tags)</label>
                 <div class="tags-input-container" id="tags-container">
-                    <input type="text" id="tag-input" placeholder="Nhập tag rồi ấn Enter hoặc phẩy (,)...">
+                    <input type="text" id="tag-input" placeholder="Nhập tag rồi ấn Enter hoặc phẩy (,)..." list="tags-datalist" autocomplete="off">
+                    <datalist id="tags-datalist"></datalist>
                 </div>
-                <div class="help-text">Nhấn phím Enter hoặc gõ dấu phẩy (,) để thêm thể loại. Click vào dấu "x" để xóa.
+                <div class="help-text">Nhấn Enter, gõ phẩy (,), hoặc nhấn ra ngoài để thêm thể loại. Click vào "x" để xóa.
                 </div>
             </div>
 
@@ -193,7 +194,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -234,16 +235,30 @@
             });
         }
 
+        function addTag(raw) {
+            const val = raw.trim().replace(/,/g, '').trim();
+            if (val !== "" && !currentTagsArray.some(t => t.toLowerCase() === val.toLowerCase())) {
+                currentTagsArray.push(val);
+                renderTags();
+            }
+            tagInput.value = '';
+        }
+
         tagInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ',') {
                 e.preventDefault();
-                const val = tagInput.value.trim().replace(',', '');
-                if (val !== "" && !currentTagsArray.includes(val)) {
-                    currentTagsArray.push(val);
-                    renderTags();
-                }
-                tagInput.value = '';
+                addTag(tagInput.value);
             }
+        });
+
+        tagInput.addEventListener('input', () => {
+            if (tagInput.value.includes(',')) {
+                addTag(tagInput.value);
+            }
+        });
+
+        tagInput.addEventListener('blur', () => {
+            addTag(tagInput.value);
         });
 
         tagsContainer.addEventListener('click', (e) => {
@@ -253,6 +268,35 @@
                 renderTags();
             }
         });
+
+        async function loadExistingTags() {
+            try {
+                const snap = await getDoc(doc(db, "config", "tags"));
+                if (snap.exists() && Array.isArray(snap.data().list)) {
+                    const datalist = document.getElementById('tags-datalist');
+                    datalist.innerHTML = '';
+                    snap.data().list.sort().forEach(tag => {
+                        const opt = document.createElement('option');
+                        opt.value = tag;
+                        datalist.appendChild(opt);
+                    });
+                }
+            } catch(e) {}
+        }
+
+        async function updateConfigTags(tags) {
+            try {
+                const ref = doc(db, "config", "tags");
+                const snap = await getDoc(ref);
+                let existing = (snap.exists() && Array.isArray(snap.data().list)) ? snap.data().list : [];
+                tags.forEach(tag => {
+                    if (!existing.some(t => t.toLowerCase() === tag.toLowerCase())) {
+                        existing.push(tag);
+                    }
+                });
+                await setDoc(ref, { list: existing });
+            } catch(e) { console.error("Lỗi cập nhật tags:", e); }
+        }
 
         document.getElementById('add-story-form').addEventListener('keydown', function (event) {
             if (event.key === "Enter" && event.target.tagName !== "TEXTAREA") {
@@ -272,6 +316,7 @@
                 document.getElementById('add-story-form').style.display = 'block';
                 document.getElementById('auth-warning').style.display = 'none';
 
+                loadExistingTags();
                 if (isEditMode) { initEditMode(); }
 
             } else {
@@ -380,6 +425,7 @@
                     const storyRef = doc(db, "stories", editId);
                     // UpdateDoc sẽ ghi đè các trường trên, bao gồm cả việc cập nhật uploaderName mới nhất
                     await updateDoc(storyRef, storyObject);
+                    await updateConfigTags(currentTagsArray);
                     alert("Cập nhật thông tin truyện thành công!");
                     window.location.href = `info.html?id=${editId}`;
                 } else {
@@ -390,6 +436,7 @@
                     storyObject.likeCount = 0;
 
                     const docRef = await addDoc(collection(db, "stories"), storyObject);
+                    await updateConfigTags(currentTagsArray);
                     alert("Tạo bộ truyện thành công!");
                     window.location.href = `info.html?id=${docRef.id}`;
                 }
