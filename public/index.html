@@ -670,6 +670,38 @@
     .recent-comment-target a:hover {
       text-decoration: underline;
     }
+
+    .recent-comment-cover-link {
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+
+    .recent-comment-cover {
+      width: 56px;
+      height: 76px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      display: block;
+      border: 1px solid var(--border);
+      transition: opacity 0.2s var(--ease);
+    }
+
+    .recent-comment-cover:hover {
+      opacity: 0.8;
+    }
+
+    @media (max-width: 600px) {
+      .recent-comment-cover {
+        width: 44px;
+        height: 60px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .recent-comment-cover-link {
+        display: none;
+      }
+    }
   </style>
 </head>
 
@@ -723,7 +755,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, getDocs, orderBy, query, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, getDoc, doc, orderBy, query, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCVAIacKswr9w5NagFnDoh5P9kcweztOmQ",
@@ -936,13 +968,40 @@
           return;
         }
 
+        const comments = [];
+        snap.forEach(docSnap => comments.push({ id: docSnap.id, ...docSnap.data() }));
+
+        // Build story lookup from already-loaded allStoriesArray (zero extra Firestore reads)
+        const storyMap = {};
+        allStoriesArray.forEach(s => { storyMap[s.id] = s; });
+
+        // For chapter-type comments, batch-fetch chapters in parallel to get storyId
+        const chapterIds = [...new Set(
+          comments.filter(c => c.targetType === 'chapter').map(c => c.targetId)
+        )];
+        const chapterStoryMap = {};
+        if (chapterIds.length > 0) {
+          const chapterDocs = await Promise.all(
+            chapterIds.map(cid => getDoc(doc(db, "chapters", cid)))
+          );
+          chapterDocs.forEach((cdoc, i) => {
+            if (cdoc.exists()) chapterStoryMap[chapterIds[i]] = cdoc.data().storyId;
+          });
+        }
+
         let html = "";
-        snap.forEach(doc => {
-          const c = doc.data();
+        comments.forEach(c => {
           const dateStr = new Date(c.createdAt).toLocaleString('vi-VN');
           const avatar = c.avatar || "https://www.w3schools.com/howto/img_avatar.png";
-          const targetUrl = c.targetType === 'story' ? `info.html?id=${c.targetId}` : `read.html?chapterId=${c.targetId}`;
-          const targetLabel = c.targetType === 'story' ? 'trang thông tin truyện' : 'chương truyện';
+          const targetUrl = c.targetType === 'story'
+            ? `info.html?id=${c.targetId}`
+            : `read.html?chapterId=${c.targetId}`;
+
+          const storyId = c.targetType === 'story' ? c.targetId : chapterStoryMap[c.targetId];
+          const story = storyId ? storyMap[storyId] : null;
+          const coverImage = story ? story.coverImage : '';
+          const storyTitle = story ? story.title : '';
+          const storyUrl = storyId ? `info.html?id=${storyId}` : targetUrl;
 
           let formattedContent = escapeHTML(c.content);
           if (c.replyToName && c.replyToUid) {
@@ -953,8 +1012,21 @@
             }
           }
 
+          const coverHtml = coverImage
+            ? `<a href="${storyUrl}" class="recent-comment-cover-link" title="${escapeHTML(storyTitle)}">
+                 <img src="${coverImage}" alt="${escapeHTML(storyTitle)}" class="recent-comment-cover" loading="lazy">
+               </a>`
+            : '';
+
+          const targetLabel = storyTitle
+            ? `<a href="${storyUrl}">${escapeHTML(storyTitle)}</a>`
+            : c.targetType === 'story'
+              ? `<a href="${targetUrl}">trang thông tin truyện</a>`
+              : `<a href="${targetUrl}">chương truyện</a>`;
+
           html += `
                     <div class="recent-comment-item">
+                        ${coverHtml}
                         <a href="profile.html?uid=${c.userId}">
                             <img src="${avatar}" alt="Avatar" class="recent-comment-avatar" loading="lazy">
                         </a>
@@ -965,7 +1037,7 @@
                             </div>
                             <div class="recent-comment-text">${formattedContent}</div>
                             <div class="recent-comment-target">
-                                Đã bình luận trong <a href="${targetUrl}">${targetLabel}</a>
+                                Đã bình luận trong ${targetLabel}
                             </div>
                         </div>
                     </div>
