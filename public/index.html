@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>tên web - Nền Tảng Đọc Truyện Trực Tuyến</title>
+  <title>Mã Đề 0099 - Nền Tảng Đọc Truyện Trực Tuyến</title>
   <link rel="stylesheet" href="style.css">
   <style>
 
@@ -729,10 +729,16 @@
 <body>
   <header class="site-header">
     <div class="header-container">
-      <a href="index.html" class="logo">tên web</a>
+      <a href="index.html" class="logo">Mã Đề 0099</a>
       <nav class="main-nav" id="top-nav"></nav>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Mở menu">☰</button>
     </div>
   </header>
+
+  <div class="nav-overlay" id="nav-overlay">
+    <span class="close-btn" id="close-nav">&times;</span>
+    <div class="nav-content" id="nav-overlay-content"></div>
+  </div>
 
   <!-- ===== CAROUSEL ===== -->
   <div class="carousel-section">
@@ -794,23 +800,44 @@
     const db = getFirestore(app);
 
     const topNav = document.getElementById('top-nav');
+    const navOverlay = document.getElementById('nav-overlay');
+    const navOverlayContent = document.getElementById('nav-overlay-content');
+
     onAuthStateChanged(auth, (user) => {
+      let linksHTML;
       if (user) {
-        topNav.innerHTML = `
-                    <a href="profile.html?uid=${user.uid}">Hồ Sơ</a>
-                    <a href="add-story.html">Đăng Truyện</a>
-                    <a href="#" id="btnLogout">Đăng Xuất</a>
-                `;
-        document.getElementById('btnLogout').addEventListener('click', (e) => {
+        linksHTML = `
+          <a href="profile.html?uid=${user.uid}">Hồ Sơ</a>
+          <a href="add-story.html">Đăng Truyện</a>
+          <a href="#" class="btn-logout">Đăng Xuất</a>
+        `;
+      } else {
+        linksHTML = `
+          <a href="login.html">Đăng Nhập</a>
+          <a href="register.html">Đăng Ký</a>
+        `;
+      }
+      topNav.innerHTML = linksHTML;
+      navOverlayContent.innerHTML = linksHTML;
+
+      document.querySelectorAll('.btn-logout').forEach(btn => {
+        btn.addEventListener('click', (e) => {
           e.preventDefault();
           signOut(auth).then(() => { window.location.reload(); });
         });
-      } else {
-        topNav.innerHTML = `
-                    <a href="login.html">Đăng Nhập</a>
-                    <a href="register.html">Đăng Ký</a>
-                `;
-      }
+      });
+    });
+
+    const menuToggle = document.getElementById('menu-toggle');
+    const closeNav = document.getElementById('close-nav');
+
+    menuToggle.addEventListener('click', () => navOverlay.classList.add('active'));
+    closeNav.addEventListener('click', () => navOverlay.classList.remove('active'));
+    navOverlay.addEventListener('click', (e) => {
+      if (e.target === navOverlay) navOverlay.classList.remove('active');
+    });
+    navOverlayContent.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A') navOverlay.classList.remove('active');
     });
 
     let allStoriesArray = [];
@@ -1140,12 +1167,17 @@
 
       function resetTimer() {
         clearInterval(autoTimer);
-        autoTimer = setInterval(() => goTo(currentSlide + 1), 4500);
+        autoTimer = setInterval(() => goTo(currentSlide + 1), 3000);
       }
 
+      let touchStartX = 0;
+      wrapper.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+      wrapper.addEventListener('touchend', (e) => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) { diff > 0 ? goTo(currentSlide + 1) : goTo(currentSlide - 1); resetTimer(); }
+      }, { passive: true });
+
       resetTimer();
-      wrapper.addEventListener('mouseenter', () => clearInterval(autoTimer));
-      wrapper.addEventListener('mouseleave', resetTimer);
     }
 
     async function fetchStories() {

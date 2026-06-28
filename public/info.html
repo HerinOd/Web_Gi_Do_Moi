@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thông Tin Truyện - tên web</title>
+    <title>Thông Tin Truyện - Mã Đề 0099</title>
     <link rel="stylesheet" href="style.css">
     <style>
         .info-container {
@@ -72,8 +72,26 @@
         .action-bars {
             margin-top: 24px;
             display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .action-main {
+            display: flex;
             gap: 10px;
             flex-wrap: wrap;
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        @media (max-width: 600px) {
+            .action-icons { margin-left: 0; }
         }
 
         .btn {
@@ -87,19 +105,47 @@
             text-decoration: none;
             display: inline-flex;
             align-items: center;
+            gap: 7px;
             transition: background 0.2s var(--ease), transform 0.15s, box-shadow 0.2s;
         }
 
         .btn:hover { transform: translateY(-1px); }
         .btn:active { transform: translateY(0); }
 
-        .btn-read {
-            background: var(--accent);
-            color: #0e0e16;
-        }
+        .btn-read { background: var(--accent); color: #0e0e16; }
         .btn-read:hover { background: var(--accent-dark); box-shadow: 0 4px 16px var(--accent-glow); }
 
-        .btn-edit { background: var(--blue); color: #0e0e16; display: none; }
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg-hover);
+            color: var(--text-2);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .icon-btn:hover { transform: translateY(-1px); }
+
+        .icon-btn.like-btn {
+            gap: 6px;
+            padding: 0 14px;
+            width: auto;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .icon-btn.like-btn.liked { border-color: var(--red); color: var(--red); background: rgba(255, 77, 109, 0.12); }
+        .icon-btn.like-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255, 77, 109, 0.08); }
+        .icon-btn.edit-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+        .icon-btn.delete-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255, 77, 109, 0.08); }
 
         /* ===== SECTIONS ===== */
         .description-section,
@@ -310,7 +356,7 @@
 <body>
     <header class="site-header">
         <div class="header-container">
-            <a href="index.html" class="logo">tên web</a>
+            <a href="index.html" class="logo">Mã Đề 0099</a>
         </div>
     </header>
 
@@ -382,13 +428,15 @@
             const btnBookmark = document.getElementById('btnBookmark');
             if (btnBookmark && currentUserData) {
                 if (currentUserData.bookmarked && currentUserData.bookmarked.includes(storyId)) {
-                    btnBookmark.textContent = "Bỏ Lưu Truyện";
-                    btnBookmark.style.background = "#ff5555";
-                    btnBookmark.style.color = "#121218";
+                    btnBookmark.innerHTML = '🔖 Bỏ Lưu';
+                    btnBookmark.style.background = 'var(--accent)';
+                    btnBookmark.style.color = '#0e0e16';
+                    btnBookmark.style.borderColor = 'var(--accent)';
                 } else {
-                    btnBookmark.textContent = "Lưu Truyện";
-                    btnBookmark.style.background = "#2a2a35";
-                    btnBookmark.style.color = "#e0e0e0";
+                    btnBookmark.innerHTML = '🔖 Lưu Truyện';
+                    btnBookmark.style.background = 'var(--bg-hover)';
+                    btnBookmark.style.color = 'var(--text-2)';
+                    btnBookmark.style.borderColor = 'var(--border)';
                 }
             }
         }
@@ -399,6 +447,11 @@
                     const btnAddChapter = document.getElementById('btnAddChapter');
                     btnAddChapter.style.display = 'inline-block';
                     btnAddChapter.href = `add-chapter.html?storyId=${storyId}`;
+
+                    const btnEdit = document.getElementById('btnEditStory');
+                    const btnDelete = document.getElementById('btnDeleteStory');
+                    if (btnEdit) btnEdit.style.display = 'inline-flex';
+                    if (btnDelete) btnDelete.style.display = 'inline-flex';
                 }
             }
         }
@@ -415,9 +468,8 @@
 
                     const btnLike = document.getElementById('btnLikeStory');
                     if (btnLike && currentStoryData && currentStoryData.likedBy && currentStoryData.likedBy.includes(user.uid)) {
-                        btnLike.textContent = "Đã Thích";
-                        btnLike.style.background = "#ff5555";
-                        btnLike.style.color = "#121218";
+                        btnLike.classList.add('liked');
+                        btnLike.title = 'Bỏ thích';
                     }
                 }
             } else {
@@ -479,20 +531,21 @@
                         <div class="meta-item">Dịch giả: <a href="profile.html?uid=${currentStoryData.uploaderId}">${translatorName}</a></div>
                         
                         <div class="meta-item" style="margin-top: 15px; color: #ffaa00;">
-                            Lượt xem: <span>${currentStoryData.views}</span> &nbsp;|&nbsp; Lượt thích: <span id="like-count-display">${likeCountDisplay}</span>
+                            Lượt xem: <span>${currentStoryData.views}</span>
                         </div>
 
                         <div class="tag-list">${tagsHTML}</div>
-                        
+
                         <div class="action-bars">
-                            <a href="${firstChapterUrl}" class="btn btn-read" ${chaptersArray.length === 0 ? 'style="opacity: 0.5; pointer-events: none;"' : ''}>Bắt đầu đọc</a>
-                            <button class="btn" id="btnLikeStory" style="background: ${isLiked ? '#ff5555' : '#2a2a35'}; color: ${isLiked ? '#121218' : '#e0e0e0'};">
-                                ${isLiked ? 'Đã Thích' : 'Thích Truyện'}
-                            </button>
-                            <a href="#" class="btn" id="btnBookmark" style="background: #2a2a35; color: #e0e0e0;">Lưu Truyện</a>
-                            
-                            <a href="add-story.html?editId=${storyId}" class="btn" style="background: #4da6ff; color: #121218; display: ${(currentUserData && (currentUserData.role === 'admin' || currentUser.uid === currentStoryData.uploaderId)) ? 'inline-block' : 'none'};">Sửa Thông Tin</a>
-                            <button class="btn" id="btnDeleteStory" data-story-id="${storyId}" style="background: #ff5555; color: #121218; display: ${(currentUserData && (currentUserData.role === 'admin' || currentUser.uid === currentStoryData.uploaderId)) ? 'inline-block' : 'none'};">Xóa Truyện</button>
+                            <div class="action-main">
+                                <a href="${firstChapterUrl}" class="btn btn-read" ${chaptersArray.length === 0 ? 'style="opacity:0.5;pointer-events:none;"' : ''}>▶ Bắt Đầu Đọc</a>
+                                <button class="btn" id="btnBookmark" style="background:var(--bg-hover);color:var(--text-2);border:1px solid var(--border);">🔖 Lưu Truyện</button>
+                            </div>
+                            <div class="action-icons">
+                                <button class="icon-btn like-btn${isLiked ? ' liked' : ''}" id="btnLikeStory" title="${isLiked ? 'Bỏ thích' : 'Thích truyện'}">❤️ <span id="like-count-display">${likeCountDisplay}</span></button>
+                                <a href="add-story.html?editId=${storyId}" class="icon-btn edit-btn" id="btnEditStory" title="Sửa thông tin" style="display:none;">✏️</a>
+                                <button class="icon-btn delete-btn" id="btnDeleteStory" data-story-id="${storyId}" title="Xóa truyện" style="display:none;">🗑️</button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -501,7 +554,7 @@
                 descTextContent.textContent = descText;
                 descBlock.style.display = 'block';
 
-                document.title = currentStoryData.title + " - tên web";
+                document.title = currentStoryData.title + " - Mã Đề 0099";
                 checkPermissions();
                 updateBookmarkUI();
 
@@ -576,9 +629,8 @@
                         });
                         currentStoryData.likedBy = currentStoryData.likedBy.filter(id => id !== currentUser.uid);
                         currentStoryData.likeCount = Math.max(0, (currentStoryData.likeCount || 0) - 1);
-                        btn.textContent = "Thích Truyện";
-                        btn.style.background = "#2a2a35";
-                        btn.style.color = "#e0e0e0";
+                        btn.classList.remove('liked');
+                        btn.title = 'Thích truyện';
                     } else {
                         await updateDoc(storyRef, {
                             likedBy: arrayUnion(currentUser.uid),
@@ -586,9 +638,8 @@
                         });
                         currentStoryData.likedBy.push(currentUser.uid);
                         currentStoryData.likeCount = (currentStoryData.likeCount || 0) + 1;
-                        btn.textContent = "Đã Thích";
-                        btn.style.background = "#ff5555";
-                        btn.style.color = "#121218";
+                        btn.classList.add('liked');
+                        btn.title = 'Bỏ thích';
                     }
                     const likeDisplay = document.getElementById('like-count-display');
                     if (likeDisplay) likeDisplay.textContent = currentStoryData.likeCount;
@@ -607,7 +658,7 @@
                 if (!confirm("CẢNH BÁO ĐỎ: Bạn có chắc chắn muốn xóa TOÀN BỘ bộ truyện này? Tất cả chương và bình luận sẽ bị xóa vĩnh viễn và không thể khôi phục!")) return;
 
                 const targetStoryId = e.target.getAttribute('data-story-id');
-                e.target.textContent = "Đang dọn dẹp dữ liệu...";
+                e.target.style.opacity = '0.4';
                 e.target.disabled = true;
 
                 try {
@@ -639,7 +690,7 @@
                 } catch (error) {
                     console.error("Lỗi xóa truyện:", error);
                     alert("Có lỗi xảy ra khi xóa truyện. Vui lòng kiểm tra Console (F12).");
-                    e.target.textContent = "Xóa Truyện";
+                    e.target.style.opacity = '';
                     e.target.disabled = false;
                 }
             }
