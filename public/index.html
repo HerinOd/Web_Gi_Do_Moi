@@ -7,28 +7,6 @@
   <title>tên web - Nền Tảng Đọc Truyện Trực Tuyến</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* ===== HERO ===== */
-    .hero-section {
-      text-align: center;
-      padding: 60px 20px 50px;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(240, 165, 0, 0.09) 0%, transparent 65%),
-        linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-base) 100%);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .hero-title {
-      font-size: 40px;
-      font-weight: 800;
-      color: var(--accent);
-      margin-bottom: 10px;
-      letter-spacing: -1px;
-    }
-
-    .hero-subtitle {
-      color: var(--text-2);
-      font-size: 17px;
-    }
 
     /* ===== FILTER BAR ===== */
     .filter-bar {
@@ -594,60 +572,87 @@
       padding: 0 20px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .recent-comment-item {
       background: var(--bg-card);
-      padding: 16px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--border);
       display: flex;
-      gap: 14px;
-      transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+      overflow: hidden;
+      transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
     }
 
     .recent-comment-item:hover {
-      border-color: var(--blue);
-      transform: translateX(3px);
+      border-color: var(--accent);
+      box-shadow: 0 2px 14px rgba(0, 0, 0, 0.2);
     }
 
-    .recent-comment-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      object-fit: cover;
+    .recent-comment-cover-link {
       flex-shrink: 0;
+      display: block;
+      width: 68px;
     }
 
-    .recent-comment-content {
+    .recent-comment-cover {
+      width: 68px;
+      height: 100%;
+      min-height: 92px;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.2s var(--ease);
+    }
+
+    .recent-comment-cover:hover {
+      opacity: 0.82;
+    }
+
+    .recent-comment-body {
       flex: 1;
       min-width: 0;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
     }
 
     .recent-comment-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 5px;
+      gap: 8px;
+    }
+
+    .recent-comment-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
     }
 
     .recent-comment-author {
       font-weight: 700;
       color: var(--accent);
       text-decoration: none;
-      font-size: 14px;
+      font-size: 13px;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .recent-comment-time {
       color: var(--text-3);
-      font-size: 12px;
+      font-size: 11px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .recent-comment-text {
-      color: var(--text-1);
-      font-size: 14px;
-      line-height: 1.55;
+      color: var(--text-2);
+      font-size: 13px;
+      line-height: 1.5;
       white-space: pre-wrap;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -656,8 +661,7 @@
     }
 
     .recent-comment-target {
-      margin-top: 7px;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-3);
     }
 
@@ -671,35 +675,13 @@
       text-decoration: underline;
     }
 
-    .recent-comment-cover-link {
-      flex-shrink: 0;
-      align-self: flex-start;
-    }
-
-    .recent-comment-cover {
-      width: 56px;
-      height: 76px;
-      object-fit: cover;
-      border-radius: var(--radius-sm);
-      display: block;
-      border: 1px solid var(--border);
-      transition: opacity 0.2s var(--ease);
-    }
-
-    .recent-comment-cover:hover {
-      opacity: 0.8;
-    }
-
-    @media (max-width: 600px) {
-      .recent-comment-cover {
-        width: 44px;
-        height: 60px;
-      }
-    }
-
-    @media (max-width: 400px) {
+    @media (max-width: 480px) {
       .recent-comment-cover-link {
         display: none;
+      }
+
+      .recent-comment-body {
+        padding: 11px 13px;
       }
     }
   </style>
@@ -712,11 +694,6 @@
       <nav class="main-nav" id="top-nav"></nav>
     </div>
   </header>
-
-  <div class="hero-section">
-    <h1 class="hero-title">Mã Đề 0099</h1>
-    <p class="hero-subtitle">Ba Mia Loai Hai</p>
-  </div>
 
   <!-- ===== CAROUSEL ===== -->
   <div class="carousel-section">
@@ -1026,12 +1003,11 @@
 
           html += `
                     <div class="recent-comment-item">
-                        ${coverHtml}
-                        <a href="profile.html?uid=${c.userId}">
-                            <img src="${avatar}" alt="Avatar" class="recent-comment-avatar" loading="lazy">
-                        </a>
-                        <div class="recent-comment-content">
+                        <div class="recent-comment-body">
                             <div class="recent-comment-header">
+                                <a href="profile.html?uid=${c.userId}">
+                                    <img src="${avatar}" alt="Avatar" class="recent-comment-avatar" loading="lazy">
+                                </a>
                                 <a href="profile.html?uid=${c.userId}" class="recent-comment-author">${escapeHTML(c.displayName)}</a>
                                 <span class="recent-comment-time">${dateStr}</span>
                             </div>
@@ -1040,6 +1016,7 @@
                                 Đã bình luận trong ${targetLabel}
                             </div>
                         </div>
+                        ${coverHtml}
                     </div>
                 `;
         });
