@@ -59,9 +59,7 @@
         }
 
         .form-group label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: block;
             color: var(--text-2);
             font-size: 13px;
             font-weight: 500;
@@ -150,6 +148,9 @@
         .auth-footer a:hover { opacity: 0.8; text-decoration: underline; }
 
         .forgot-link {
+            display: block;
+            text-align: right;
+            margin-top: 7px;
             color: var(--text-3);
             font-size: 12px;
             font-weight: 400;
@@ -184,14 +185,12 @@
             </div>
 
             <div class="form-group">
-                <label>
-                    Mật khẩu
-                    <a href="forgot-password.html" class="forgot-link">Quên mật khẩu?</a>
-                </label>
+                <label>Mật khẩu</label>
                 <div class="input-wrap">
                     <span class="input-icon">🔒</span>
                     <input type="password" id="login-password" placeholder="••••••••" required>
                 </div>
+                <a href="forgot-password.html" class="forgot-link">Quên mật khẩu?</a>
             </div>
 
             <button class="auth-btn" id="btnLogin">Đăng Nhập</button>
