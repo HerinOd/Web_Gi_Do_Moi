@@ -1064,8 +1064,8 @@
         carouselSnap.forEach(doc => carouselStories.push({ id: doc.id, ...doc.data() }));
         buildCarousel(carouselStories);
 
-        // Danh sách truyện: tối đa 100 truyện mới nhất
-        const q = query(storiesRef, orderBy("createdAt", "desc"), limit(100));
+        // Danh sách truyện: tất cả, mới nhất trước
+        const q = query(storiesRef, orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
 
         querySnapshot.forEach((doc) => {

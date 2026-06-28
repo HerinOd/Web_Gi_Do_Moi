@@ -728,39 +728,61 @@
             `;
         }
 
+        let allComments = [];
+        let displayedParentCount = 20;
+
         async function loadComments() {
             if (!storyId) return;
             try {
-                const q = query(collection(db, "comments"), where("targetId", "==", storyId), limit(50));
+                const q = query(collection(db, "comments"), where("targetId", "==", storyId));
                 const snap = await getDocs(q);
-                let commentsArr = [];
-                snap.forEach(doc => commentsArr.push({ id: doc.id, ...doc.data() }));
-
-                commentsArr.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-
-                const parents = commentsArr.filter(c => c.parentId === null);
-                const replies = commentsArr.filter(c => c.parentId !== null);
-
-                if (commentsArr.length === 0) {
-                    commentListBlock.innerHTML = "<p style='color: #aaa; text-align: center;'>Chưa có bình luận nào. Hãy là người đầu tiên!</p>";
-                    return;
-                }
-
-                let html = "";
-                parents.forEach(p => {
-                    html += generateCommentHTML(p, false, null);
-                    const childReplies = replies.filter(r => r.parentId === p.id);
-                    if (childReplies.length > 0) {
-                        html += `<div class="replies-container">`;
-                        childReplies.forEach(r => html += generateCommentHTML(r, true, p));
-                        html += `</div>`;
-                    }
-                });
-                commentListBlock.innerHTML = html;
+                allComments = [];
+                snap.forEach(doc => allComments.push({ id: doc.id, ...doc.data() }));
+                allComments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                renderComments();
             } catch (error) {
                 console.error("Lỗi tải bình luận:", error);
                 commentListBlock.innerHTML = "<p style='color: #ff5555;'>Lỗi tải bình luận.</p>";
             }
+        }
+
+        function renderComments() {
+            const parents = allComments.filter(c => c.parentId === null);
+            const replies = allComments.filter(c => c.parentId !== null);
+
+            if (allComments.length === 0) {
+                commentListBlock.innerHTML = "<p style='color: #aaa; text-align: center;'>Chưa có bình luận nào. Hãy là người đầu tiên!</p>";
+                return;
+            }
+
+            const visibleParents = parents.slice(0, displayedParentCount);
+            const remaining = parents.length - visibleParents.length;
+
+            let html = "";
+            visibleParents.forEach(p => {
+                html += generateCommentHTML(p, false, null);
+                const childReplies = replies.filter(r => r.parentId === p.id);
+                if (childReplies.length > 0) {
+                    html += `<div class="replies-container">`;
+                    childReplies.forEach(r => html += generateCommentHTML(r, true, p));
+                    html += `</div>`;
+                }
+            });
+
+            if (remaining > 0) {
+                html += `<div style="text-align:center;margin-top:20px;">
+                    <button id="btnLoadMoreComments" style="padding:10px 28px;background:var(--bg-card);color:var(--text-2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:background 0.2s,color 0.2s,border-color 0.2s;">
+                        Xem thêm ${remaining} bình luận
+                    </button>
+                </div>`;
+            }
+
+            commentListBlock.innerHTML = html;
+
+            document.getElementById('btnLoadMoreComments')?.addEventListener('click', () => {
+                displayedParentCount += 20;
+                renderComments();
+            });
         }
 
         const mainCommentForm = document.getElementById('main-comment-form');
@@ -790,6 +812,7 @@
             try {
                 await addDoc(collection(db, "comments"), cmtObject);
                 document.getElementById('main-comment-text').value = "";
+                displayedParentCount = 99999;
                 loadComments();
             } catch (error) { console.error(error); alert("Lỗi khi đăng bình luận."); }
             finally { btnSubmitComment.disabled = false; }
