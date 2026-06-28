@@ -147,10 +147,12 @@
 
         .auth-footer a:hover { opacity: 0.8; text-decoration: underline; }
 
-        .forgot-link {
-            display: block;
+        .forgot-wrap {
             text-align: right;
             margin-top: 7px;
+        }
+
+        .forgot-link {
             color: var(--text-3);
             font-size: 12px;
             font-weight: 400;
@@ -190,7 +192,7 @@
                     <span class="input-icon">🔒</span>
                     <input type="password" id="login-password" placeholder="••••••••" required>
                 </div>
-                <a href="forgot-password.html" class="forgot-link">Quên mật khẩu?</a>
+                <div class="forgot-wrap"><a href="forgot-password.html" class="forgot-link">Quên mật khẩu?</a></div>
             </div>
 
             <button class="auth-btn" id="btnLogin">Đăng Nhập</button>
