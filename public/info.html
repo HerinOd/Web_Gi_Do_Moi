@@ -731,10 +731,12 @@
         async function loadComments() {
             if (!storyId) return;
             try {
-                const q = query(collection(db, "comments"), where("targetId", "==", storyId), orderBy("createdAt", "asc"), limit(50));
+                const q = query(collection(db, "comments"), where("targetId", "==", storyId), limit(50));
                 const snap = await getDocs(q);
                 let commentsArr = [];
                 snap.forEach(doc => commentsArr.push({ id: doc.id, ...doc.data() }));
+
+                commentsArr.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
                 const parents = commentsArr.filter(c => c.parentId === null);
                 const replies = commentsArr.filter(c => c.parentId !== null);

@@ -418,18 +418,20 @@
                     `;
                 }
 
-                const currentNum = chapterData.chapterNumber;
                 const chaptersRef = collection(db, "chapters");
-                const [prevSnap, nextSnap] = await Promise.all([
-                    getDocs(query(chaptersRef, where("storyId", "==", chapterData.storyId), where("chapterNumber", "<", currentNum), orderBy("chapterNumber", "desc"), limit(1))),
-                    getDocs(query(chaptersRef, where("storyId", "==", chapterData.storyId), where("chapterNumber", ">", currentNum), orderBy("chapterNumber", "asc"), limit(1)))
-                ]);
+                const chapQ = query(chaptersRef, where("storyId", "==", chapterData.storyId), limit(500));
+                const querySnapshot = await getDocs(chapQ);
+
+                let chaptersArray = [];
+                querySnapshot.forEach((doc) => { chaptersArray.push({ id: doc.id, chapterNumber: doc.data().chapterNumber }); });
+                chaptersArray.sort((a, b) => a.chapterNumber - b.chapterNumber);
+                const currentIndex = chaptersArray.findIndex(c => c.id === chapterId);
 
                 let prevLink = `<a href="#" class="nav-btn disabled">Chương Trước</a>`;
                 let nextLink = `<a href="#" class="nav-btn disabled">Chương Sau</a>`;
 
-                if (!prevSnap.empty) prevLink = `<a href="read.html?chapterId=${prevSnap.docs[0].id}" class="nav-btn">Chương Trước</a>`;
-                if (!nextSnap.empty) nextLink = `<a href="read.html?chapterId=${nextSnap.docs[0].id}" class="nav-btn">Chương Sau</a>`;
+                if (currentIndex > 0) prevLink = `<a href="read.html?chapterId=${chaptersArray[currentIndex - 1].id}" class="nav-btn">Chương Trước</a>`;
+                if (currentIndex < chaptersArray.length - 1) nextLink = `<a href="read.html?chapterId=${chaptersArray[currentIndex + 1].id}" class="nav-btn">Chương Sau</a>`;
 
                 const chapterDisplayTitle = `Chương ${chapterData.chapterNumber}${chapterData.title ? ': ' + chapterData.title : ''}`;
 
@@ -578,10 +580,12 @@
         async function loadComments() {
             if (!chapterId) return;
             try {
-                const q = query(collection(db, "comments"), where("targetId", "==", chapterId), orderBy("createdAt", "asc"), limit(50));
+                const q = query(collection(db, "comments"), where("targetId", "==", chapterId), limit(50));
                 const snap = await getDocs(q);
                 let commentsArr = [];
                 snap.forEach(doc => commentsArr.push({ id: doc.id, ...doc.data() }));
+
+                commentsArr.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
                 const parents = commentsArr.filter(c => c.parentId === null);
                 const replies = commentsArr.filter(c => c.parentId !== null);
