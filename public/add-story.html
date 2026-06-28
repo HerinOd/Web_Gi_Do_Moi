@@ -134,18 +134,23 @@
         }
 
         .tags-dropdown-btn {
-            background: transparent;
-            border: none;
-            color: #888;
+            background: rgba(240, 165, 0, 0.08);
+            border: 1px solid rgba(240, 165, 0, 0.28);
+            color: #ffaa00;
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 4px 12px;
             font-size: 11px;
+            font-weight: 700;
+            border-radius: 20px;
             flex-shrink: 0;
-            transition: color 0.2s;
+            white-space: nowrap;
+            font-family: inherit;
+            transition: background 0.15s, border-color 0.15s;
         }
 
         .tags-dropdown-btn:hover {
-            color: #ffaa00;
+            background: rgba(240, 165, 0, 0.18);
+            border-color: rgba(240, 165, 0, 0.5);
         }
 
         .tags-dropdown-panel {
@@ -223,7 +228,7 @@
                 <div class="tags-wrapper" id="tags-wrapper">
                     <div class="tags-input-container" id="tags-container">
                         <input type="text" id="tag-input" placeholder="Nhập tag rồi ấn Enter hoặc phẩy (,)..." autocomplete="off">
-                        <button type="button" class="tags-dropdown-btn" id="tags-dropdown-btn" title="Xem tags có sẵn">▼</button>
+                        <button type="button" class="tags-dropdown-btn" id="tags-dropdown-btn">Tags có sẵn ▾</button>
                     </div>
                     <div class="tags-dropdown-panel" id="tags-dropdown-panel" style="display:none;"></div>
                 </div>

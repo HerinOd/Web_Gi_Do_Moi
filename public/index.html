@@ -295,7 +295,7 @@
     /* ===== CAROUSEL ===== */
     .carousel-section {
       margin: 0 0 28px;
-      padding: 0;
+      padding-top: 60px;
     }
 
     .carousel-track-area {
@@ -688,24 +688,40 @@
     /* ===== ANNOUNCEMENT BANNER ===== */
     .announcement-banner {
       max-width: 1200px;
-      margin: 0 auto 20px;
+      margin: 0 auto 22px;
       padding: 0 20px;
     }
 
     .announcement-content {
-      background: var(--bg-card);
-      border: 1px solid var(--accent-glow);
-      border-left: 4px solid var(--accent);
+      background: rgba(240, 165, 0, 0.05);
+      border: 1px solid rgba(240, 165, 0, 0.28);
       border-radius: var(--radius-sm);
-      padding: 13px 18px;
+      padding: 12px 18px;
       display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      color: var(--text-1);
+      align-items: center;
+      gap: 14px;
       font-size: 14px;
       line-height: 1.6;
-      white-space: pre-wrap;
       word-break: break-word;
+    }
+
+    .announcement-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      white-space: nowrap;
+      flex-shrink: 0;
+      padding: 4px 10px;
+      background: var(--accent-dim);
+      border-radius: 99px;
+      border: 1px solid var(--accent-glow);
+    }
+
+    #announcement-text {
+      color: var(--text-1);
+      white-space: pre-wrap;
     }
   </style>
 </head>
@@ -734,7 +750,7 @@
 
   <div class="announcement-banner" id="announcement-banner" style="display:none;">
     <div class="announcement-content">
-      <span style="font-size:18px;flex-shrink:0;margin-top:2px;">📢</span>
+      <span class="announcement-label">📢 Thông báo</span>
       <span id="announcement-text"></span>
     </div>
   </div>
