@@ -262,6 +262,7 @@
         </form>
     </div>
 
+    <script src="toast.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -446,8 +447,8 @@
                     originalUploaderId = data.uploaderId;
 
                     if (data.uploaderId !== currentUserId && currentUserData.role !== "admin") {
-                        alert("Lỗi Phân Quyền: Bạn không có quyền sửa bộ truyện này!");
-                        window.location.href = "index.html";
+                        showToast("Lỗi Phân Quyền: Bạn không có quyền sửa bộ truyện này!", "error");
+                        setTimeout(() => { window.location.href = "index.html"; }, 1500);
                         return;
                     }
 
@@ -463,8 +464,8 @@
                     }
 
                 } else {
-                    alert("Bộ truyện không tồn tại!");
-                    window.location.href = "index.html";
+                    showToast("Bộ truyện không tồn tại!", "error");
+                    setTimeout(() => { window.location.href = "index.html"; }, 1500);
                 }
             } catch (error) { console.error("Lỗi khi tải dữ liệu cũ: ", error); }
         }
@@ -477,7 +478,7 @@
             if (!currentUserId || !currentUserData) return;
 
             if (currentTagsArray.length === 0) {
-                alert("Vui lòng thêm ít nhất 1 thể loại (Tag) cho truyện!");
+                showToast("Vui lòng thêm ít nhất 1 thể loại (Tag) cho truyện!", "warning");
                 tagInput.focus();
                 return;
             }
@@ -485,7 +486,7 @@
             const imageFile = document.getElementById('coverImage').files[0];
 
             if (!isEditMode && !imageFile) {
-                alert("Vui lòng chọn ảnh bìa cho truyện mới!");
+                showToast("Vui lòng chọn ảnh bìa cho truyện mới!", "warning");
                 return;
             }
 
@@ -533,7 +534,8 @@
                     const storyRef = doc(db, "stories", editId);
                     await updateDoc(storyRef, storyObject);
                     await updateConfigTags(currentTagsArray);
-                    alert("Cập nhật thông tin truyện thành công!");
+                    showToast("Cập nhật thông tin truyện thành công!", "success");
+                    await new Promise(r => setTimeout(r, 1200));
                     window.location.href = `info.html?id=${editId}`;
                 } else {
                     // Khi Tạo Mới thì mới bơm thêm Khóa ngoại và các Biến đếm (Counters)
@@ -544,13 +546,14 @@
 
                     const docRef = await addDoc(collection(db, "stories"), storyObject);
                     await updateConfigTags(currentTagsArray);
-                    alert("Tạo bộ truyện thành công!");
+                    showToast("Tạo bộ truyện thành công!", "success");
+                    await new Promise(r => setTimeout(r, 1200));
                     window.location.href = `info.html?id=${docRef.id}`;
                 }
 
             } catch (error) {
                 console.error("Lỗi hệ thống: ", error);
-                alert("Đã xảy ra lỗi, vui lòng xem Console (F12) để debug.");
+                showToast("Đã xảy ra lỗi, vui lòng xem Console (F12) để debug.", "error");
                 submitBtn.textContent = isEditMode ? "Lưu Thay Đổi" : "Tạo Bộ Truyện";
                 submitBtn.disabled = false;
             }

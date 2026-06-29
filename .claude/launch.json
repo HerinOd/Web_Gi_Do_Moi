@@ -4,8 +4,9 @@
     {
       "name": "doomixi",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "public", "-p", "5500", "--no-clipboard"],
-      "port": 5500
+      "runtimeArgs": ["serve", "public", "--no-clipboard"],
+      "port": 5500,
+      "autoPort": true
     }
   ]
 }

@@ -202,6 +202,7 @@
         </div>
     </div>
 
+    <script src="toast.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         // Bổ sung import signOut để bẻ gãy Session ngay lập tức
@@ -228,7 +229,7 @@
             const btn = document.getElementById('btnRegister');
 
             if (!name || !email || !pass) {
-                alert("Vui lòng điền đủ thông tin!");
+                showToast("Vui lòng điền đủ thông tin!", "warning");
                 return;
             }
 
@@ -259,13 +260,14 @@
                 // Hủy ngay lập tức phiên đăng nhập tự động của Firebase
                 await signOut(auth);
 
-                alert("Tạo tài khoản thành công! Hệ thống đã gửi một Link Xác Thực tới Email của bạn. Vui lòng kiểm tra (cả hộp thư Spam) để kích hoạt tài khoản trước khi đăng nhập.");
+                showToast("Tạo tài khoản thành công! Hệ thống đã gửi Link Xác Thực tới Email của bạn.", "success");
+                await new Promise(r => setTimeout(r, 2000));
 
                 // Đổi luồng Routing: Bắt về màn hình Login để Gatekeeper làm việc
                 window.location.href = "login.html";
             } catch (error) {
                 console.error(error);
-                alert("Lỗi tạo tài khoản (Có thể Email đã tồn tại hoặc Mật khẩu quá ngắn).");
+                showToast("Lỗi tạo tài khoản (Có thể Email đã tồn tại hoặc Mật khẩu quá ngắn).", "error");
                 btn.textContent = "Tạo Tài Khoản";
                 btn.disabled = false;
             }

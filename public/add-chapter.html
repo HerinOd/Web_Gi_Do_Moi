@@ -116,6 +116,7 @@
         </form>
     </div>
 
+    <script src="toast.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -146,8 +147,8 @@
 
         // Bẫy lỗi URL
         if (!storyId && !editId) {
-            alert("Lỗi truy cập: Không xác định được mã truyện hoặc chương!");
-            window.location.href = "index.html";
+            showToast("Lỗi truy cập: Không xác định được mã truyện hoặc chương!", "error");
+            setTimeout(() => { window.location.href = "index.html"; }, 1500);
         }
 
         onAuthStateChanged(auth, async (user) => {
@@ -173,8 +174,8 @@
             try {
                 const chapterSnap = await getDoc(doc(db, "chapters", editId));
                 if (!chapterSnap.exists()) {
-                    alert("Chương không tồn tại!");
-                    window.location.href = "index.html";
+                    showToast("Chương không tồn tại!", "error");
+                    setTimeout(() => { window.location.href = "index.html"; }, 1500);
                     return;
                 }
 
@@ -186,8 +187,8 @@
                 if (storySnap.exists()) {
                     const storyData = storySnap.data();
                     if (storyData.uploaderId !== currentUserId && currentUserData.role !== "admin") {
-                        alert("Lỗi Phân Quyền: Bạn không có quyền sửa chương này!");
-                        window.location.href = `info.html?id=${parentStoryId}`;
+                        showToast("Lỗi Phân Quyền: Bạn không có quyền sửa chương này!", "error");
+                        setTimeout(() => { window.location.href = `info.html?id=${parentStoryId}`; }, 1500);
                         return;
                     }
                 }
@@ -224,19 +225,21 @@
                 if (isEditMode) {
                     // CẬP NHẬT
                     await updateDoc(doc(db, "chapters", editId), chapObject);
-                    alert("Cập nhật chương thành công!");
+                    showToast("Cập nhật chương thành công!", "success");
+                    await new Promise(r => setTimeout(r, 1200));
                     window.location.href = `read.html?chapterId=${editId}`; // Trả về trang đọc
                 } else {
                     // TẠO MỚI
                     chapObject.storyId = storyId; // Gắn Khóa ngoại (Foreign Key)
                     chapObject.createdAt = new Date().toISOString();
                     const docRef = await addDoc(collection(db, "chapters"), chapObject);
-                    alert("Đăng chương thành công!");
+                    showToast("Đăng chương thành công!", "success");
+                    await new Promise(r => setTimeout(r, 1200));
                     window.location.href = `read.html?chapterId=${docRef.id}`;
                 }
             } catch (error) {
                 console.error("Lỗi: ", error);
-                alert("Đã xảy ra lỗi, vui lòng xem Console.");
+                showToast("Đã xảy ra lỗi, vui lòng xem Console.", "error");
                 submitBtn.textContent = isEditMode ? "Lưu Thay Đổi" : "Đăng Chương";
                 submitBtn.disabled = false;
             }

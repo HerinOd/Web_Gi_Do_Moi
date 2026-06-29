@@ -127,6 +127,7 @@
         </form>
     </div>
 
+    <script src="toast.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -220,14 +221,15 @@
                 const userDocRef = doc(db, "users", currentUser.uid);
                 await updateDoc(userDocRef, updateObject);
 
-                alert("Cập nhật hồ sơ thành công!");
+                showToast("Cập nhật hồ sơ thành công!", "success");
+                await new Promise(r => setTimeout(r, 1200));
 
                 // Định tuyến sang trang profile cá nhân công khai kèm UID
                 window.location.href = `profile.html?uid=${currentUser.uid}`;
 
             } catch (error) {
                 console.error("Lỗi cập nhật hồ sơ:", error);
-                alert("Đã xảy ra lỗi trong quá trình lưu dữ liệu.");
+                showToast("Đã xảy ra lỗi trong quá trình lưu dữ liệu.", "error");
             } finally {
                 btnSave.textContent = "Lưu Thay Đổi";
                 btnSave.disabled = false;

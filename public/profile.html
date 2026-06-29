@@ -496,6 +496,7 @@
         </div>
     </div>
 
+    <script src="toast.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -683,9 +684,9 @@
                     createdBy: currentUser.uid
                 });
                 announceModal.classList.remove('open');
-                alert('Đã đăng thông báo thành công!');
+                showToast('Đã đăng thông báo thành công!', 'success');
             } catch (e) {
-                alert('Lỗi: ' + e.message);
+                showToast('Lỗi: ' + e.message, 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Đăng';

@@ -318,6 +318,7 @@
         </div>
     </div>
 
+    <script src="toast.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, doc, getDoc, collection, query, where, orderBy, limit, getDocs, addDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -656,7 +657,7 @@
             };
 
             try { await addDoc(collection(db, "comments"), cmtObject); document.getElementById('main-comment-text').value = ""; displayedParentCount = 99999; loadComments(); }
-            catch (error) { console.error(error); alert("Lỗi khi đăng bình luận."); }
+            catch (error) { console.error(error); showToast("Lỗi khi đăng bình luận.", "error"); }
             finally { btnSubmitComment.disabled = false; }
         });
 
@@ -666,14 +667,14 @@
             if (!action) return;
 
             if (action === "delete") {
-                if (!confirm("Bạn có chắc chắn muốn xóa bình luận này?")) return;
+                if (!await showConfirm("Bình luận sẽ bị xóa vĩnh viễn.", { title: "Xóa bình luận?", icon: "🗑️", confirmText: "Xóa", cancelText: "Hủy" })) return;
                 const cmtId = target.getAttribute('data-id');
                 try { await deleteDoc(doc(db, "comments", cmtId)); loadComments(); }
-                catch (err) { console.error(err); alert("Lỗi xóa bình luận."); }
+                catch (err) { console.error(err); showToast("Lỗi xóa bình luận.", "error"); }
             }
 
             if (action === "reply") {
-                if (!currentUser) { alert("Vui lòng đăng nhập để phản hồi."); return; }
+                if (!currentUser) { showToast("Vui lòng đăng nhập để phản hồi.", "warning"); return; }
                 const cmtId = target.getAttribute('data-id');
                 const tagName = target.getAttribute('data-tag-name');
                 const tagUid = target.getAttribute('data-tag-uid'); // Lấy UID người bị Tag
@@ -723,7 +724,7 @@
                 };
 
                 try { await addDoc(collection(db, "comments"), replyObject); loadComments(); }
-                catch (err) { console.error(err); alert("Lỗi gửi phản hồi."); target.textContent = "Gửi"; }
+                catch (err) { console.error(err); showToast("Lỗi gửi phản hồi.", "error"); target.textContent = "Gửi"; }
             }
 
             if (action === "edit") {
@@ -741,17 +742,17 @@
             if (action === "save-edit") {
                 const cmtId = target.getAttribute('data-id');
                 const newContent = document.getElementById(`edit-input-${cmtId}`).value.trim();
-                if (newContent === "") { alert("Nội dung không được để trống!"); return; }
+                if (newContent === "") { showToast("Nội dung không được để trống!", "warning"); return; }
 
                 target.textContent = "Đang lưu...";
                 try {
                     await updateDoc(doc(db, "comments", cmtId), { content: newContent, isEdited: true });
                     loadComments();
-                } catch (error) { console.error("Lỗi sửa:", error); alert("Lỗi khi lưu chỉnh sửa."); target.textContent = "Lưu thay đổi"; }
+                } catch (error) { console.error("Lỗi sửa:", error); showToast("Lỗi khi lưu chỉnh sửa.", "error"); target.textContent = "Lưu thay đổi"; }
             }
 
             if (action === "like") {
-                if (!currentUser) { alert("Vui lòng đăng nhập để Thích."); return; }
+                if (!currentUser) { showToast("Vui lòng đăng nhập để Thích.", "warning"); return; }
                 const cmtId = target.getAttribute('data-id');
                 const cmtRef = doc(db, "comments", cmtId);
                 try {
@@ -766,7 +767,7 @@
         document.addEventListener('click', async (e) => {
             if (e.target.id === 'btnDeleteChapter') {
                 e.preventDefault();
-                if (!confirm("CẢNH BÁO: Bạn có chắc chắn muốn xóa chương này? Toàn bộ bình luận của chương sẽ bị xóa vĩnh viễn!")) return;
+                if (!await showConfirm("Toàn bộ bình luận của chương cũng sẽ bị xóa vĩnh viễn!", { title: "Xóa chương này?", icon: "⚠️", confirmText: "Xóa chương", cancelText: "Hủy" })) return;
 
                 const chapId = e.target.getAttribute('data-chap-id');
                 const parentStoryId = e.target.getAttribute('data-story-id');
@@ -785,11 +786,12 @@
                     await Promise.all(deletePromises);
                     await deleteDoc(doc(db, "chapters", chapId));
 
-                    alert("Đã xóa chương và dọn dẹp bình luận thành công!");
+                    showToast("Đã xóa chương và dọn dẹp bình luận thành công!", "success");
+                    await new Promise(r => setTimeout(r, 1200));
                     window.location.href = `info.html?id=${parentStoryId}`;
                 } catch (error) {
                     console.error("Lỗi xóa chương:", error);
-                    alert("Có lỗi xảy ra khi xóa.");
+                    showToast("Có lỗi xảy ra khi xóa.", "error");
                     e.target.textContent = "Xóa Chương";
                     e.target.disabled = false;
                 }

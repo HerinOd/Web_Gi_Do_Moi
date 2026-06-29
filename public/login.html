@@ -203,6 +203,7 @@
         </div>
     </div>
 
+    <script src="toast.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         // Bổ sung import signOut để bẻ Session
@@ -226,7 +227,7 @@
             const btn = document.getElementById('btnLogin');
 
             if (!email || !pass) {
-                alert("Vui lòng điền đủ Email và Mật khẩu!");
+                showToast("Vui lòng điền đủ Email và Mật khẩu!", "warning");
                 return;
             }
 
@@ -240,18 +241,19 @@
 
                 // LỚP GATEKEEPER ĐÁNH GIÁ TOKEN CLAIM
                 if (!user.emailVerified) {
-                    alert("Tài khoản này chưa được kích hoạt! Vui lòng vào Email đã đăng ký và bấm vào Link Xác Thực.");
+                    showToast("Tài khoản này chưa được kích hoạt! Vui lòng vào Email đã đăng ký và bấm vào Link Xác Thực.", "warning");
                     await signOut(auth); // Vô hiệu hóa Session ngay lập tức
                     btn.textContent = "Đăng Nhập";
                     btn.disabled = false;
                     return; // Ngắt luồng thực thi
                 }
 
-                alert("Đăng nhập thành công!");
+                showToast("Đăng nhập thành công!", "success");
+                await new Promise(r => setTimeout(r, 1200));
                 window.location.href = "index.html";
             } catch (error) {
                 console.error(error);
-                alert("Sai Email hoặc Mật khẩu!");
+                showToast("Sai Email hoặc Mật khẩu!", "error");
                 btn.textContent = "Đăng Nhập";
                 btn.disabled = false;
             }

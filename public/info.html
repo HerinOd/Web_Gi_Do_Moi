@@ -480,6 +480,7 @@
         </div>
     </div>
 
+    <script src="toast.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, doc, getDoc, collection, query, where, orderBy, limit, getDocs, addDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -690,7 +691,7 @@
         infoBlock.addEventListener('click', async (e) => {
             if (e.target.id === 'btnBookmark') {
                 e.preventDefault();
-                if (!currentUser || !currentUserData) { alert("Vui lòng đăng nhập để sử dụng tính năng Lưu truyện!"); return; }
+                if (!currentUser || !currentUserData) { showToast("Vui lòng đăng nhập để sử dụng tính năng Lưu truyện!", "warning"); return; }
 
                 const userRef = doc(db, "users", currentUser.uid);
                 const btn = e.target;
@@ -710,14 +711,14 @@
                     updateBookmarkUI();
                 } catch (error) {
                     console.error("Lỗi khi lưu truyện:", error);
-                    alert("Đã xảy ra lỗi hệ thống, vui lòng thử lại sau.");
+                    showToast("Đã xảy ra lỗi hệ thống, vui lòng thử lại sau.", "error");
                     updateBookmarkUI();
                 }
             }
 
             if (e.target.id === 'btnLikeStory') {
                 e.preventDefault();
-                if (!currentUser) { alert("Vui lòng đăng nhập để Thích truyện!"); return; }
+                if (!currentUser) { showToast("Vui lòng đăng nhập để Thích truyện!", "warning"); return; }
 
                 const btn = e.target;
                 btn.disabled = true;
@@ -750,7 +751,7 @@
                     if (likeDisplay) likeDisplay.textContent = currentStoryData.likeCount;
                 } catch (error) {
                     console.error("Lỗi khi like truyện:", error);
-                    alert("Có lỗi xảy ra, vui lòng thử lại.");
+                    showToast("Có lỗi xảy ra, vui lòng thử lại.", "error");
                 } finally {
                     btn.disabled = false;
                 }
@@ -760,7 +761,7 @@
         document.addEventListener('click', async (e) => {
             if (e.target.id === 'btnDeleteStory') {
                 e.preventDefault();
-                if (!confirm("CẢNH BÁO ĐỎ: Bạn có chắc chắn muốn xóa TOÀN BỘ bộ truyện này? Tất cả chương và bình luận sẽ bị xóa vĩnh viễn và không thể khôi phục!")) return;
+                if (!await showConfirm("Tất cả chương và bình luận sẽ bị xóa vĩnh viễn và không thể khôi phục!", { title: "Xóa toàn bộ truyện?", icon: "⛔", confirmText: "Xóa tất cả", cancelText: "Hủy" })) return;
 
                 const targetStoryId = e.target.getAttribute('data-story-id');
                 e.target.style.opacity = '0.4';
@@ -790,11 +791,12 @@
                     await Promise.all(deletePromises);
                     await deleteDoc(doc(db, "stories", targetStoryId));
 
-                    alert("Đã xóa bộ truyện và toàn bộ dữ liệu phân tầng (Chương & Bình luận) thành công!");
+                    showToast("Đã xóa bộ truyện và toàn bộ dữ liệu thành công!", "success");
+                    await new Promise(r => setTimeout(r, 1200));
                     window.location.href = "index.html";
                 } catch (error) {
                     console.error("Lỗi xóa truyện:", error);
-                    alert("Có lỗi xảy ra khi xóa truyện. Vui lòng kiểm tra Console (F12).");
+                    showToast("Có lỗi xảy ra khi xóa truyện. Vui lòng kiểm tra Console (F12).", "error");
                     e.target.style.opacity = '';
                     e.target.disabled = false;
                 }
@@ -970,7 +972,7 @@
                 document.getElementById('main-comment-text').value = "";
                 displayedParentCount = 99999;
                 loadComments();
-            } catch (error) { console.error(error); alert("Lỗi khi đăng bình luận."); }
+            } catch (error) { console.error(error); showToast("Lỗi khi đăng bình luận.", "error"); }
             finally { btnSubmitComment.disabled = false; }
         });
 
@@ -980,16 +982,16 @@
             if (!action) return;
 
             if (action === "delete") {
-                if (!confirm("Bạn có chắc chắn muốn xóa bình luận này?")) return;
+                if (!await showConfirm("Bình luận sẽ bị xóa vĩnh viễn.", { title: "Xóa bình luận?", icon: "🗑️", confirmText: "Xóa", cancelText: "Hủy" })) return;
                 const cmtId = target.getAttribute('data-id');
                 try {
                     await deleteDoc(doc(db, "comments", cmtId));
                     loadComments();
-                } catch (err) { console.error(err); alert("Lỗi xóa bình luận."); }
+                } catch (err) { console.error(err); showToast("Lỗi xóa bình luận.", "error"); }
             }
 
             if (action === "reply") {
-                if (!currentUser) { alert("Vui lòng đăng nhập để phản hồi."); return; }
+                if (!currentUser) { showToast("Vui lòng đăng nhập để phản hồi.", "warning"); return; }
                 const cmtId = target.getAttribute('data-id');
                 const tagName = target.getAttribute('data-tag-name');
                 const tagUid = target.getAttribute('data-tag-uid'); // Lấy UID người bị Tag
@@ -1043,7 +1045,7 @@
                 try {
                     await addDoc(collection(db, "comments"), replyObject);
                     loadComments();
-                } catch (err) { console.error(err); alert("Lỗi gửi phản hồi."); target.textContent = "Gửi"; }
+                } catch (err) { console.error(err); showToast("Lỗi gửi phản hồi.", "error"); target.textContent = "Gửi"; }
             }
 
             if (action === "edit") {
@@ -1062,18 +1064,18 @@
                 const cmtId = target.getAttribute('data-id');
                 const newContent = document.getElementById(`edit-input-${cmtId}`).value.trim();
 
-                if (newContent === "") { alert("Nội dung không được để trống!"); return; }
+                if (newContent === "") { showToast("Nội dung không được để trống!", "warning"); return; }
 
                 target.textContent = "Đang lưu...";
                 try {
                     const cmtRef = doc(db, "comments", cmtId);
                     await updateDoc(cmtRef, { content: newContent, isEdited: true });
                     loadComments();
-                } catch (error) { console.error("Lỗi sửa:", error); alert("Lỗi khi lưu chỉnh sửa."); target.textContent = "Lưu thay đổi"; }
+                } catch (error) { console.error("Lỗi sửa:", error); showToast("Lỗi khi lưu chỉnh sửa.", "error"); target.textContent = "Lưu thay đổi"; }
             }
 
             if (action === "like") {
-                if (!currentUser) { alert("Vui lòng đăng nhập để Thích."); return; }
+                if (!currentUser) { showToast("Vui lòng đăng nhập để Thích.", "warning"); return; }
                 const cmtId = target.getAttribute('data-id');
                 const cmtRef = doc(db, "comments", cmtId);
 
