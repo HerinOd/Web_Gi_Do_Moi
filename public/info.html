@@ -7,6 +7,7 @@
     <title>Thông Tin Truyện - Mã Đề 0099</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* ===== INFO CARD ===== */
         .info-container {
             max-width: 900px;
             margin: 82px auto 24px;
@@ -16,98 +17,126 @@
             border: 1px solid var(--border);
             display: flex;
             gap: 32px;
-            flex-wrap: wrap;
             box-shadow: var(--shadow-md);
         }
 
         .cover-wrapper {
-            flex: 1;
-            min-width: 200px;
-            max-width: 260px;
+            position: relative;
+            flex-shrink: 0;
+            width: 220px;
         }
 
         .cover-wrapper img {
             width: 100%;
-            border-radius: var(--radius-sm);
+            border-radius: 16px;
             box-shadow: var(--shadow-lg);
+            display: block;
         }
 
-        .meta-wrapper { flex: 2; min-width: 280px; }
+        .status-badge {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: #0e0e16;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 5px 14px;
+            border-radius: 99px;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            z-index: 2;
+        }
+
+        .status-badge.ongoing { background: var(--blue); color: #fff; }
+
+        .meta-wrapper {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
 
         .story-title {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 800;
-            color: var(--accent);
-            margin-bottom: 16px;
-            line-height: 1.2;
-            letter-spacing: -0.5px;
+            color: var(--text-1);
+            margin-bottom: 14px;
+            line-height: 1.25;
+            letter-spacing: -0.3px;
+        }
+
+        .meta-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px 20px;
+            margin-bottom: 4px;
         }
 
         .meta-item {
-            margin-bottom: 10px;
-            color: var(--text-2);
-            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            margin-bottom: 6px;
         }
 
-        .meta-item span { color: var(--text-1); font-weight: 600; }
+        .meta-icon { color: var(--text-3); font-size: 13px; flex-shrink: 0; }
 
-        .meta-item a { color: var(--blue); text-decoration: none; }
-        .meta-item a:hover { text-decoration: underline; }
+        .meta-label {
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            color: var(--text-3);
+            text-transform: uppercase;
+        }
 
-        .tag-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+        .meta-value { color: var(--text-1); font-weight: 600; font-size: 13px; }
+
+        .meta-link { color: var(--blue); text-decoration: none; font-weight: 600; font-size: 13px; }
+        .meta-link:hover { text-decoration: underline; }
+
+        .tag-list { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
 
         .tag-bubble {
             background: var(--bg-hover);
-            color: var(--accent);
-            padding: 5px 13px;
+            color: var(--text-2);
+            padding: 4px 12px;
             border-radius: 99px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             border: 1px solid var(--border);
-            transition: background 0.2s;
+            letter-spacing: 0.3px;
+            transition: background 0.2s, color 0.2s;
         }
 
-        .tag-bubble:hover { background: var(--accent-dim); }
+        .tag-bubble:hover { background: var(--accent-dim); color: var(--accent); }
 
+        /* ===== ACTION BUTTONS ===== */
         .action-bars {
-            margin-top: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .action-main {
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .action-icons {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-left: auto;
-        }
-
-        @media (max-width: 600px) {
-            .action-icons { margin-left: 0; }
+            margin-top: 18px;
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 11px 20px;
             border: none;
             border-radius: var(--radius-sm);
-            font-weight: 600;
+            font-weight: 700;
             font-size: 14px;
             font-family: inherit;
             cursor: pointer;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 7px;
             transition: background 0.2s var(--ease), transform 0.15s, box-shadow 0.2s;
         }
+
+        .action-bars .btn { flex: 1; }
 
         .btn:hover { transform: translateY(-1px); }
         .btn:active { transform: translateY(0); }
@@ -115,6 +144,45 @@
         .btn-read { background: var(--accent); color: #0e0e16; }
         .btn-read:hover { background: var(--accent-dark); box-shadow: 0 4px 16px var(--accent-glow); }
 
+        .btn-save {
+            background: var(--bg-hover);
+            color: var(--text-2);
+            border: 1px solid var(--border);
+        }
+
+        /* ===== STATS ROW ===== */
+        .stats-row {
+            display: flex;
+            align-items: center;
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            gap: 16px;
+        }
+
+        .stats-left { display: flex; align-items: flex-start; gap: 24px; flex: 1; }
+
+        .stat-item { display: flex; flex-direction: column; }
+
+        .stat-num {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-1);
+            line-height: 1;
+        }
+
+        .stat-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-3);
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .stats-right { display: flex; gap: 8px; align-items: center; }
+
+        /* ===== ICON BUTTONS ===== */
         .icon-btn {
             width: 40px;
             height: 40px;
@@ -126,26 +194,51 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 17px;
+            font-size: 16px;
             transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
             text-decoration: none;
             flex-shrink: 0;
         }
 
         .icon-btn:hover { transform: translateY(-1px); }
-
-        .icon-btn.like-btn {
-            gap: 6px;
-            padding: 0 14px;
-            width: auto;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
         .icon-btn.like-btn.liked { border-color: var(--red); color: var(--red); background: rgba(255, 77, 109, 0.12); }
         .icon-btn.like-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255, 77, 109, 0.08); }
         .icon-btn.edit-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
         .icon-btn.delete-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255, 77, 109, 0.08); }
+
+        /* ===== MOBILE ===== */
+        @media (max-width: 640px) {
+            .info-container {
+                flex-direction: column;
+                align-items: center;
+                padding: 24px 20px;
+                gap: 20px;
+            }
+
+            .cover-wrapper { width: 60%; max-width: 200px; }
+
+            .meta-wrapper { width: 100%; }
+
+            .story-title { font-size: 20px; text-align: center; }
+
+            .meta-grid { justify-content: center; }
+            .meta-item { justify-content: center; }
+            .tag-list { justify-content: center; }
+
+            .action-bars { flex-direction: column; }
+
+            .stats-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+
+            .stats-left { justify-content: space-around; }
+
+            .stats-right { justify-content: center; gap: 12px; }
+
+            .stats-right .icon-btn { flex: 1; height: 44px; width: auto; }
+        }
 
         /* ===== SECTIONS ===== */
         .description-section,
@@ -522,27 +615,56 @@
                 }
                 const likeCountDisplay = currentStoryData.likeCount || 0;
 
+                const isCompleted = currentStoryData.status === 'Hoàn Thành';
+                const badgeClass = isCompleted ? '' : ' ongoing';
+                const badgeIcon = isCompleted ? '✓' : '◎';
+
                 infoBlock.innerHTML = `
-                    <div class="cover-wrapper"><img src="${currentStoryData.coverImage}" alt="Cover"></div>
+                    <div class="cover-wrapper">
+                        <span class="status-badge${badgeClass}">${badgeIcon} ${(currentStoryData.status || 'Đang cập nhật').toUpperCase()}</span>
+                        <img src="${currentStoryData.coverImage}" alt="Cover">
+                    </div>
                     <div class="meta-wrapper">
                         <h1 class="story-title">${currentStoryData.title}</h1>
-                        <div class="meta-item">Tác giả gốc: <span>${currentStoryData.originalAuthor || 'Đang cập nhật'}</span></div>
-                        <div class="meta-item">Trạng thái: <span>${currentStoryData.status}</span></div>
-                        <div class="meta-item">Dịch giả: <a href="profile.html?uid=${currentStoryData.uploaderId}">${translatorName}</a></div>
-                        
-                        <div class="meta-item" style="margin-top: 15px; color: #ffaa00;">
-                            Lượt xem: <span>${currentStoryData.views}</span>
+
+                        <div class="meta-grid">
+                            <div class="meta-item">
+                                <span class="meta-icon">✍</span>
+                                <span class="meta-label">Tác Giả:</span>
+                                <span class="meta-value">${currentStoryData.originalAuthor || 'Đang cập nhật'}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">⚡</span>
+                                <span class="meta-label">Trạng Thái:</span>
+                                <span class="meta-value">${currentStoryData.status || 'Đang cập nhật'}</span>
+                            </div>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-icon">👤</span>
+                            <span class="meta-label">Dịch Giả:</span>
+                            <a href="profile.html?uid=${currentStoryData.uploaderId}" class="meta-link">${translatorName}</a>
                         </div>
 
                         <div class="tag-list">${tagsHTML}</div>
 
                         <div class="action-bars">
-                            <div class="action-main">
-                                <a href="${firstChapterUrl}" class="btn btn-read" ${chaptersArray.length === 0 ? 'style="opacity:0.5;pointer-events:none;"' : ''}>▶ Bắt Đầu Đọc</a>
-                                <button class="btn" id="btnBookmark" style="background:var(--bg-hover);color:var(--text-2);border:1px solid var(--border);">🔖 Lưu Truyện</button>
+                            <a href="${firstChapterUrl}" class="btn btn-read" ${chaptersArray.length === 0 ? 'style="opacity:0.5;pointer-events:none;"' : ''}>▶ Đọc Ngay</a>
+                            <button class="btn btn-save" id="btnBookmark">🔖 Lưu Truyện</button>
+                        </div>
+
+                        <div class="stats-row">
+                            <div class="stats-left">
+                                <div class="stat-item">
+                                    <span class="stat-num">${(currentStoryData.views || 0).toLocaleString('vi-VN')}</span>
+                                    <span class="stat-lbl">Lượt Xem</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-num" id="like-count-display">${likeCountDisplay}</span>
+                                    <span class="stat-lbl">Yêu Thích</span>
+                                </div>
                             </div>
-                            <div class="action-icons">
-                                <button class="icon-btn like-btn${isLiked ? ' liked' : ''}" id="btnLikeStory" title="${isLiked ? 'Bỏ thích' : 'Thích truyện'}">❤️ <span id="like-count-display">${likeCountDisplay}</span></button>
+                            <div class="stats-right">
+                                <button class="icon-btn like-btn${isLiked ? ' liked' : ''}" id="btnLikeStory" title="${isLiked ? 'Bỏ thích' : 'Thích truyện'}">❤</button>
                                 <a href="add-story.html?editId=${storyId}" class="icon-btn edit-btn" id="btnEditStory" title="Sửa thông tin" style="display:none;">✏️</a>
                                 <button class="icon-btn delete-btn" id="btnDeleteStory" data-story-id="${storyId}" title="Xóa truyện" style="display:none;">🗑️</button>
                             </div>
