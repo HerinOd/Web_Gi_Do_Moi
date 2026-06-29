@@ -415,7 +415,7 @@
                             </div>
                             <div id="lock-error-msg" class="lock-error">Mật mã không chính xác!</div>
                         </div>
-                        <div class="chapter-content" id="hidden-content" style="display: none;">${chapterData.content}</div>
+                        <div id="content-placeholder"></div>
                     `;
                 }
 
@@ -475,7 +475,7 @@
                             sessionStorage.setItem(`unlocked_chap_${chapterId}`, "true");
                             triggerViewIncrement();
                             document.getElementById('lock-block').style.display = 'none';
-                            document.getElementById('hidden-content').style.display = 'block';
+                            document.getElementById('content-placeholder').innerHTML = `<div class="chapter-content">${chapterData.content}</div>`;
                         } else {
                             document.getElementById('lock-error-msg').style.display = 'block';
                         }
