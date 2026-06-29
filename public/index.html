@@ -902,14 +902,6 @@
         htmlParts.push(`
             <div class="grid-item">
                 <a href="info.html?id=${story.id}" class="post-link">
-                    <div class="card-header">
-                        <div class="card-uploader">
-                            <img src="${uploaderAvatar}" alt="Avatar" loading="lazy">
-                            <span class="card-uploader-name">${uploaderName}</span>
-                        </div>
-                        <div class="card-date">${dateStr}</div>
-                    </div>
-
                     <div class="post-thumbnail">
                         <img src="${story.coverImage}" alt="Cover" loading="lazy">
                         <div class="thumbnail-gradient"></div>
@@ -920,8 +912,8 @@
                     <h3 class="post-title">${escapeHTML(story.title)}</h3>
 
                     <div class="card-footer">
-                        <div class="stat-item"><span style="font-size: 16px;">👁️</span> ${viewCount}</div>
-                        <div class="stat-item"><span style="font-size: 14px;">❤️</span> ${likeCount}</div>
+                        <div class="stat-item" title="Lượt xem"><span>👁️</span> ${viewCount}</div>
+                        <div class="stat-item" title="Lượt thích"><span>❤️</span> ${likeCount}</div>
                     </div>
                 </a>
             </div>
