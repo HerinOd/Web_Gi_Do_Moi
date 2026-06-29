@@ -663,6 +663,9 @@
     .recent-comment-target {
       font-size: 11px;
       color: var(--text-3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .recent-comment-target a {
@@ -698,11 +701,16 @@
       border-radius: var(--radius-sm);
       padding: 12px 18px;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 14px;
       font-size: 14px;
       line-height: 1.6;
       word-break: break-word;
+    }
+
+    #announcement-text {
+      flex: 1;
+      min-width: 0;
     }
 
     .announcement-label {
@@ -1069,7 +1077,7 @@
             : '';
 
           const targetLabel = storyTitle
-            ? `<a href="${storyUrl}">${escapeHTML(storyTitle)}</a>`
+            ? `<a href="${targetUrl}">${escapeHTML(storyTitle)}</a>`
             : c.targetType === 'story'
               ? `<a href="${targetUrl}">trang thông tin truyện</a>`
               : `<a href="${targetUrl}">chương truyện</a>`;
