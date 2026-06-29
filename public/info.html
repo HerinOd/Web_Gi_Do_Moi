@@ -129,7 +129,7 @@
         .btn:hover { transform: translateY(-1px); }
         .btn:active { transform: translateY(0); }
 
-        .btn-read { background: var(--accent); color: #0e0e16; }
+        .btn-read { background: var(--accent); color: #121a28; }
         .btn-read:hover { background: var(--accent-dark); box-shadow: 0 4px 16px var(--accent-glow); }
 
         .btn-save {
@@ -189,10 +189,10 @@
         }
 
         .icon-btn:hover { transform: translateY(-1px); }
-        .icon-btn.like-btn.liked { border-color: var(--red); color: var(--red); background: rgba(255, 77, 109, 0.12); }
-        .icon-btn.like-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255, 77, 109, 0.08); }
+        .icon-btn.like-btn.liked { border-color: var(--red); color: var(--red); background: rgba(255, 94, 108, 0.12); }
+        .icon-btn.like-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255, 94, 108, 0.08); }
         .icon-btn.edit-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
-        .icon-btn.delete-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255, 77, 109, 0.08); }
+        .icon-btn.delete-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255, 94, 108, 0.08); }
 
         /* ===== MOBILE ===== */
         @media (max-width: 640px) {
@@ -316,7 +316,7 @@
             align-self: flex-end;
             padding: 9px 22px;
             background: var(--blue);
-            color: #0e0e16;
+            color: #121a28;
             border: none;
             font-weight: 700;
             font-size: 14px;
@@ -326,7 +326,7 @@
             transition: background 0.2s, transform 0.15s;
         }
 
-        .comment-form button:hover { background: var(--blue-hover, #3388dd); transform: translateY(-1px); }
+        .comment-form button:hover { background: var(--blue-hover, #4a87c0); transform: translateY(-1px); }
 
         /* ===== COMMENTS ===== */
         .comment-item { display: flex; gap: 14px; margin-bottom: 20px; }
@@ -382,7 +382,7 @@
         .reply-input-box button {
             padding: 8px 16px;
             background: var(--accent);
-            color: #0e0e16;
+            color: #121a28;
             border: none;
             font-weight: 700;
             border-radius: var(--radius-sm);
@@ -421,7 +421,7 @@
             transition: background 0.2s;
         }
 
-        .btn-save-edit { background: var(--accent); color: #0e0e16; }
+        .btn-save-edit { background: var(--accent); color: #121a28; }
         .btn-save-edit:hover { background: var(--accent-dark); }
 
         .btn-cancel-edit {
@@ -442,33 +442,33 @@
     </header>
 
     <div class="info-container" id="story-info-block">
-        <h2 style="color: #aaa; width: 100%; text-align: center;">Đang trích xuất dữ liệu...</h2>
+        <h2 style="color: #9aa7bc; width: 100%; text-align: center;">Đang trích xuất dữ liệu...</h2>
     </div>
 
     <div class="description-section" id="story-desc-block" style="display: none;">
         <div class="section-header">
-            <h3 style="color: #ffaa00; margin: 0;">TÓM TẮT NỘI DUNG</h3>
+            <h3 style="color: #f0a500; margin: 0;">TÓM TẮT NỘI DUNG</h3>
         </div>
         <div class="description-content" id="desc-text-content"></div>
     </div>
 
     <div class="chapter-section">
         <div class="section-header">
-            <h3 style="color: #ffaa00; margin: 0;">DANH SÁCH CHƯƠNG</h3>
+            <h3 style="color: #f0a500; margin: 0;">DANH SÁCH CHƯƠNG</h3>
             <a href="#" class="btn btn-edit" id="btnAddChapter">Thêm Chương Mới</a>
         </div>
         <ul class="chapter-list" id="chapter-list-block">
-            <li style="color: #aaa; text-align: center;">Hệ thống đang tải danh sách chương...</li>
+            <li style="color: #9aa7bc; text-align: center;">Hệ thống đang tải danh sách chương...</li>
         </ul>
     </div>
 
     <div class="comment-section">
         <div class="section-header">
-            <h3 style="color: #ffaa00; margin: 0;">BÌNH LUẬN</h3>
+            <h3 style="color: #f0a500; margin: 0;">BÌNH LUẬN</h3>
         </div>
 
-        <div id="comment-auth-warning" style="text-align: center; color: #ff5555; padding: 20px 0;">
-            Vui lòng <a href="login.html" style="color: #ffaa00;">đăng nhập</a> để bình luận.
+        <div id="comment-auth-warning" style="text-align: center; color: #ff5e6c; padding: 20px 0;">
+            Vui lòng <a href="login.html" style="color: #f0a500;">đăng nhập</a> để bình luận.
         </div>
         <form class="comment-form" id="main-comment-form" style="display: none;">
             <textarea id="main-comment-text" placeholder="Bạn nghĩ gì về bộ truyện này?" required></textarea>
@@ -476,7 +476,7 @@
         </form>
 
         <div id="comment-list-block">
-            <p style="color: #aaa; text-align: center;">Đang tải bình luận...</p>
+            <p style="color: #9aa7bc; text-align: center;">Đang tải bình luận...</p>
         </div>
     </div>
 
@@ -512,7 +512,7 @@
                 if (currentUserData.bookmarked && currentUserData.bookmarked.includes(storyId)) {
                     btnBookmark.innerHTML = '🔖 Bỏ Lưu';
                     btnBookmark.style.background = 'var(--accent)';
-                    btnBookmark.style.color = '#0e0e16';
+                    btnBookmark.style.color = '#121a28';
                     btnBookmark.style.borderColor = 'var(--accent)';
                 } else {
                     btnBookmark.innerHTML = '🔖 Lưu Truyện';
@@ -567,12 +567,12 @@
             const descBlock = document.getElementById('story-desc-block');
             const descTextContent = document.getElementById('desc-text-content');
 
-            if (!storyId) { infoBlock.innerHTML = "<h2 style='color:#ff5555; width:100%; text-align:center;'>Không tìm thấy mã truyện!</h2>"; return; }
+            if (!storyId) { infoBlock.innerHTML = "<h2 style='color:#ff5e6c; width:100%; text-align:center;'>Không tìm thấy mã truyện!</h2>"; return; }
 
             try {
                 const storyRef = doc(db, "stories", storyId);
                 const storySnap = await getDoc(storyRef);
-                if (!storySnap.exists()) { infoBlock.innerHTML = "<h2 style='color:#ff5555; width:100%; text-align:center;'>Truyện đã bị xóa!</h2>"; return; }
+                if (!storySnap.exists()) { infoBlock.innerHTML = "<h2 style='color:#ff5e6c; width:100%; text-align:center;'>Truyện đã bị xóa!</h2>"; return; }
                 currentStoryData = storySnap.data();
 
                 let firstChapterUrl = "#";
@@ -666,7 +666,7 @@
 
                 const chapterListBlock = document.getElementById('chapter-list-block');
                 if (chaptersArray.length === 0) {
-                    chapterListBlock.innerHTML = `<li style="color: #aaa; text-align: center;">Chưa có chương nào được đăng tải.</li>`;
+                    chapterListBlock.innerHTML = `<li style="color: #9aa7bc; text-align: center;">Chưa có chương nào được đăng tải.</li>`;
                 } else {
                     chapterListBlock.innerHTML = "";
                     chaptersArray.forEach(chap => {
@@ -683,7 +683,7 @@
                 loadComments();
             } catch (error) {
                 console.error(error);
-                infoBlock.innerHTML = "<h2 style='color:#ff5555; width:100%; text-align:center;'>Lỗi kết nối CSDL!</h2>";
+                infoBlock.innerHTML = "<h2 style='color:#ff5e6c; width:100%; text-align:center;'>Lỗi kết nối CSDL!</h2>";
             }
         }
 
@@ -823,7 +823,7 @@
             let likeCount = c.likedBy ? c.likedBy.length : 0;
             if (currentUser && c.likedBy && c.likedBy.includes(currentUser.uid)) isLiked = true;
 
-            const editedTag = c.isEdited ? `<span style="font-size: 11px; font-style: italic; color: #888; margin-left: 5px;">(đã chỉnh sửa)</span>` : "";
+            const editedTag = c.isEdited ? `<span style="font-size: 11px; font-style: italic; color: #5e6e86; margin-left: 5px;">(đã chỉnh sửa)</span>` : "";
             const replyParentId = isReply ? c.parentId : c.id;
 
             // XÁC ĐỊNH MỤC TIÊU BỊ TAG
@@ -835,13 +835,13 @@
             if (c.replyToName && c.replyToUid) {
                 const tagString = `@${escapeHTML(c.replyToName)}`;
                 if (formattedContent.startsWith(tagString)) {
-                    const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+                    const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #5b9bd5; text-decoration: none; font-weight: bold;">${tagString}</a>`;
                     formattedContent = formattedContent.replace(tagString, hyperlinkTag);
                 }
             } else if (isReply && parentComment) {
                 const tagString = `@${escapeHTML(parentComment.displayName)}`;
                 if (formattedContent.startsWith(tagString)) {
-                    const hyperlinkTag = `<a href="profile.html?uid=${parentComment.userId}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+                    const hyperlinkTag = `<a href="profile.html?uid=${parentComment.userId}" style="color: #5b9bd5; text-decoration: none; font-weight: bold;">${tagString}</a>`;
                     formattedContent = formattedContent.replace(tagString, hyperlinkTag);
                 }
             }
@@ -854,7 +854,7 @@
                     <div class="comment-body" style="width: 100%;">
                         <div class="comment-header">
                             <div class="comment-author">
-                                <a href="profile.html?uid=${c.userId}" style="color: #ffaa00; text-decoration: none;">${escapeHTML(c.displayName)}</a> ${editedTag}
+                                <a href="profile.html?uid=${c.userId}" style="color: #f0a500; text-decoration: none;">${escapeHTML(c.displayName)}</a> ${editedTag}
                             </div>
                             <div class="comment-time">${dateStr}</div>
                         </div>
@@ -900,7 +900,7 @@
                 renderComments();
             } catch (error) {
                 console.error("Lỗi tải bình luận:", error);
-                commentListBlock.innerHTML = "<p style='color: #ff5555;'>Lỗi tải bình luận.</p>";
+                commentListBlock.innerHTML = "<p style='color: #ff5e6c;'>Lỗi tải bình luận.</p>";
             }
         }
 
@@ -909,7 +909,7 @@
             const replies = allComments.filter(c => c.parentId !== null);
 
             if (allComments.length === 0) {
-                commentListBlock.innerHTML = "<p style='color: #aaa; text-align: center;'>Chưa có bình luận nào. Hãy là người đầu tiên!</p>";
+                commentListBlock.innerHTML = "<p style='color: #9aa7bc; text-align: center;'>Chưa có bình luận nào. Hãy là người đầu tiên!</p>";
                 return;
             }
 

@@ -11,33 +11,33 @@
             max-width: 800px;
             margin: 100px auto 40px;
             padding: 30px;
-            background: #1f1f2e;
+            background: #222d3e;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
 
         .story-header {
             text-align: center;
-            border-bottom: 1px solid #2a2a35;
+            border-bottom: 1px solid #324056;
             padding-bottom: 20px;
             margin-bottom: 20px;
         }
 
         .story-title {
             font-size: 28px;
-            color: #ffaa00;
+            color: #f0a500;
             margin-bottom: 10px;
         }
 
         .story-author {
             font-style: italic;
-            color: #aaa;
+            color: #9aa7bc;
         }
 
         .story-content {
             font-size: 18px;
             line-height: 1.8;
-            color: #e0e0e0;
+            color: #eceff3;
             white-space: pre-wrap;
             /* Giữ nguyên định dạng xuống dòng của văn bản */
         }
@@ -45,7 +45,7 @@
         .back-btn {
             display: inline-block;
             margin-bottom: 20px;
-            color: #ffaa00;
+            color: #f0a500;
             text-decoration: none;
             font-weight: bold;
         }
@@ -67,7 +67,7 @@
         <a href="index.html" class="back-btn">← Quay lại Trang Chủ</a>
 
         <div id="story-display">
-            <h2 style="text-align: center; color: #aaa;">Đang tải nội dung...</h2>
+            <h2 style="text-align: center; color: #9aa7bc;">Đang tải nội dung...</h2>
         </div>
     </div>
 
@@ -97,7 +97,7 @@
 
             // Bẫy lỗi: Nếu truy cập file mà không có ID
             if (!documentId) {
-                displayArea.innerHTML = "<h2 style='text-align:center; color:#ff5555;'>Không tìm thấy mã truyện!</h2>";
+                displayArea.innerHTML = "<h2 style='text-align:center; color:#ff5e6c;'>Không tìm thấy mã truyện!</h2>";
                 return;
             }
 
@@ -120,11 +120,11 @@
                     // Cập nhật lại tiêu đề Tab trình duyệt
                     document.title = storyData.title + " - Mã Đề 0099";
                 } else {
-                    displayArea.innerHTML = "<h2 style='text-align:center; color:#ff5555;'>Truyện đã bị xóa hoặc không tồn tại!</h2>";
+                    displayArea.innerHTML = "<h2 style='text-align:center; color:#ff5e6c;'>Truyện đã bị xóa hoặc không tồn tại!</h2>";
                 }
             } catch (error) {
                 console.error("Lỗi trích xuất dữ liệu:", error);
-                displayArea.innerHTML = "<h2 style='text-align:center; color:#ff5555;'>Lỗi kết nối máy chủ.</h2>";
+                displayArea.innerHTML = "<h2 style='text-align:center; color:#ff5e6c;'>Lỗi kết nối máy chủ.</h2>";
             }
         }
 

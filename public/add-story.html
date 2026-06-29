@@ -11,9 +11,9 @@
             max-width: 600px;
             margin: 100px auto;
             padding: 20px;
-            background: #1f1f2e;
+            background: #222d3e;
             border-radius: 8px;
-            border: 1px solid #2a2a35;
+            border: 1px solid #324056;
         }
 
         .form-group {
@@ -23,7 +23,7 @@
         .form-group label {
             display: block;
             margin-bottom: 5px;
-            color: #ffaa00;
+            color: #f0a500;
             font-weight: bold;
         }
 
@@ -32,9 +32,9 @@
         .form-group textarea {
             width: 100%;
             padding: 10px;
-            background: #121218;
-            border: 1px solid #2a2a35;
-            color: #e0e0e0;
+            background: #121a28;
+            border: 1px solid #324056;
+            color: #eceff3;
             border-radius: 4px;
             font-family: inherit;
         }
@@ -47,8 +47,8 @@
         .submit-btn {
             width: 100%;
             padding: 12px;
-            background: #ffaa00;
-            color: #121218;
+            background: #f0a500;
+            color: #121a28;
             border: none;
             font-weight: bold;
             font-size: 16px;
@@ -58,13 +58,13 @@
         }
 
         .submit-btn:hover {
-            background: #e69900;
+            background: #d99200;
         }
 
         #auth-warning {
             display: none;
             text-align: center;
-            color: #ff5555;
+            color: #ff5e6c;
             padding: 50px 0;
         }
 
@@ -74,7 +74,7 @@
 
         .help-text {
             font-size: 12px;
-            color: #aaa;
+            color: #9aa7bc;
             margin-top: 5px;
             font-style: italic;
         }
@@ -85,20 +85,20 @@
             flex-wrap: wrap;
             gap: 8px;
             padding: 8px;
-            background: #121218;
-            border: 1px solid #2a2a35;
+            background: #121a28;
+            border: 1px solid #324056;
             border-radius: 4px;
         }
 
         .tags-input-container:focus-within {
-            border-color: #ffaa00;
+            border-color: #f0a500;
         }
 
         /* Đổi màu viền khi đang gõ */
 
         .tag-bubble-edit {
-            background: #4da6ff;
-            color: #121218;
+            background: #5b9bd5;
+            color: #121a28;
             padding: 5px 12px;
             border-radius: 20px;
             font-size: 13px;
@@ -110,20 +110,20 @@
 
         .tag-bubble-edit span {
             cursor: pointer;
-            color: #121218;
+            color: #121a28;
             font-weight: bold;
             font-size: 14px;
         }
 
         .tag-bubble-edit span:hover {
-            color: #ff5555;
+            color: #ff5e6c;
         }
 
         .tags-input-container input {
             flex: 1;
             border: none !important;
             background: transparent !important;
-            color: #e0e0e0;
+            color: #eceff3;
             outline: none;
             min-width: 150px;
             padding: 4px 0 !important;
@@ -136,7 +136,7 @@
         .tags-dropdown-btn {
             background: rgba(240, 165, 0, 0.08);
             border: 1px solid rgba(240, 165, 0, 0.28);
-            color: #ffaa00;
+            color: #f0a500;
             cursor: pointer;
             padding: 4px 12px;
             font-size: 11px;
@@ -159,8 +159,8 @@
             left: 0;
             right: 0;
             z-index: 100;
-            background: #1a1a28;
-            border: 1px solid #3a3a55;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 4px;
             max-height: 180px;
             overflow-y: auto;
@@ -170,27 +170,27 @@
         }
 
         .tags-dropdown-chip {
-            background: #2a2a40;
-            color: #e0e0e0;
+            background: var(--bg-hover);
+            color: var(--text-1);
             padding: 4px 10px;
             border-radius: 20px;
             font-size: 12px;
             cursor: pointer;
-            border: 1px solid #3a3a55;
+            border: 1px solid #324056;
             transition: background 0.15s, color 0.15s, border-color 0.15s;
             user-select: none;
         }
 
         .tags-dropdown-chip:hover:not(.selected) {
-            background: #ffaa00;
-            color: #121218;
-            border-color: #ffaa00;
+            background: #f0a500;
+            color: #121a28;
+            border-color: #f0a500;
         }
 
         .tags-dropdown-chip.selected {
             background: rgba(77, 166, 255, 0.15);
-            color: #4da6ff;
-            border-color: #4da6ff;
+            color: #5b9bd5;
+            border-color: #5b9bd5;
             cursor: default;
         }
     </style>
@@ -206,11 +206,11 @@
     <div class="admin-container">
         <div id="auth-warning">
             <h2>Vui lòng đăng nhập để sử dụng tính năng này!</h2><br>
-            <a href="login.html" style="color: #ffaa00; text-decoration: underline;">Đi tới trang Đăng nhập</a>
+            <a href="login.html" style="color: #f0a500; text-decoration: underline;">Đi tới trang Đăng nhập</a>
         </div>
 
         <form id="add-story-form">
-            <h2 id="form-title" style="text-align: center; margin-bottom: 20px; color: #e0e0e0;">Khởi tạo Truyện Mới
+            <h2 id="form-title" style="text-align: center; margin-bottom: 20px; color: #eceff3;">Khởi tạo Truyện Mới
             </h2>
 
             <div class="form-group">
@@ -342,7 +342,7 @@
             const panel = document.getElementById('tags-dropdown-panel');
             panel.innerHTML = '';
             if (existingTagsList.length === 0) {
-                panel.innerHTML = '<span style="color:#666;font-size:12px;">Chưa có tags nào có sẵn.</span>';
+                panel.innerHTML = '<span style="color:#5e6e86;font-size:12px;">Chưa có tags nào có sẵn.</span>';
                 return;
             }
             existingTagsList.forEach(tag => {

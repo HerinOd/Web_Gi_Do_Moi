@@ -89,7 +89,7 @@
 
         .nav-btn:hover {
             background: var(--accent);
-            color: #0e0e16;
+            color: #121a28;
             border-color: var(--accent);
             transform: translateY(-1px);
         }
@@ -135,7 +135,7 @@
         .lock-btn {
             padding: 11px 22px;
             background: var(--accent);
-            color: #0e0e16;
+            color: #121a28;
             border: none;
             font-weight: 700;
             font-family: inherit;
@@ -184,7 +184,7 @@
             align-self: flex-end;
             padding: 9px 22px;
             background: var(--blue);
-            color: #0e0e16;
+            color: #121a28;
             border: none;
             font-weight: 700;
             font-size: 14px;
@@ -194,7 +194,7 @@
             transition: background 0.2s, transform 0.15s;
         }
 
-        .comment-form button:hover { background: #3388dd; transform: translateY(-1px); }
+        .comment-form button:hover { background: #4a87c0; transform: translateY(-1px); }
 
         .comment-item { display: flex; gap: 14px; margin-bottom: 20px; }
         .comment-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
@@ -239,7 +239,7 @@
         .reply-input-box button {
             padding: 8px 16px;
             background: var(--accent);
-            color: #0e0e16;
+            color: #121a28;
             border: none;
             font-weight: 700;
             border-radius: var(--radius-sm);
@@ -278,7 +278,7 @@
             transition: background 0.2s;
         }
 
-        .btn-save-edit { background: var(--accent); color: #0e0e16; }
+        .btn-save-edit { background: var(--accent); color: #121a28; }
         .btn-save-edit:hover { background: var(--accent-dark); }
 
         .btn-cancel-edit {
@@ -297,16 +297,16 @@
     </header>
 
     <div class="reader-container" id="reader-block">
-        <h2 style="color: #aaa; text-align: center;">Đang tải nội dung chương...</h2>
+        <h2 style="color: #9aa7bc; text-align: center;">Đang tải nội dung chương...</h2>
     </div>
 
     <div class="comment-section" id="comment-section-block" style="display: none;">
-        <div style="border-bottom: 1px solid #2a2a35; padding-bottom: 10px; margin-bottom: 20px;">
-            <h3 style="color: #ffaa00; margin: 0;">THẢO LUẬN CHƯƠNG NÀY</h3>
+        <div style="border-bottom: 1px solid #324056; padding-bottom: 10px; margin-bottom: 20px;">
+            <h3 style="color: #f0a500; margin: 0;">THẢO LUẬN CHƯƠNG NÀY</h3>
         </div>
 
-        <div id="comment-auth-warning" style="text-align: center; color: #ff5555; padding: 20px 0;">
-            Vui lòng <a href="login.html" style="color: #ffaa00;">đăng nhập</a> để bình luận.
+        <div id="comment-auth-warning" style="text-align: center; color: #ff5e6c; padding: 20px 0;">
+            Vui lòng <a href="login.html" style="color: #f0a500;">đăng nhập</a> để bình luận.
         </div>
         <form class="comment-form" id="main-comment-form" style="display: none;">
             <textarea id="main-comment-text" placeholder="Bạn nghĩ gì về chương truyện này?" required></textarea>
@@ -314,7 +314,7 @@
         </form>
 
         <div id="comment-list-block">
-            <p style="color: #aaa; text-align: center;">Đang tải bình luận...</p>
+            <p style="color: #9aa7bc; text-align: center;">Đang tải bình luận...</p>
         </div>
     </div>
 
@@ -361,13 +361,13 @@
 
         async function renderChapter() {
             const readerBlock = document.getElementById('reader-block');
-            if (!chapterId) { readerBlock.innerHTML = "<h2 style='text-align:center; color:#ff5555;'>Không tìm thấy mã chương!</h2>"; return; }
+            if (!chapterId) { readerBlock.innerHTML = "<h2 style='text-align:center; color:#ff5e6c;'>Không tìm thấy mã chương!</h2>"; return; }
 
             try {
                 const chapterRef = doc(db, "chapters", chapterId);
                 const chapterSnap = await getDoc(chapterRef);
 
-                if (!chapterSnap.exists()) { readerBlock.innerHTML = "<h2 style='text-align:center; color:#ff5555;'>Chương này không tồn tại hoặc đã bị xóa.</h2>"; return; }
+                if (!chapterSnap.exists()) { readerBlock.innerHTML = "<h2 style='text-align:center; color:#ff5e6c;'>Chương này không tồn tại hoặc đã bị xóa.</h2>"; return; }
 
                 const chapterData = chapterSnap.data();
                 let storyTitle = "Tên truyện...";
@@ -440,9 +440,9 @@
                 if (currentUser && currentUserData) {
                     if (currentUserData.role === "admin" || currentUser.uid === storyUploaderId) {
                         adminControlsHTML = `
-                            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px; padding-top: 20px; border-top: 1px dashed #2a2a35;">
-                                <a href="add-chapter.html?editId=${chapterId}" class="btn" style="background: #4da6ff; color: #121218; padding: 10px 20px; font-weight: bold; border-radius: 4px; text-decoration: none;">Sửa Nội Dung</a>
-                                <button class="btn" id="btnDeleteChapter" data-chap-id="${chapterId}" data-story-id="${chapterData.storyId}" style="background: #ff5555; color: #121218; padding: 10px 20px; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">Xóa Chương</button>
+                            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px; padding-top: 20px; border-top: 1px dashed #324056;">
+                                <a href="add-chapter.html?editId=${chapterId}" class="btn" style="background: #5b9bd5; color: #121a28; padding: 10px 20px; font-weight: bold; border-radius: 4px; text-decoration: none;">Sửa Nội Dung</a>
+                                <button class="btn" id="btnDeleteChapter" data-chap-id="${chapterId}" data-story-id="${chapterData.storyId}" style="background: #ff5e6c; color: #121a28; padding: 10px 20px; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">Xóa Chương</button>
                             </div>
                         `;
                     }
@@ -452,7 +452,7 @@
                     <div class="breadcrumb">
                         <a href="index.html">Trang Chủ</a> <span>/</span> 
                         <a href="info.html?id=${chapterData.storyId}">${storyTitle}</a> <span>/</span> 
-                        <span style="color: #e0e0e0;">${chapterDisplayTitle}</span>
+                        <span style="color: #eceff3;">${chapterDisplayTitle}</span>
                     </div>
                     <div class="chapter-header">
                         <h1 class="chapter-title">${chapterDisplayTitle}</h1>
@@ -462,7 +462,7 @@
                     ${contentHTML}
                     <div class="navigation-bars">
                         ${prevLink}
-                        <a href="info.html?id=${chapterData.storyId}" class="nav-btn" style="background: #4da6ff; color:#121218;">Mục Lục</a>
+                        <a href="info.html?id=${chapterData.storyId}" class="nav-btn" style="background: #5b9bd5; color:#121a28;">Mục Lục</a>
                         ${nextLink}
                     </div>
                 `;
@@ -492,7 +492,7 @@
                 document.getElementById('comment-section-block').style.display = 'block';
                 loadComments();
 
-            } catch (error) { console.error(error); readerBlock.innerHTML = "<h2 style='text-align:center; color:#ff5555;'>Lỗi tải dữ liệu.</h2>"; }
+            } catch (error) { console.error(error); readerBlock.innerHTML = "<h2 style='text-align:center; color:#ff5e6c;'>Lỗi tải dữ liệu.</h2>"; }
         }
 
         const commentListBlock = document.getElementById('comment-list-block');
@@ -515,7 +515,7 @@
             let likeCount = c.likedBy ? c.likedBy.length : 0;
             if (currentUser && c.likedBy && c.likedBy.includes(currentUser.uid)) isLiked = true;
 
-            const editedTag = c.isEdited ? `<span style="font-size: 11px; font-style: italic; color: #888; margin-left: 5px;">(đã chỉnh sửa)</span>` : "";
+            const editedTag = c.isEdited ? `<span style="font-size: 11px; font-style: italic; color: #5e6e86; margin-left: 5px;">(đã chỉnh sửa)</span>` : "";
             const replyParentId = isReply ? c.parentId : c.id;
 
             // XÁC ĐỊNH MỤC TIÊU BỊ TAG
@@ -527,13 +527,13 @@
             if (c.replyToName && c.replyToUid) {
                 const tagString = `@${escapeHTML(c.replyToName)}`;
                 if (formattedContent.startsWith(tagString)) {
-                    const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+                    const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #5b9bd5; text-decoration: none; font-weight: bold;">${tagString}</a>`;
                     formattedContent = formattedContent.replace(tagString, hyperlinkTag);
                 }
             } else if (isReply && parentComment) {
                 const tagString = `@${escapeHTML(parentComment.displayName)}`;
                 if (formattedContent.startsWith(tagString)) {
-                    const hyperlinkTag = `<a href="profile.html?uid=${parentComment.userId}" style="color: #4da6ff; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+                    const hyperlinkTag = `<a href="profile.html?uid=${parentComment.userId}" style="color: #5b9bd5; text-decoration: none; font-weight: bold;">${tagString}</a>`;
                     formattedContent = formattedContent.replace(tagString, hyperlinkTag);
                 }
             }
@@ -546,7 +546,7 @@
                     <div class="comment-body" style="width: 100%;">
                         <div class="comment-header">
                             <div class="comment-author">
-                                <a href="profile.html?uid=${c.userId}" style="color: #ffaa00; text-decoration: none;">${escapeHTML(c.displayName)}</a> ${editedTag}
+                                <a href="profile.html?uid=${c.userId}" style="color: #f0a500; text-decoration: none;">${escapeHTML(c.displayName)}</a> ${editedTag}
                             </div>
                             <div class="comment-time">${dateStr}</div>
                         </div>
@@ -590,7 +590,7 @@
                 snap.forEach(doc => allComments.push({ id: doc.id, ...doc.data() }));
                 allComments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
                 renderComments();
-            } catch (error) { console.error(error); commentListBlock.innerHTML = "<p style='color: #ff5555;'>Lỗi tải bình luận.</p>"; }
+            } catch (error) { console.error(error); commentListBlock.innerHTML = "<p style='color: #ff5e6c;'>Lỗi tải bình luận.</p>"; }
         }
 
         function renderComments() {
@@ -598,7 +598,7 @@
             const replies = allComments.filter(c => c.parentId !== null);
 
             if (allComments.length === 0) {
-                commentListBlock.innerHTML = "<p style='color: #aaa; text-align: center;'>Chưa có bình luận nào cho chương này. Mở bát thôi!</p>";
+                commentListBlock.innerHTML = "<p style='color: #9aa7bc; text-align: center;'>Chưa có bình luận nào cho chương này. Mở bát thôi!</p>";
                 return;
             }
 

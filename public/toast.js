@@ -20,8 +20,8 @@
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            background: #1a1a28;
-            border: 1px solid #2a2a40;
+            background: #1d2839;
+            border: 1px solid #324056;
             border-radius: 12px;
             padding: 14px 16px 16px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.65);
@@ -41,26 +41,26 @@
         }
         .toast-icon { font-size:20px; line-height:1; flex-shrink:0; margin-top:1px; }
         .toast-body { flex:1; min-width:0; }
-        .toast-title { font-weight:600; font-size:14px; color:#eeeef5; margin-bottom:3px; }
-        .toast-msg   { font-size:13px; color:#9898b3; line-height:1.5; word-break:break-word; }
+        .toast-title { font-weight:600; font-size:14px; color:#eceff3; margin-bottom:3px; }
+        .toast-msg   { font-size:13px; color:#9aa7bc; line-height:1.5; word-break:break-word; }
         .toast-close {
-            background:none; border:none; color:#52526a; cursor:pointer;
+            background:none; border:none; color:#5e6e86; cursor:pointer;
             font-size:15px; line-height:1; padding:0; flex-shrink:0;
             transition:color 0.2s; margin-top:1px;
         }
-        .toast-close:hover { color:#eeeef5; }
-        .toast-success { border-left:3px solid #22c55e; }
-        .toast-error   { border-left:3px solid #ff4d6d; }
+        .toast-close:hover { color:#eceff3; }
+        .toast-success { border-left:3px solid #3ddc84; }
+        .toast-error   { border-left:3px solid #ff5e6c; }
         .toast-warning { border-left:3px solid #f0a500; }
-        .toast-info    { border-left:3px solid #4d9fff; }
+        .toast-info    { border-left:3px solid #5b9bd5; }
         .toast-bar {
             position:absolute; bottom:0; left:0; height:2px; border-radius:0 0 12px 12px;
             transition: width linear;
         }
-        .toast-success .toast-bar { background:#22c55e; }
-        .toast-error   .toast-bar { background:#ff4d6d; }
+        .toast-success .toast-bar { background:#3ddc84; }
+        .toast-error   .toast-bar { background:#ff5e6c; }
         .toast-warning .toast-bar { background:#f0a500; }
-        .toast-info    .toast-bar { background:#4d9fff; }
+        .toast-info    .toast-bar { background:#5b9bd5; }
 
         /* Confirm modal */
         .confirm-overlay {
@@ -75,8 +75,8 @@
         }
         @keyframes overlayIn { from{opacity:0} to{opacity:1} }
         .confirm-card {
-            background:#1a1a28;
-            border:1px solid #2a2a40;
+            background:#1d2839;
+            border:1px solid #324056;
             border-radius:18px;
             padding:32px 30px 28px;
             max-width:400px; width:100%;
@@ -88,19 +88,19 @@
             to   { opacity:1; transform:scale(1) translateY(0); }
         }
         .confirm-icon  { font-size:42px; display:block; margin-bottom:16px; }
-        .confirm-title { font-size:17px; font-weight:700; color:#eeeef5; margin-bottom:8px; }
-        .confirm-msg   { font-size:14px; color:#9898b3; line-height:1.65; margin-bottom:26px; }
+        .confirm-title { font-size:17px; font-weight:700; color:#eceff3; margin-bottom:8px; }
+        .confirm-msg   { font-size:14px; color:#9aa7bc; line-height:1.65; margin-bottom:26px; }
         .confirm-actions { display:flex; gap:10px; justify-content:flex-end; }
         .confirm-btn {
             padding:10px 22px; border:none; border-radius:9px;
             font-family:inherit; font-size:14px; font-weight:600;
             cursor:pointer; transition:all 0.2s;
         }
-        .confirm-cancel { background:#24243a; color:#9898b3; }
-        .confirm-cancel:hover { background:#2c2c46; color:#eeeef5; }
-        .confirm-ok-danger  { background:#ff4d6d; color:#fff; }
-        .confirm-ok-danger:hover  { background:#ff2651; box-shadow:0 4px 18px rgba(255,77,109,0.35); }
-        .confirm-ok-warning { background:#f0a500; color:#0e0e16; }
+        .confirm-cancel { background:#273347; color:#9aa7bc; }
+        .confirm-cancel:hover { background:#2f3d54; color:#eceff3; }
+        .confirm-ok-danger  { background:#ff5e6c; color:#fff; }
+        .confirm-ok-danger:hover  { background:#ff3b50; box-shadow:0 4px 18px rgba(255, 94, 108,0.35); }
+        .confirm-ok-warning { background:#f0a500; color:#121a28; }
         .confirm-ok-warning:hover { background:#d99200; }
 
         @media (max-width:480px) {
