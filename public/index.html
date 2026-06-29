@@ -219,7 +219,7 @@
     }
 
     .status-completed {
-      background: rgba(91, 155, 213, 0.85);
+      background: rgba(91, 163, 224, 0.85);
     }
 
     .status-paused {
@@ -238,8 +238,8 @@
     }
 
     .tag-badge {
-      background: rgba(240, 165, 0, 0.88);
-      color: #121a28;
+      background: rgba(65, 84, 93, 0.9);
+      color: #dbe6ec;
       padding: 2px 7px;
       border-radius: var(--radius-xs);
       font-size: 10px;
@@ -248,8 +248,8 @@
     }
 
     .tag-badge.plus-tag {
-      background: rgba(224, 36, 94, 0.85);
-      color: #fff;
+      background: rgba(91, 163, 224, 0.9);
+      color: #121a28;
     }
 
     .thumbnail-gradient {
@@ -419,7 +419,7 @@
     .carousel-read-btn:hover {
       background: var(--accent-dark);
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(240, 165, 0, 0.38);
+      box-shadow: 0 8px 24px rgba(91, 163, 224, 0.38);
     }
 
     .carousel-nav-btn {
@@ -696,8 +696,8 @@
     }
 
     .announcement-content {
-      background: rgba(240, 165, 0, 0.05);
-      border: 1px solid rgba(240, 165, 0, 0.28);
+      background: rgba(91, 163, 224, 0.05);
+      border: 1px solid rgba(91, 163, 224, 0.28);
       border-radius: var(--radius-sm);
       padding: 12px 18px;
       display: flex;
@@ -1065,7 +1065,7 @@
           if (c.replyToName && c.replyToUid) {
             const tagString = `@${escapeHTML(c.replyToName)}`;
             if (formattedContent.startsWith(tagString)) {
-              const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #5b9bd5; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+              const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #5ba3e0; text-decoration: none; font-weight: bold;">${tagString}</a>`;
               formattedContent = formattedContent.replace(tagString, hyperlinkTag);
             }
           }
@@ -1175,7 +1175,7 @@
 
       function resetTimer() {
         clearInterval(autoTimer);
-        autoTimer = setInterval(() => goTo(currentSlide + 1), 3000);
+        autoTimer = setInterval(() => goTo(currentSlide + 1), 6000);
       }
 
       let touchStartX = 0;

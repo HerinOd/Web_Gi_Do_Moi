@@ -326,7 +326,7 @@
             transition: background 0.2s, transform 0.15s;
         }
 
-        .comment-form button:hover { background: var(--blue-hover, #4a87c0); transform: translateY(-1px); }
+        .comment-form button:hover { background: var(--blue-hover, #4a8fce); transform: translateY(-1px); }
 
         /* ===== COMMENTS ===== */
         .comment-item { display: flex; gap: 14px; margin-bottom: 20px; }
@@ -447,14 +447,14 @@
 
     <div class="description-section" id="story-desc-block" style="display: none;">
         <div class="section-header">
-            <h3 style="color: #f0a500; margin: 0;">TÓM TẮT NỘI DUNG</h3>
+            <h3 style="color: #5ba3e0; margin: 0;">TÓM TẮT NỘI DUNG</h3>
         </div>
         <div class="description-content" id="desc-text-content"></div>
     </div>
 
     <div class="chapter-section">
         <div class="section-header">
-            <h3 style="color: #f0a500; margin: 0;">DANH SÁCH CHƯƠNG</h3>
+            <h3 style="color: #5ba3e0; margin: 0;">DANH SÁCH CHƯƠNG</h3>
             <a href="#" class="btn btn-edit" id="btnAddChapter">Thêm Chương Mới</a>
         </div>
         <ul class="chapter-list" id="chapter-list-block">
@@ -464,11 +464,11 @@
 
     <div class="comment-section">
         <div class="section-header">
-            <h3 style="color: #f0a500; margin: 0;">BÌNH LUẬN</h3>
+            <h3 style="color: #5ba3e0; margin: 0;">BÌNH LUẬN</h3>
         </div>
 
         <div id="comment-auth-warning" style="text-align: center; color: #ff5e6c; padding: 20px 0;">
-            Vui lòng <a href="login.html" style="color: #f0a500;">đăng nhập</a> để bình luận.
+            Vui lòng <a href="login.html" style="color: #5ba3e0;">đăng nhập</a> để bình luận.
         </div>
         <form class="comment-form" id="main-comment-form" style="display: none;">
             <textarea id="main-comment-text" placeholder="Bạn nghĩ gì về bộ truyện này?" required></textarea>
@@ -835,13 +835,13 @@
             if (c.replyToName && c.replyToUid) {
                 const tagString = `@${escapeHTML(c.replyToName)}`;
                 if (formattedContent.startsWith(tagString)) {
-                    const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #5b9bd5; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+                    const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #5ba3e0; text-decoration: none; font-weight: bold;">${tagString}</a>`;
                     formattedContent = formattedContent.replace(tagString, hyperlinkTag);
                 }
             } else if (isReply && parentComment) {
                 const tagString = `@${escapeHTML(parentComment.displayName)}`;
                 if (formattedContent.startsWith(tagString)) {
-                    const hyperlinkTag = `<a href="profile.html?uid=${parentComment.userId}" style="color: #5b9bd5; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+                    const hyperlinkTag = `<a href="profile.html?uid=${parentComment.userId}" style="color: #5ba3e0; text-decoration: none; font-weight: bold;">${tagString}</a>`;
                     formattedContent = formattedContent.replace(tagString, hyperlinkTag);
                 }
             }
@@ -854,7 +854,7 @@
                     <div class="comment-body" style="width: 100%;">
                         <div class="comment-header">
                             <div class="comment-author">
-                                <a href="profile.html?uid=${c.userId}" style="color: #f0a500; text-decoration: none;">${escapeHTML(c.displayName)}</a> ${editedTag}
+                                <a href="profile.html?uid=${c.userId}" style="color: #5ba3e0; text-decoration: none;">${escapeHTML(c.displayName)}</a> ${editedTag}
                             </div>
                             <div class="comment-time">${dateStr}</div>
                         </div>

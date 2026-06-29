@@ -7,19 +7,65 @@
     <title>Đọc Truyện - Mã Đề 0099</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* ===== READING BAR (sticky) ===== */
+        .reading-bar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            background: rgba(var(--base-rgb), 0.82);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border-bottom: 1px solid var(--border);
+            z-index: 999;
+            opacity: 0;
+            transform: translateY(-6px);
+            transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+            pointer-events: none;
+        }
+        .reading-bar.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+        .reading-bar-inner {
+            max-width: 780px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 9px 20px;
+        }
+
+        .rb-back {
+            color: var(--text-2);
+            text-decoration: none;
+            font-size: 18px;
+            line-height: 1;
+            flex-shrink: 0;
+            transition: color 0.2s;
+        }
+        .rb-back:hover { color: var(--accent); }
+
+        .rb-titles { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3; }
+        .rb-story { font-size: 11px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .rb-chapter { font-size: 13px; font-weight: 600; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .rb-pct { font-size: 12px; font-weight: 700; color: var(--accent); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+
+        .rb-progress { height: 3px; background: var(--border-muted); }
+        .rb-progress-fill { height: 100%; width: 0; background: var(--accent); transition: width 0.15s linear; }
+
         /* ===== READER ===== */
         .reader-container {
             max-width: 780px;
-            margin: 72px auto 32px;
+            margin: 96px auto 32px;
             background: var(--bg-card);
-            padding: 44px 48px;
+            padding: 48px 52px;
             border-radius: var(--radius);
             border: 1px solid var(--border);
             box-shadow: var(--shadow-md);
         }
 
         @media (max-width: 600px) {
-            .reader-container { padding: 28px 20px; }
+            .reader-container { padding: 30px 20px; margin-top: 92px; }
+            .rb-story { display: none; }
         }
 
         .breadcrumb {
@@ -57,9 +103,9 @@
         }
 
         .chapter-content {
-            font-size: 18px;
+            font-size: 18.5px;
             line-height: 2;
-            color: var(--text-1);
+            color: #dbe3ec;
             white-space: pre-wrap;
             font-family: inherit;
             letter-spacing: 0.01em;
@@ -194,7 +240,7 @@
             transition: background 0.2s, transform 0.15s;
         }
 
-        .comment-form button:hover { background: #4a87c0; transform: translateY(-1px); }
+        .comment-form button:hover { background: #4a8fce; transform: translateY(-1px); }
 
         .comment-item { display: flex; gap: 14px; margin-bottom: 20px; }
         .comment-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
@@ -296,17 +342,29 @@
         </div>
     </header>
 
+    <div class="reading-bar" id="reading-bar">
+        <div class="reading-bar-inner">
+            <a href="index.html" class="rb-back" aria-label="Trang chủ">&#8592;</a>
+            <div class="rb-titles">
+                <span class="rb-story" id="rb-story"></span>
+                <span class="rb-chapter" id="rb-chapter"></span>
+            </div>
+            <span class="rb-pct" id="rb-pct">0%</span>
+        </div>
+        <div class="rb-progress"><div class="rb-progress-fill" id="rb-progress-fill"></div></div>
+    </div>
+
     <div class="reader-container" id="reader-block">
         <h2 style="color: #9aa7bc; text-align: center;">Đang tải nội dung chương...</h2>
     </div>
 
     <div class="comment-section" id="comment-section-block" style="display: none;">
         <div style="border-bottom: 1px solid #324056; padding-bottom: 10px; margin-bottom: 20px;">
-            <h3 style="color: #f0a500; margin: 0;">THẢO LUẬN CHƯƠNG NÀY</h3>
+            <h3 style="color: #5ba3e0; margin: 0;">THẢO LUẬN CHƯƠNG NÀY</h3>
         </div>
 
         <div id="comment-auth-warning" style="text-align: center; color: #ff5e6c; padding: 20px 0;">
-            Vui lòng <a href="login.html" style="color: #f0a500;">đăng nhập</a> để bình luận.
+            Vui lòng <a href="login.html" style="color: #5ba3e0;">đăng nhập</a> để bình luận.
         </div>
         <form class="comment-form" id="main-comment-form" style="display: none;">
             <textarea id="main-comment-text" placeholder="Bạn nghĩ gì về chương truyện này?" required></textarea>
@@ -358,6 +416,28 @@
                 document.getElementById('main-comment-form').style.display = 'none';
             }
         });
+
+        let readingProgressBound = false;
+        function setupReadingProgress() {
+            const bar = document.getElementById('reading-bar');
+            const fill = document.getElementById('rb-progress-fill');
+            const pct = document.getElementById('rb-pct');
+            const update = () => {
+                const h = document.documentElement;
+                const scrollable = h.scrollHeight - h.clientHeight;
+                const ratio = scrollable > 0 ? h.scrollTop / scrollable : 0;
+                const p = Math.min(100, Math.max(0, Math.round(ratio * 100)));
+                fill.style.width = p + '%';
+                pct.textContent = p + '%';
+                bar.classList.toggle('show', h.scrollTop > 180);
+            };
+            if (!readingProgressBound) {
+                window.addEventListener('scroll', update, { passive: true });
+                window.addEventListener('resize', update, { passive: true });
+                readingProgressBound = true;
+            }
+            update();
+        }
 
         async function renderChapter() {
             const readerBlock = document.getElementById('reader-block');
@@ -441,7 +521,7 @@
                     if (currentUserData.role === "admin" || currentUser.uid === storyUploaderId) {
                         adminControlsHTML = `
                             <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px; padding-top: 20px; border-top: 1px dashed #324056;">
-                                <a href="add-chapter.html?editId=${chapterId}" class="btn" style="background: #5b9bd5; color: #121a28; padding: 10px 20px; font-weight: bold; border-radius: 4px; text-decoration: none;">Sửa Nội Dung</a>
+                                <a href="add-chapter.html?editId=${chapterId}" class="btn" style="background: #5ba3e0; color: #121a28; padding: 10px 20px; font-weight: bold; border-radius: 4px; text-decoration: none;">Sửa Nội Dung</a>
                                 <button class="btn" id="btnDeleteChapter" data-chap-id="${chapterId}" data-story-id="${chapterData.storyId}" style="background: #ff5e6c; color: #121a28; padding: 10px 20px; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">Xóa Chương</button>
                             </div>
                         `;
@@ -462,11 +542,15 @@
                     ${contentHTML}
                     <div class="navigation-bars">
                         ${prevLink}
-                        <a href="info.html?id=${chapterData.storyId}" class="nav-btn" style="background: #5b9bd5; color:#121a28;">Mục Lục</a>
+                        <a href="info.html?id=${chapterData.storyId}" class="nav-btn" style="background: #5ba3e0; color:#121a28;">Mục Lục</a>
                         ${nextLink}
                     </div>
                 `;
                 document.title = `${chapterDisplayTitle} - Mã Đề 0099`;
+
+                document.getElementById('rb-story').textContent = storyTitle;
+                document.getElementById('rb-chapter').textContent = chapterDisplayTitle;
+                setupReadingProgress();
 
                 if (isLocked && !hasAccess) {
                     document.getElementById('btnUnlock').addEventListener('click', () => {
@@ -527,13 +611,13 @@
             if (c.replyToName && c.replyToUid) {
                 const tagString = `@${escapeHTML(c.replyToName)}`;
                 if (formattedContent.startsWith(tagString)) {
-                    const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #5b9bd5; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+                    const hyperlinkTag = `<a href="profile.html?uid=${c.replyToUid}" style="color: #5ba3e0; text-decoration: none; font-weight: bold;">${tagString}</a>`;
                     formattedContent = formattedContent.replace(tagString, hyperlinkTag);
                 }
             } else if (isReply && parentComment) {
                 const tagString = `@${escapeHTML(parentComment.displayName)}`;
                 if (formattedContent.startsWith(tagString)) {
-                    const hyperlinkTag = `<a href="profile.html?uid=${parentComment.userId}" style="color: #5b9bd5; text-decoration: none; font-weight: bold;">${tagString}</a>`;
+                    const hyperlinkTag = `<a href="profile.html?uid=${parentComment.userId}" style="color: #5ba3e0; text-decoration: none; font-weight: bold;">${tagString}</a>`;
                     formattedContent = formattedContent.replace(tagString, hyperlinkTag);
                 }
             }
@@ -546,7 +630,7 @@
                     <div class="comment-body" style="width: 100%;">
                         <div class="comment-header">
                             <div class="comment-author">
-                                <a href="profile.html?uid=${c.userId}" style="color: #f0a500; text-decoration: none;">${escapeHTML(c.displayName)}</a> ${editedTag}
+                                <a href="profile.html?uid=${c.userId}" style="color: #5ba3e0; text-decoration: none;">${escapeHTML(c.displayName)}</a> ${editedTag}
                             </div>
                             <div class="comment-time">${dateStr}</div>
                         </div>

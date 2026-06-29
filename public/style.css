@@ -13,16 +13,19 @@
   --border:      #324056;  /* slate viền       */
   --border-muted:#222d3e;
   --base-rgb:    18, 26, 40; /* dùng cho lớp trong suốt */
-  /* ── Nhấn: vàng hổ phách (giữ nguyên) ── */
-  --accent:      #f0a500;
-  --accent-dark: #d99200;
-  --accent-dim:  rgba(240, 165, 0, 0.12);
-  --accent-glow: rgba(240, 165, 0, 0.22);
-  /* ── Xanh phụ: hài hòa với navy ── */
-  --blue:        #5b9bd5;
-  --blue-dark:   #4a87c0;
-  --blue-dim:    rgba(91, 155, 213, 0.14);
-  --red:         #ff5e6c;
+  /* ── Nhấn: xanh slate (rút sáng từ palette) ── */
+  --accent:      #5ba3e0;
+  --accent-dark: #4a8fce;
+  --accent-dim:  rgba(91, 163, 224, 0.14);
+  --accent-glow: rgba(91, 163, 224, 0.30);
+  /* ── Blue = đồng nhất với nhấn (1 sắc xanh duy nhất) ── */
+  --blue:        #5ba3e0;
+  --blue-dark:   #4a8fce;
+  --blue-dim:    rgba(91, 163, 224, 0.14);
+  /* ── Teal phụ: chip / nút phụ ── */
+  --teal:        #41545d;
+  --teal-hover:  #4d646e;
+  --red:         #ff6b7a;
   --green:       #3ddc84;
   /* ── Chữ: thang xám-xanh ── */
   --text-1:      #eceff3;  /* xám sáng (palette) */

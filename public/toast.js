@@ -52,7 +52,7 @@
         .toast-success { border-left:3px solid #3ddc84; }
         .toast-error   { border-left:3px solid #ff5e6c; }
         .toast-warning { border-left:3px solid #f0a500; }
-        .toast-info    { border-left:3px solid #5b9bd5; }
+        .toast-info    { border-left:3px solid #5ba3e0; }
         .toast-bar {
             position:absolute; bottom:0; left:0; height:2px; border-radius:0 0 12px 12px;
             transition: width linear;
@@ -60,7 +60,7 @@
         .toast-success .toast-bar { background:#3ddc84; }
         .toast-error   .toast-bar { background:#ff5e6c; }
         .toast-warning .toast-bar { background:#f0a500; }
-        .toast-info    .toast-bar { background:#5b9bd5; }
+        .toast-info    .toast-bar { background:#5ba3e0; }
 
         /* Confirm modal */
         .confirm-overlay {
