@@ -211,7 +211,9 @@
 
         <div id="perm-warning" style="display: none; text-align: center; padding: 20px;">
             <h2>Bạn chưa có quyền đăng truyện!</h2><br>
-            <p style="color: #9aa7bc; line-height: 1.7;">Tính năng này chỉ dành cho <b>Dịch Giả</b> và <b>Admin</b>.<br>Vui lòng liên hệ Admin để được cấp quyền Dịch Giả.</p><br>
+            <p style="color: #9aa7bc; line-height: 1.7;">Tính năng này chỉ dành cho <b>Dịch Giả</b> và <b>Admin</b>.<br>Đăng ký làm dịch giả để Admin duyệt và cấp quyền cho bạn nhé.</p><br>
+            <a href="#" id="btn-apply-translator" style="display:inline-block; padding:10px 20px; background:rgba(91,163,224,0.15); color:#5ba3e0; border:1px solid rgba(91,163,224,0.4); border-radius:8px; font-weight:700; text-decoration:none;">✍️ Đăng ký làm Dịch Giả</a>
+            <br><br>
             <a href="index.html" style="color: #5ba3e0; text-decoration: underline;">Quay về trang chủ</a>
         </div>
 
@@ -434,6 +436,7 @@
 
                 if (!canUpload) {
                     document.getElementById('add-story-form').style.display = 'none';
+                    document.getElementById('btn-apply-translator').href = `profile.html?uid=${currentUserId}&apply=1`;
                     document.getElementById('perm-warning').style.display = 'block';
                     return;
                 }

@@ -495,6 +495,98 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        /* ===== ĐĂNG KÝ DỊCH GIẢ ===== */
+        .btn-apply {
+            margin-top: 14px;
+            padding: 10px 18px;
+            background: rgba(91, 163, 224, 0.15);
+            color: #5ba3e0;
+            border: 1px solid rgba(91, 163, 224, 0.4);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-apply:hover { opacity: 0.85; }
+
+        .apply-pending {
+            margin-top: 14px;
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--bg-hover);
+            color: var(--text-2);
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* ===== HÒM THƯ ĐƠN DỊCH GIẢ ===== */
+        #requests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .request-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+        }
+
+        .request-card img {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .request-info { flex: 1; min-width: 0; }
+        .request-name { font-weight: 700; color: var(--text-1); }
+        .request-reason { color: var(--text-2); font-size: 13px; margin-top: 2px; line-height: 1.5; }
+
+        .request-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+        .btn-req {
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            text-decoration: none;
+            white-space: nowrap;
+            border: 1px solid var(--border);
+        }
+
+        .btn-req:hover { opacity: 0.85; }
+        .btn-req:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-req.view {
+            background: var(--accent);
+            color: #121a28;
+            border-color: var(--accent);
+        }
+
+        .btn-req.reject {
+            background: var(--bg-hover);
+            color: var(--red, #ff5e6c);
+        }
+
+        @media (max-width: 560px) {
+            .request-card { flex-wrap: wrap; }
+            .request-actions { width: 100%; }
+            .btn-req { flex: 1; text-align: center; }
+        }
     </style>
 </head>
 
@@ -522,6 +614,11 @@
         <p style="text-align: center; width: 100%; color: #9aa7bc;">Đang tải danh sách lưu...</p>
     </div>
 
+    <div class="section-title blue-accent" id="requests-title" style="display: none; margin-top: 16px;">
+        📬 ĐƠN XIN LÀM DỊCH GIẢ <span id="requests-count"></span>
+    </div>
+    <div id="requests-list" style="display: none;"></div>
+
     <div class="modal-overlay" id="announce-modal">
         <div class="modal-box">
             <div class="modal-title">📢 Đăng Thông Báo Mới</div>
@@ -533,10 +630,22 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="apply-modal">
+        <div class="modal-box">
+            <div class="modal-title">✍️ Đăng Ký Làm Dịch Giả</div>
+            <p style="color: var(--text-2); font-size: 13px; margin: 0;">Gửi đơn tới Admin để được cấp quyền đăng truyện. Bạn có thể ghi vài lời giới thiệu (không bắt buộc).</p>
+            <textarea id="apply-reason" placeholder="VD: Mình muốn dịch truyện thể loại trinh thám, đã có kinh nghiệm..."></textarea>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" id="btn-cancel-apply">Hủy</button>
+                <button class="btn-modal-post" id="btn-submit-apply">Gửi Đơn</button>
+            </div>
+        </div>
+    </div>
+
     <script src="toast.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -646,11 +755,113 @@
             if (btn) { btn.disabled = true; btn.textContent = 'Đang xử lý...'; }
             try {
                 await updateDoc(doc(db, "users", targetUid), { role: newRole });
+                // Phong dịch giả xong thì dọn luôn đơn xin (nếu có) khỏi hòm thư
+                if (newRole === 'translator') {
+                    try { await deleteDoc(doc(db, "translatorRequests", targetUid)); } catch (_) {}
+                }
                 showToast(`Đã ${label} thành công!`, 'success');
                 renderProfile();
             } catch (e) {
                 showToast('Lỗi: ' + e.message, 'error');
                 if (btn) btn.disabled = false;
+            }
+        }
+
+        // ==========================================
+        // USER: ĐĂNG KÝ LÀM DỊCH GIẢ
+        // ==========================================
+        async function renderApplySection() {
+            // Kiểm tra đã có đơn đang chờ chưa
+            let pending = false;
+            try {
+                const reqSnap = await getDoc(doc(db, "translatorRequests", targetUid));
+                pending = reqSnap.exists();
+            } catch (_) {}
+
+            const block = document.getElementById('profile-block');
+            if (pending) {
+                const tag = document.createElement('div');
+                tag.className = 'apply-pending';
+                tag.textContent = '⏳ Đơn xin làm dịch giả đang chờ duyệt';
+                block.appendChild(tag);
+            } else {
+                const btn = document.createElement('button');
+                btn.className = 'btn-apply';
+                btn.textContent = '✍️ Đăng ký làm Dịch Giả';
+                block.appendChild(btn);
+                btn.addEventListener('click', () => {
+                    document.getElementById('apply-reason').value = '';
+                    document.getElementById('apply-modal').classList.add('open');
+                });
+
+                // Tự mở form đăng ký khi tới từ trang Đăng Truyện (?apply=1)
+                if (urlParams.get('apply') === '1') {
+                    document.getElementById('apply-reason').value = '';
+                    document.getElementById('apply-modal').classList.add('open');
+                }
+            }
+        }
+
+        // ==========================================
+        // ADMIN: HÒM THƯ ĐƠN XIN LÀM DỊCH GIẢ
+        // ==========================================
+        async function loadTranslatorRequests() {
+            const title = document.getElementById('requests-title');
+            const list = document.getElementById('requests-list');
+            try {
+                const snap = await getDocs(collection(db, "translatorRequests"));
+                if (snap.empty) return; // Không có đơn -> ẩn luôn
+
+                title.style.display = 'flex';
+                list.style.display = 'flex';
+                document.getElementById('requests-count').textContent = `(${snap.size})`;
+
+                list.innerHTML = "";
+                snap.forEach(d => {
+                    const r = d.data();
+                    const avatar = r.avatar || "https://www.w3schools.com/howto/img_avatar.png";
+                    const reason = r.reason ? `<div class="request-reason">${r.reason}</div>` : `<div class="request-reason" style="font-style:italic; opacity:0.7;">(Không có lời nhắn)</div>`;
+                    const card = document.createElement('div');
+                    card.className = 'request-card';
+                    card.innerHTML = `
+                        <img src="${avatar}" alt="Avatar">
+                        <div class="request-info">
+                            <div class="request-name">${r.displayName || 'Người dùng'}</div>
+                            ${reason}
+                        </div>
+                        <div class="request-actions">
+                            <a href="profile.html?uid=${d.id}" class="btn-req view">Xem hồ sơ →</a>
+                            <button class="btn-req reject" data-uid="${d.id}">Từ chối</button>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+
+                list.querySelectorAll('.btn-req.reject').forEach(btn => {
+                    btn.addEventListener('click', () => rejectRequest(btn.dataset.uid, btn));
+                });
+            } catch (e) { console.error("Lỗi tải hòm thư:", e); }
+        }
+
+        async function rejectRequest(uid, btn) {
+            btn.disabled = true;
+            btn.textContent = 'Đang xóa...';
+            try {
+                await deleteDoc(doc(db, "translatorRequests", uid));
+                showToast('Đã từ chối đơn.', 'success');
+                btn.closest('.request-card').remove();
+                // Cập nhật lại số đếm / ẩn nếu hết đơn
+                const remaining = document.querySelectorAll('#requests-list .request-card').length;
+                if (remaining === 0) {
+                    document.getElementById('requests-title').style.display = 'none';
+                    document.getElementById('requests-list').style.display = 'none';
+                } else {
+                    document.getElementById('requests-count').textContent = `(${remaining})`;
+                }
+            } catch (e) {
+                showToast('Lỗi: ' + e.message, 'error');
+                btn.disabled = false;
+                btn.textContent = 'Từ chối';
             }
         }
 
@@ -725,6 +936,12 @@
                             document.getElementById('announce-text').value = '';
                             document.getElementById('announce-modal').classList.add('open');
                         });
+
+                        // Admin xem hồ sơ mình -> tải hòm thư đơn xin làm dịch giả
+                        loadTranslatorRequests();
+                    } else if (targetRole === 'user') {
+                        // User thường xem hồ sơ mình -> nút Đăng ký làm dịch giả (hoặc trạng thái Đang chờ)
+                        renderApplySection();
                     }
 
                     bookmarkTitle.style.display = 'flex';
@@ -777,6 +994,42 @@
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Đăng';
+            }
+        });
+
+        // ===== MODAL ĐĂNG KÝ DỊCH GIẢ =====
+        const applyModal = document.getElementById('apply-modal');
+        document.getElementById('btn-cancel-apply').addEventListener('click', () => {
+            applyModal.classList.remove('open');
+        });
+        applyModal.addEventListener('click', (e) => {
+            if (e.target === applyModal) applyModal.classList.remove('open');
+        });
+        document.getElementById('btn-submit-apply').addEventListener('click', async () => {
+            if (!currentUser) return;
+            const reason = document.getElementById('apply-reason').value.trim();
+            const submitBtn = document.getElementById('btn-submit-apply');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang gửi...';
+            try {
+                // Lấy tên/avatar mới nhất từ hồ sơ để hiển thị trong hòm thư admin
+                const meSnap = await getDoc(doc(db, "users", currentUser.uid));
+                const me = meSnap.exists() ? meSnap.data() : {};
+                await setDoc(doc(db, "translatorRequests", currentUser.uid), {
+                    uid: currentUser.uid,
+                    displayName: me.displayName || "Người dùng",
+                    avatar: me.avatar || "",
+                    reason: reason,
+                    createdAt: new Date().toISOString()
+                });
+                applyModal.classList.remove('open');
+                showToast('Đã gửi đơn! Vui lòng chờ Admin duyệt.', 'success');
+                renderProfile();
+            } catch (e) {
+                showToast('Lỗi: ' + e.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Gửi Đơn';
             }
         });
     </script>

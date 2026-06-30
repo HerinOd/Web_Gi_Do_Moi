@@ -91,6 +91,21 @@ service cloud.firestore {
     }
 
     // =====================================
+    // BẢNG TRANSLATOR REQUESTS (Đơn xin làm Dịch Giả)
+    // Mã đơn = uid của người gửi -> mỗi người chỉ có 1 đơn
+    // =====================================
+    match /translatorRequests/{userId} {
+      // Admin xem được tất cả đơn; user chỉ xem được đơn của chính mình
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+
+      // User tự gửi/sửa đơn của chính mình
+      allow create, update: if isSignedIn() && request.auth.uid == userId;
+
+      // Admin (từ chối/duyệt) hoặc chính chủ (rút đơn) được xóa
+      allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+    }
+
+    // =====================================
     // CONFIG (Thông báo, Danh sách Tags)
     // =====================================
     match /config/{document} {
