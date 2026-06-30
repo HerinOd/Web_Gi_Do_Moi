@@ -88,6 +88,12 @@
             <a href="login.html" style="color: #5ba3e0; text-decoration: underline;">Đi tới trang Đăng nhập</a>
         </div>
 
+        <div id="perm-warning" style="display: none; text-align: center; padding: 20px;">
+            <h2>Bạn chưa có quyền đăng chương!</h2><br>
+            <p style="color: #9aa7bc; line-height: 1.7;">Tính năng này chỉ dành cho <b>Dịch Giả</b> và <b>Admin</b>.</p><br>
+            <a href="index.html" style="color: #5ba3e0; text-decoration: underline;">Quay về trang chủ</a>
+        </div>
+
         <form id="add-chapter-form">
             <h2 id="form-title" style="text-align: center; margin-bottom: 25px; color: #eceff3;">Thêm Chương Mới</h2>
 
@@ -157,12 +163,25 @@
                 const userSnap = await getDoc(doc(db, "users", currentUserId));
                 if (userSnap.exists()) currentUserData = userSnap.data();
 
-                document.getElementById('add-chapter-form').style.display = 'block';
                 document.getElementById('auth-warning').style.display = 'none';
+
+                // Kiểm tra quyền: chỉ Admin hoặc Dịch Giả mới được đăng chương
+                const role = currentUserData ? currentUserData.role : "user";
+                const canUpload = (role === "admin" || role === "translator");
+
+                if (!canUpload) {
+                    document.getElementById('add-chapter-form').style.display = 'none';
+                    document.getElementById('perm-warning').style.display = 'block';
+                    return;
+                }
+
+                document.getElementById('perm-warning').style.display = 'none';
+                document.getElementById('add-chapter-form').style.display = 'block';
 
                 if (isEditMode) initEditMode();
             } else {
                 document.getElementById('add-chapter-form').style.display = 'none';
+                document.getElementById('perm-warning').style.display = 'none';
                 document.getElementById('auth-warning').style.display = 'block';
             }
         });

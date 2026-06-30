@@ -7,9 +7,19 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // 2. Hàm kiểm tra quyền Admin (Truy xuất chéo sang bảng users)
+    // 2. Hàm lấy role của người đang đăng nhập (Truy xuất chéo sang bảng users)
+    function myRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    // 3. Hàm kiểm tra quyền Admin
     function isAdmin() {
-      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return isSignedIn() && myRole() == 'admin';
+    }
+
+    // 4. Hàm kiểm tra quyền Đăng Truyện (Admin HOẶC Dịch Giả)
+    function canUpload() {
+      return isSignedIn() && (myRole() == 'admin' || myRole() == 'translator');
     }
 
     // =====================================
@@ -19,10 +29,13 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isSignedIn() && request.auth.uid == userId;
       
-      // BẢO MẬT: Chỉ cho phép tự sửa thông tin cá nhân, NGHIÊM CẤM tự sửa role của chính mình thành admin
-      allow update: if isSignedIn() && request.auth.uid == userId 
-                    && (!request.resource.data.keys().hasAny(['role']) || request.resource.data.role == resource.data.role);
-                    
+      // BẢO MẬT:
+      // - Admin được phép sửa hồ sơ người khác (dùng để PHONG/GỠ quyền Dịch Giả).
+      // - Người dùng tự sửa thông tin cá nhân của mình, NHƯNG NGHIÊM CẤM tự sửa role của chính mình.
+      allow update: if isAdmin()
+                    || (isSignedIn() && request.auth.uid == userId
+                        && (!request.resource.data.keys().hasAny(['role']) || request.resource.data.role == resource.data.role));
+
       allow delete: if isAdmin();
     }
 
@@ -31,7 +44,8 @@ service cloud.firestore {
     // =====================================
     match /stories/{storyId} {
       allow read: if true;
-      allow create: if isSignedIn();
+      // Chỉ Admin hoặc Dịch Giả mới được đăng truyện
+      allow create: if canUpload();
       
       // Admin hoặc Chủ truyện được phép XÓA
       allow delete: if isSignedIn() && (resource.data.uploaderId == request.auth.uid || isAdmin());
@@ -52,7 +66,8 @@ service cloud.firestore {
     // =====================================
     match /chapters/{chapterId} {
       allow read: if true;
-      allow create: if isSignedIn();
+      // Chỉ Admin hoặc Dịch Giả mới được đăng chương
+      allow create: if canUpload();
       allow update, delete: if isSignedIn() &&
         (get(/databases/$(database)/documents/stories/$(resource.data.storyId)).data.uploaderId == request.auth.uid || isAdmin());
     }

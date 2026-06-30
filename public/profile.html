@@ -84,6 +84,43 @@
             border-color: var(--accent-glow);
         }
 
+        .profile-role.translator {
+            background: rgba(91, 163, 224, 0.12);
+            color: #5ba3e0;
+            border-color: rgba(91, 163, 224, 0.4);
+        }
+
+        .role-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .btn-role {
+            padding: 8px 16px;
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: opacity 0.2s;
+        }
+
+        .btn-role:hover { opacity: 0.85; }
+        .btn-role:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-role.promote {
+            background: rgba(91, 163, 224, 0.15);
+            color: #5ba3e0;
+            border-color: rgba(91, 163, 224, 0.4);
+        }
+
+        .btn-role.demote {
+            background: var(--bg-hover);
+            color: var(--text-2);
+        }
+
         .profile-bio {
             color: var(--text-2);
             line-height: 1.7;
@@ -499,7 +536,7 @@
     <script src="toast.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -583,6 +620,40 @@
             `;
         }
 
+        // ==========================================
+        // ADMIN: PHONG / GỠ QUYỀN DỊCH GIẢ
+        // ==========================================
+        function renderRoleControls(targetRole) {
+            const wrap = document.createElement('div');
+            wrap.className = 'role-actions';
+
+            if (targetRole === 'translator') {
+                wrap.innerHTML = `<button class="btn-role demote" id="btn-set-user">⬇️ Gỡ quyền Dịch Giả</button>`;
+            } else {
+                wrap.innerHTML = `<button class="btn-role promote" id="btn-set-translator">⬆️ Phong làm Dịch Giả</button>`;
+            }
+            document.getElementById('profile-block').appendChild(wrap);
+
+            const promoteBtn = document.getElementById('btn-set-translator');
+            const demoteBtn = document.getElementById('btn-set-user');
+            if (promoteBtn) promoteBtn.addEventListener('click', () => changeRole('translator'));
+            if (demoteBtn) demoteBtn.addEventListener('click', () => changeRole('user'));
+        }
+
+        async function changeRole(newRole) {
+            const label = newRole === 'translator' ? 'phong làm Dịch Giả' : 'gỡ quyền Dịch Giả';
+            const btn = document.querySelector('.btn-role');
+            if (btn) { btn.disabled = true; btn.textContent = 'Đang xử lý...'; }
+            try {
+                await updateDoc(doc(db, "users", targetUid), { role: newRole });
+                showToast(`Đã ${label} thành công!`, 'success');
+                renderProfile();
+            } catch (e) {
+                showToast('Lỗi: ' + e.message, 'error');
+                if (btn) btn.disabled = false;
+            }
+        }
+
         async function renderProfile() {
             try {
                 // 1. KÉO DỮ LIỆU PUBLIC USER
@@ -597,19 +668,35 @@
 
                 const userData = userSnap.data();
                 const avatarUrl = userData.avatar || "https://www.w3schools.com/howto/img_avatar.png";
-                const roleBadge = userData.role === "admin" ? "ADMIN" : "USER";
+                const targetRole = userData.role || "user";
 
-                const isAdmin = userData.role === "admin";
+                // Nhãn + class hiển thị theo role
+                let roleBadge = "USER", roleClass = "";
+                if (targetRole === "admin") { roleBadge = "ADMIN"; roleClass = "admin"; }
+                else if (targetRole === "translator") { roleBadge = "DỊCH GIẢ"; roleClass = "translator"; }
+
+                const isAdmin = targetRole === "admin";
                 profileBlock.innerHTML = `
                     <img src="${avatarUrl}" alt="Avatar" class="profile-avatar">
                     <div class="profile-info">
                         <div class="profile-name">${userData.displayName}</div>
-                        <div class="profile-role ${isAdmin ? 'admin' : ''}">${roleBadge}</div>
+                        <div class="profile-role ${roleClass}">${roleBadge}</div>
                         <div class="profile-bio">${userData.bio || 'Không có gì sất...'}</div>
                     </div>
                     <a href="settings.html" class="btn-edit-profile" id="btnEditProfile">Chỉnh sửa hồ sơ</a>
                 `;
                 document.title = `${userData.displayName} - Hồ Sơ - Mã Đề 0099`;
+
+                // ADMIN ĐANG XEM HỒ SƠ NGƯỜI KHÁC -> Hiển thị nút phong/gỡ quyền Dịch Giả
+                if (currentUser && currentUser.uid !== targetUid) {
+                    try {
+                        const viewerSnap = await getDoc(doc(db, "users", currentUser.uid));
+                        const viewerRole = viewerSnap.exists() ? viewerSnap.data().role : "user";
+                        if (viewerRole === "admin" && targetRole !== "admin") {
+                            renderRoleControls(targetRole);
+                        }
+                    } catch (e) { console.error("Lỗi kiểm tra quyền admin:", e); }
+                }
 
                 // 2. KÉO DỮ LIỆU TRUYỆN ĐÃ ĐĂNG
                 const storiesRef = collection(db, "stories");
