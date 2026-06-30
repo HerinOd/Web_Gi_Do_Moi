@@ -525,18 +525,55 @@
         }
 
         /* ===== HÒM THƯ ĐƠN DỊCH GIẢ ===== */
+        .btn-inbox {
+            position: absolute;
+            top: 116px;
+            right: 28px;
+            padding: 8px 16px;
+            background: rgba(91, 163, 224, 0.15);
+            color: #5ba3e0;
+            border: 1px solid rgba(91, 163, 224, 0.4);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.2s;
+        }
+
+        .btn-inbox:hover { opacity: 0.85; }
+
+        .inbox-badge {
+            display: inline-block;
+            min-width: 18px;
+            padding: 0 5px;
+            margin-left: 4px;
+            background: var(--red, #ff5e6c);
+            color: #fff;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 800;
+            text-align: center;
+            line-height: 18px;
+        }
+
+        @media (max-width: 600px) {
+            .btn-inbox { position: static !important; margin-top: 8px; }
+        }
+
         #requests-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 16px;
+            max-height: 60vh;
+            overflow-y: auto;
         }
 
         .request-card {
             display: flex;
             align-items: center;
             gap: 14px;
-            background: var(--bg-card);
+            background: var(--bg-surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 14px 16px;
@@ -614,10 +651,15 @@
         <p style="text-align: center; width: 100%; color: #9aa7bc;">Đang tải danh sách lưu...</p>
     </div>
 
-    <div class="section-title blue-accent" id="requests-title" style="display: none; margin-top: 16px;">
-        📬 ĐƠN XIN LÀM DỊCH GIẢ <span id="requests-count"></span>
+    <div class="modal-overlay" id="requests-modal">
+        <div class="modal-box" style="max-width: 600px;">
+            <div class="modal-title">📬 Đơn Xin Làm Dịch Giả <span id="requests-count"></span></div>
+            <div id="requests-list"></div>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" id="btn-close-requests">Đóng</button>
+            </div>
+        </div>
     </div>
-    <div id="requests-list" style="display: none;"></div>
 
     <div class="modal-overlay" id="announce-modal">
         <div class="modal-box">
@@ -741,7 +783,7 @@
             } else {
                 wrap.innerHTML = `<button class="btn-role promote" id="btn-set-translator">⬆️ Phong làm Dịch Giả</button>`;
             }
-            document.getElementById('profile-block').appendChild(wrap);
+            document.getElementById('profile-info-block').appendChild(wrap);
 
             const promoteBtn = document.getElementById('btn-set-translator');
             const demoteBtn = document.getElementById('btn-set-user');
@@ -778,7 +820,7 @@
                 pending = reqSnap.exists();
             } catch (_) {}
 
-            const block = document.getElementById('profile-block');
+            const block = document.getElementById('profile-info-block');
             if (pending) {
                 const tag = document.createElement('div');
                 tag.className = 'apply-pending';
@@ -806,15 +848,27 @@
         // ADMIN: HÒM THƯ ĐƠN XIN LÀM DỊCH GIẢ
         // ==========================================
         async function loadTranslatorRequests() {
-            const title = document.getElementById('requests-title');
             const list = document.getElementById('requests-list');
             try {
                 const snap = await getDocs(collection(db, "translatorRequests"));
-                if (snap.empty) return; // Không có đơn -> ẩn luôn
 
-                title.style.display = 'flex';
-                list.style.display = 'flex';
-                document.getElementById('requests-count').textContent = `(${snap.size})`;
+                // Tạo nút Hòm Thư trên khung hồ sơ (luôn hiện với admin)
+                const inboxBtn = document.createElement('button');
+                inboxBtn.className = 'btn-inbox';
+                inboxBtn.innerHTML = snap.size > 0
+                    ? `📬 Hòm Thư <span class="inbox-badge">${snap.size}</span>`
+                    : `📬 Hòm Thư`;
+                document.getElementById('profile-block').appendChild(inboxBtn);
+                inboxBtn.addEventListener('click', () => {
+                    document.getElementById('requests-modal').classList.add('open');
+                });
+
+                document.getElementById('requests-count').textContent = snap.size > 0 ? `(${snap.size})` : '';
+
+                if (snap.empty) {
+                    list.innerHTML = `<p style="text-align:center; color:var(--text-2); padding:16px;">Chưa có đơn nào.</p>`;
+                    return;
+                }
 
                 list.innerHTML = "";
                 snap.forEach(d => {
@@ -843,6 +897,20 @@
             } catch (e) { console.error("Lỗi tải hòm thư:", e); }
         }
 
+        function updateInboxBadge() {
+            const remaining = document.querySelectorAll('#requests-list .request-card').length;
+            const badge = document.querySelector('.btn-inbox');
+            if (badge) {
+                badge.innerHTML = remaining > 0
+                    ? `📬 Hòm Thư <span class="inbox-badge">${remaining}</span>`
+                    : `📬 Hòm Thư`;
+            }
+            document.getElementById('requests-count').textContent = remaining > 0 ? `(${remaining})` : '';
+            if (remaining === 0) {
+                document.getElementById('requests-list').innerHTML = `<p style="text-align:center; color:var(--text-2); padding:16px;">Chưa có đơn nào.</p>`;
+            }
+        }
+
         async function rejectRequest(uid, btn) {
             btn.disabled = true;
             btn.textContent = 'Đang xóa...';
@@ -850,14 +918,7 @@
                 await deleteDoc(doc(db, "translatorRequests", uid));
                 showToast('Đã từ chối đơn.', 'success');
                 btn.closest('.request-card').remove();
-                // Cập nhật lại số đếm / ẩn nếu hết đơn
-                const remaining = document.querySelectorAll('#requests-list .request-card').length;
-                if (remaining === 0) {
-                    document.getElementById('requests-title').style.display = 'none';
-                    document.getElementById('requests-list').style.display = 'none';
-                } else {
-                    document.getElementById('requests-count').textContent = `(${remaining})`;
-                }
+                updateInboxBadge();
             } catch (e) {
                 showToast('Lỗi: ' + e.message, 'error');
                 btn.disabled = false;
@@ -889,7 +950,7 @@
                 const isAdmin = targetRole === "admin";
                 profileBlock.innerHTML = `
                     <img src="${avatarUrl}" alt="Avatar" class="profile-avatar">
-                    <div class="profile-info">
+                    <div class="profile-info" id="profile-info-block">
                         <div class="profile-name">${userData.displayName}</div>
                         <div class="profile-role ${roleClass}">${roleBadge}</div>
                         <div class="profile-bio">${userData.bio || 'Không có gì sất...'}</div>
@@ -995,6 +1056,15 @@
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Đăng';
             }
+        });
+
+        // ===== MODAL HÒM THƯ ĐƠN DỊCH GIẢ =====
+        const requestsModal = document.getElementById('requests-modal');
+        document.getElementById('btn-close-requests').addEventListener('click', () => {
+            requestsModal.classList.remove('open');
+        });
+        requestsModal.addEventListener('click', (e) => {
+            if (e.target === requestsModal) requestsModal.classList.remove('open');
         });
 
         // ===== MODAL ĐĂNG KÝ DỊCH GIẢ =====

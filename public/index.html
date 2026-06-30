@@ -913,20 +913,14 @@
     const navOverlay = document.getElementById('nav-overlay');
     const navOverlayContent = document.getElementById('nav-overlay-content');
 
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, (user) => {
       let linksHTML;
       if (user) {
-        // Chỉ Admin / Dịch Giả mới thấy nút Đăng Truyện
-        let canUpload = false;
-        try {
-          const userSnap = await getDoc(doc(db, "users", user.uid));
-          const role = userSnap.exists() ? userSnap.data().role : "user";
-          canUpload = (role === "admin" || role === "translator");
-        } catch (e) { canUpload = false; }
-
+        // Mọi người đăng nhập đều thấy nút Đăng Truyện.
+        // User thường bấm vào sẽ được dẫn tới form Đăng ký làm Dịch Giả (xử lý ở add-story.html).
         linksHTML = `
           <a href="profile.html?uid=${user.uid}">Hồ Sơ</a>
-          ${canUpload ? '<a href="add-story.html">Đăng Truyện</a>' : ''}
+          <a href="add-story.html">Đăng Truyện</a>
           <a href="#" class="btn-logout">Đăng Xuất</a>
         `;
       } else {
