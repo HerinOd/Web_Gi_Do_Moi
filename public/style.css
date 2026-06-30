@@ -103,14 +103,22 @@ body {
 
 .menu-toggle {
   cursor: pointer;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-2);
-  transition: color 0.2s;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-1);
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
   user-select: none;
-  padding: 6px;
 }
-.menu-toggle:hover { color: var(--accent); }
+.menu-toggle:hover { color: var(--accent); border-color: var(--accent); background: var(--bg-hover); }
+.menu-toggle svg { width: 20px; height: 20px; display: block; }
 
 .main-nav {
   display: flex;

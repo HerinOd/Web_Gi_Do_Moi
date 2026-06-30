@@ -217,7 +217,7 @@
       background: var(--bg-hover);
     }
 
-    .post-thumbnail img {
+    .post-thumbnail > img {
       position: absolute;
       top: 0;
       left: 0;
@@ -227,7 +227,7 @@
       transition: transform 0.4s var(--ease);
     }
 
-    .grid-item:hover .post-thumbnail img {
+    .grid-item:hover .post-thumbnail > img {
       transform: scale(1.06);
     }
 
@@ -366,11 +366,20 @@
     }
 
     .stat-item {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       font-weight: 600;
     }
+
+    .ic {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      vertical-align: -2px;
+    }
+
+    .ic-heart { color: var(--red); width: 13px; height: 13px; }
 
     /* ===== CAROUSEL ===== */
     .carousel-section {
@@ -826,7 +835,7 @@
     <div class="header-container">
       <a href="index.html" class="logo">Mã Đề 0099</a>
       <nav class="main-nav" id="top-nav"></nav>
-      <button class="menu-toggle" id="menu-toggle" aria-label="Mở menu">☰</button>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Mở menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3.5" y1="7" x2="20.5" y2="7"/><line x1="3.5" y1="12" x2="20.5" y2="12"/><line x1="3.5" y1="17" x2="20.5" y2="17"/></svg></button>
     </div>
   </header>
 
@@ -956,6 +965,9 @@
       return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
+    const ICON_EYE = `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const ICON_HEART = `<svg class="ic ic-heart" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.3l-1.45-1.32C5.4 14.25 2 11.18 2 7.4 2 4.42 4.42 2 7.4 2c1.74 0 3.41.81 4.6 2.09C13.19 2.81 14.86 2 16.6 2 19.58 2 22 4.42 22 7.4c0 3.78-3.4 6.85-8.55 11.59L12 20.3z"/></svg>`;
+
     function updateView() {
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
       const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -1012,8 +1024,8 @@
 
                     <div class="card-footer">
                         <div class="card-stats">
-                            <span class="stat-item" title="Lượt xem">👁️ ${viewCount}</span>
-                            <span class="stat-item" title="Lượt thích">❤️ ${likeCount}</span>
+                            <span class="stat-item" title="Lượt xem">${ICON_EYE} ${viewCount}</span>
+                            <span class="stat-item" title="Lượt thích">${ICON_HEART} ${likeCount}</span>
                         </div>
                         <span class="card-date">${dateStr}</span>
                     </div>
@@ -1236,8 +1248,8 @@
               <div class="carousel-title">${story.title}</div>
               <div class="carousel-tags">${tagsHTML}</div>
               <div class="carousel-stats">
-                <span>👁️ ${(story.views || 0).toLocaleString('vi-VN')}</span>
-                <span>❤️ ${(story.likeCount || 0).toLocaleString('vi-VN')}</span>
+                <span class="stat-item">${ICON_EYE} ${(story.views || 0).toLocaleString('vi-VN')}</span>
+                <span class="stat-item">${ICON_HEART} ${(story.likeCount || 0).toLocaleString('vi-VN')}</span>
               </div>
               <a href="info.html?id=${story.id}" class="carousel-read-btn">▶ Đọc Ngay</a>
             </div>
