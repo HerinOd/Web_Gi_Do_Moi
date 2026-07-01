@@ -156,6 +156,50 @@
         }
 
         .auth-footer a:hover { opacity: 0.8; text-decoration: underline; }
+
+        /* ===== MÀN HÌNH XÁC NHẬN SAU ĐĂNG KÝ ===== */
+        .success-box {
+            display: none;
+            text-align: center;
+            padding: 8px 0 2px;
+            animation: fadeSlideUp 0.4s var(--ease) both;
+        }
+
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-icon svg { width: 30px; height: 30px; }
+
+        .success-box h3 { color: var(--text-1); font-size: 19px; font-weight: 800; margin-bottom: 10px; }
+        .success-box p { color: var(--text-2); font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
+        .success-box .email-highlight { color: var(--accent); font-weight: 600; word-break: break-all; }
+
+        .spam-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            text-align: left;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-glow);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            color: var(--text-2);
+            font-size: 13px;
+            line-height: 1.55;
+            margin-bottom: 22px;
+        }
+
+        .spam-note svg { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+        .spam-note b { color: var(--text-1); }
     </style>
 </head>
 
@@ -173,6 +217,7 @@
                 <span class="tagline">Tạo tài khoản miễn phí</span>
             </div>
 
+            <div id="form-section">
             <div class="form-group">
                 <label>Tên hiển thị</label>
                 <div class="input-wrap">
@@ -202,6 +247,18 @@
 
             <div class="auth-footer">
                 Đã có tài khoản? <a href="login.html">Đăng nhập</a>
+            </div>
+            </div>
+
+            <div class="success-box" id="success-section">
+                <span class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/><path d="M16 16l2 2 4-4"/></svg></span>
+                <h3>Tạo tài khoản thành công!</h3>
+                <p>Chúng tôi đã gửi link kích hoạt tới<br><span class="email-highlight" id="sent-email"></span><br>Hãy mở email và bấm vào link để kích hoạt tài khoản trước khi đăng nhập.</p>
+                <div class="spam-note">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <span>Không thấy email? Nhớ kiểm tra cả hộp thư <b>Rác / Spam</b> — email kích hoạt đôi khi bị lọc vào đó.</span>
+                </div>
+                <a href="login.html" class="auth-btn" style="display:block; text-align:center; text-decoration:none; box-sizing:border-box;">Đến trang đăng nhập</a>
             </div>
         </div>
     </div>
@@ -264,11 +321,11 @@
                 // Hủy ngay lập tức phiên đăng nhập tự động của Firebase
                 await signOut(auth);
 
-                showToast("Tạo tài khoản thành công! Hệ thống đã gửi Link Xác Thực tới Email của bạn.", "success");
-                await new Promise(r => setTimeout(r, 2000));
-
-                // Đổi luồng Routing: Bắt về màn hình Login để Gatekeeper làm việc
-                window.location.href = "login.html";
+                // Hiện màn xác nhận (thay vì toast biến mất nhanh) để người dùng đọc kịp
+                document.getElementById('sent-email').textContent = email;
+                document.getElementById('form-section').style.display = 'none';
+                document.getElementById('success-section').style.display = 'block';
+                window.scrollTo(0, 0);
             } catch (error) {
                 console.error(error);
                 showToast("Lỗi tạo tài khoản (Có thể Email đã tồn tại hoặc Mật khẩu quá ngắn).", "error");
