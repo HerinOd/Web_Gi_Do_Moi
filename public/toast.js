@@ -39,15 +39,21 @@
             from { opacity:1; transform: translateX(0) scale(1); max-height:120px; margin:0; }
             to   { opacity:0; transform: translateX(24px) scale(0.96); max-height:0; padding:0; margin:-10px 0 0; }
         }
-        .toast-icon { font-size:20px; line-height:1; flex-shrink:0; margin-top:1px; }
+        .toast-icon { flex-shrink:0; margin-top:1px; line-height:0; }
+        .toast-icon svg { width:20px; height:20px; display:block; }
+        .toast-success .toast-icon { color:#3ddc84; }
+        .toast-error   .toast-icon { color:#ff5e6c; }
+        .toast-warning .toast-icon { color:#f0a500; }
+        .toast-info    .toast-icon { color:#5ba3e0; }
         .toast-body { flex:1; min-width:0; }
         .toast-title { font-weight:600; font-size:14px; color:#eceff3; margin-bottom:3px; }
         .toast-msg   { font-size:13px; color:#9aa7bc; line-height:1.5; word-break:break-word; }
         .toast-close {
             background:none; border:none; color:#5e6e86; cursor:pointer;
-            font-size:15px; line-height:1; padding:0; flex-shrink:0;
-            transition:color 0.2s; margin-top:1px;
+            padding:0; flex-shrink:0; line-height:0;
+            transition:color 0.2s; margin-top:2px;
         }
+        .toast-close svg { width:15px; height:15px; display:block; }
         .toast-close:hover { color:#eceff3; }
         .toast-success { border-left:3px solid #3ddc84; }
         .toast-error   { border-left:3px solid #ff5e6c; }
@@ -87,7 +93,14 @@
             from { opacity:0; transform:scale(0.93) translateY(12px); }
             to   { opacity:1; transform:scale(1) translateY(0); }
         }
-        .confirm-icon  { font-size:42px; display:block; margin-bottom:16px; }
+        .confirm-icon {
+            width:58px; height:58px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            margin:0 0 18px;
+        }
+        .confirm-icon svg { width:29px; height:29px; }
+        .confirm-icon.danger  { background:rgba(255,94,108,0.13); color:#ff5e6c; }
+        .confirm-icon.warning { background:rgba(240,165,0,0.13); color:#f0a500; }
         .confirm-title { font-size:17px; font-weight:700; color:#eceff3; margin-bottom:8px; }
         .confirm-msg   { font-size:14px; color:#9aa7bc; line-height:1.65; margin-bottom:26px; }
         .confirm-actions { display:flex; gap:10px; justify-content:flex-end; }
@@ -119,11 +132,20 @@
     container.id = 'toast-container';
     document.body.appendChild(container);
 
+    var SVG = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+    var IC_CHECK    = '<svg ' + SVG + '><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>';
+    var IC_XCIRCLE  = '<svg ' + SVG + '><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>';
+    var IC_ALERT    = '<svg ' + SVG + '><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+    var IC_INFO     = '<svg ' + SVG + '><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+    var IC_CLOSE    = '<svg ' + SVG + '><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    var IC_TRASH    = '<svg ' + SVG + '><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>';
+    var IC_BAN      = '<svg ' + SVG + '><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+
     const META = {
-        success: { icon: '✅', title: 'Thành công' },
-        error:   { icon: '❌', title: 'Lỗi' },
-        warning: { icon: '⚠️', title: 'Lưu ý' },
-        info:    { icon: 'ℹ️', title: 'Thông báo' },
+        success: { svg: IC_CHECK,   title: 'Thành công' },
+        error:   { svg: IC_XCIRCLE, title: 'Lỗi' },
+        warning: { svg: IC_ALERT,   title: 'Lưu ý' },
+        info:    { svg: IC_INFO,    title: 'Thông báo' },
     };
 
     window.showToast = function (message, type, duration) {
@@ -134,12 +156,12 @@
         const el = document.createElement('div');
         el.className = 'toast toast-' + type;
         el.innerHTML =
-            '<span class="toast-icon">' + m.icon + '</span>' +
+            '<span class="toast-icon">' + m.svg + '</span>' +
             '<div class="toast-body">' +
                 '<div class="toast-title">' + m.title + '</div>' +
                 '<div class="toast-msg">' + message + '</div>' +
             '</div>' +
-            '<button class="toast-close">✕</button>' +
+            '<button class="toast-close" aria-label="Đóng">' + IC_CLOSE + '</button>' +
             '<div class="toast-bar" style="width:100%"></div>';
 
         container.appendChild(el);
@@ -170,13 +192,16 @@
         var confirmText = options.confirmText || 'Xác nhận';
         var cancelText  = options.cancelText  || 'Hủy';
         var btnClass    = options.type === 'warning' ? 'confirm-ok-warning' : 'confirm-ok-danger';
+        var iconType    = options.type === 'warning' ? 'warning' : 'danger';
+        var EMOJI_MAP   = { '🗑️': IC_TRASH, '⛔': IC_BAN, '⚠️': IC_ALERT };
+        var iconSvg     = EMOJI_MAP[icon] || IC_ALERT;
 
         return new Promise(function (resolve) {
             var overlay = document.createElement('div');
             overlay.className = 'confirm-overlay';
             overlay.innerHTML =
                 '<div class="confirm-card">' +
-                    '<span class="confirm-icon">' + icon + '</span>' +
+                    '<span class="confirm-icon ' + iconType + '">' + iconSvg + '</span>' +
                     '<div class="confirm-title">' + title + '</div>' +
                     '<div class="confirm-msg">' + message + '</div>' +
                     '<div class="confirm-actions">' +
