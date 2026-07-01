@@ -7,83 +7,204 @@
     <title>Cài Đặt Tài Khoản - Mã Đề 0099</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .settings-container {
-            max-width: 600px;
-            margin: 100px auto;
-            padding: 30px;
-            background: #222d3e;
-            border-radius: 8px;
-            border: 1px solid #324056;
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(ellipse 70% 50% at 50% -5%, rgba(91, 163, 224, 0.07) 0%, transparent 65%),
+                var(--bg-base);
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        .settings-wrapper {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 96px 20px 60px;
         }
+
+        .settings-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 18px;
+            font-size: 13px;
+        }
+
+        .settings-breadcrumb a {
+            color: var(--text-2);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+        }
+
+        .settings-breadcrumb a:hover { color: var(--accent); }
+        .settings-breadcrumb svg { width: 15px; height: 15px; }
+
+        .settings-container {
+            padding: 36px 36px 32px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
+            animation: fadeSlideUp 0.4s var(--ease) both;
+        }
+
+        .settings-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-1);
+            letter-spacing: -0.3px;
+            margin-bottom: 4px;
+        }
+
+        .settings-subtitle {
+            font-size: 13.5px;
+            color: var(--text-3);
+            margin-bottom: 28px;
+        }
+
+        .form-group { margin-bottom: 20px; }
 
         .form-group label {
             display: block;
-            color: #5ba3e0;
-            font-weight: bold;
+            color: var(--text-2);
+            font-size: 13px;
+            font-weight: 600;
             margin-bottom: 8px;
+            letter-spacing: 0.2px;
         }
 
-        .form-group input,
+        .form-group input[type="text"],
         .form-group textarea {
             width: 100%;
-            padding: 12px;
-            background: #121a28;
-            border: 1px solid #324056;
-            color: #fff;
-            border-radius: 4px;
+            padding: 12px 14px;
+            background: var(--bg-base);
+            border: 1px solid var(--border);
+            color: var(--text-1);
+            border-radius: var(--radius-sm);
             font-family: inherit;
+            font-size: 14.5px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-dim);
         }
 
         .form-group textarea {
-            height: 120px;
+            min-height: 110px;
             resize: vertical;
         }
 
         .avatar-preview-block {
             display: flex;
             align-items: center;
-            gap: 20px;
-            margin-bottom: 10px;
+            gap: 18px;
+            margin-bottom: 8px;
+        }
+
+        .avatar-upload {
+            position: relative;
+            width: 76px;
+            height: 76px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            cursor: pointer;
         }
 
         .avatar-preview {
-            width: 80px;
-            height: 80px;
+            width: 76px;
+            height: 76px;
             border-radius: 50%;
             object-fit: cover;
-            background: #121a28;
-            border: 2px solid #5ba3e0;
+            background: var(--bg-hover);
+            border: 2px solid var(--accent);
+            display: block;
+        }
+
+        .avatar-upload-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: rgba(18, 26, 40, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            opacity: 0;
+            transition: opacity 0.2s var(--ease);
+        }
+
+        .avatar-upload-overlay svg { width: 20px; height: 20px; }
+        .avatar-upload:hover .avatar-upload-overlay { opacity: 1; }
+
+        .avatar-upload input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .avatar-hint {
+            font-size: 12.5px;
+            color: var(--text-3);
+            line-height: 1.5;
         }
 
         .save-btn {
             width: 100%;
-            padding: 12px;
-            background: #5ba3e0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px;
+            background: var(--accent);
             color: #121a28;
             border: none;
-            font-weight: bold;
-            font-size: 16px;
+            font-weight: 700;
+            font-size: 15px;
+            font-family: inherit;
             cursor: pointer;
-            border-radius: 4px;
-            transition: 0.2s;
+            border-radius: var(--radius-sm);
+            margin-top: 6px;
+            transition: background 0.2s var(--ease), transform 0.15s var(--ease), box-shadow 0.2s var(--ease);
         }
 
         .save-btn:hover {
-            background: #4a8fce;
+            background: var(--accent-dark);
+            box-shadow: 0 4px 20px var(--accent-glow);
+            transform: translateY(-1px);
         }
+
+        .save-btn:active { transform: translateY(0); }
+
+        .save-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .save-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
 
         #auth-warning {
             text-align: center;
-            color: #ff5e6c;
-            padding: 50px 0;
+            color: var(--text-2);
+            padding: 60px 20px;
         }
 
-        #settings-form {
-            display: none;
+        #auth-warning h2 { color: var(--text-1); font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+        #auth-warning a { color: var(--accent); text-decoration: none; font-weight: 600; }
+        #auth-warning a:hover { text-decoration: underline; }
+
+        #settings-form { display: none; }
+
+        @media (max-width: 480px) {
+            .settings-container { padding: 28px 22px 26px; }
         }
     </style>
 </head>
@@ -91,40 +212,53 @@
 <body>
     <header class="site-header">
         <div class="header-container">
-            <a href="index.html" class="logo">Mã Đề 0099 - Cài Đặt</a>
+            <a href="index.html" class="logo">Mã Đề 0099</a>
         </div>
     </header>
 
-    <div class="settings-container">
-        <div id="auth-warning">
-            <h2>Vui lòng đăng nhập để cấu hình tài khoản!</h2>
-            <br>
-            <a href="login.html" style="color: #5ba3e0; text-decoration: underline;">Đi tới Đăng nhập</a>
+    <div class="settings-wrapper">
+        <div class="settings-breadcrumb">
+            <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Về trang chủ</a>
         </div>
 
-        <form id="settings-form">
-            <h2 style="text-align: center; margin-bottom: 25px; color: #eceff3;">Chỉnh Sửa Hồ Sơ</h2>
+        <div class="settings-container">
+            <div id="auth-warning">
+                <h2>Vui lòng đăng nhập để cấu hình tài khoản!</h2>
+                <a href="login.html">Đi tới đăng nhập →</a>
+            </div>
 
-            <div class="form-group">
-                <label>Ảnh Đại Diện (Avatar)</label>
-                <div class="avatar-preview-block">
-                    <img src="" id="current-avatar" class="avatar-preview" alt="Avatar">
-                    <input type="file" id="avatar-file" accept="image/*">
+            <form id="settings-form">
+                <div class="settings-title">Chỉnh sửa hồ sơ</div>
+                <div class="settings-subtitle">Thông tin này sẽ hiển thị công khai trên hồ sơ của bạn.</div>
+
+                <div class="form-group">
+                    <label>Ảnh đại diện</label>
+                    <div class="avatar-preview-block">
+                        <label class="avatar-upload">
+                            <img src="" id="current-avatar" class="avatar-preview" alt="Avatar">
+                            <span class="avatar-upload-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span>
+                            <input type="file" id="avatar-file" accept="image/*">
+                        </label>
+                        <div class="avatar-hint">Nhấn vào ảnh để đổi.<br>Nên dùng ảnh vuông, tối đa 5MB.</div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="displayName">Tên Hiển Thị (Nickname)</label>
-                <input type="text" id="displayName" required>
-            </div>
+                <div class="form-group">
+                    <label for="displayName">Tên hiển thị</label>
+                    <input type="text" id="displayName" required>
+                </div>
 
-            <div class="form-group">
-                <label for="bio">Tiểu Sử / Giới Thiệu Bản Thân</label>
-                <textarea id="bio" placeholder="Viết vài dòng giới thiệu về bạn..."></textarea>
-            </div>
+                <div class="form-group">
+                    <label for="bio">Tiểu sử / giới thiệu bản thân</label>
+                    <textarea id="bio" placeholder="Viết vài dòng giới thiệu về bạn..."></textarea>
+                </div>
 
-            <button type="submit" class="save-btn" id="btnSave">Lưu Thay Đổi</button>
-        </form>
+                <button type="submit" class="save-btn" id="btnSave">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+                    Lưu thay đổi
+                </button>
+            </form>
+        </div>
     </div>
 
     <script src="toast.js"></script>
@@ -187,6 +321,7 @@
 
             if (!currentUser) return;
 
+            const SAVE_LABEL = btnSave.innerHTML;
             btnSave.textContent = "Đang xử lý cập nhật...";
             btnSave.disabled = true;
 
@@ -231,7 +366,7 @@
                 console.error("Lỗi cập nhật hồ sơ:", error);
                 showToast("Đã xảy ra lỗi trong quá trình lưu dữ liệu.", "error");
             } finally {
-                btnSave.textContent = "Lưu Thay Đổi";
+                btnSave.innerHTML = SAVE_LABEL;
                 btnSave.disabled = false;
             }
         });
